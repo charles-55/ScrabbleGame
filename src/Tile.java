@@ -1,5 +1,5 @@
 public class Tile {
 
-    private String letter;
+    private char letter;
     private int point;
 }

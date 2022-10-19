@@ -9,14 +9,19 @@ public class Board {
      * Create the board.
      */
     public Board() {
-
+        board = new Square[BOARD_SIZE][BOARD_SIZE];
+        this.initializeBoard();
     }
 
     /**
      * Initialize the board.
      */
     private void initializeBoard() {
-
+        for(Square[] squares : board) {
+            for(Square square : squares) {
+                square = new Square();
+            }
+        }
     }
 
     // TODO: 2022-10-19 complete implementation
@@ -40,6 +45,38 @@ public class Board {
      */
     @Override
     public String toString() {
-        return "";
+        String boardString = "  || 0";
+
+        for(int i = 1; i < BOARD_SIZE; i++) {
+            if(i <= 10)
+                boardString += " | " + i;
+            else
+                boardString += "| " + i;
+        }
+        boardString += """
+
+                ---------------------------------------------------------------
+                """;
+
+        int verticalCoordinate = 0;
+        for(Square[] squares : board) {
+            if(verticalCoordinate < 10)
+                boardString += " " + verticalCoordinate + "|";
+            else
+                boardString += verticalCoordinate + "|";
+
+            for(Square square : squares) {
+                Tile tile = square.getTile();
+                if(tile == null)
+                    boardString += " |   ";
+                else
+                    boardString += " | " + tile.getLetter() + " ";
+            }
+            boardString += "\n";
+
+            verticalCoordinate++;
+        }
+
+        return boardString;
     }
 }

@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 public class GameMaster {
 
     private Board board;
@@ -10,7 +14,10 @@ public class GameMaster {
      * Create and initialize the game.
      */
     public GameMaster() {
-
+        board = new Board();
+        bag = new Bag();
+        turn = 0;
+        parser = new Parser();
     }
 
     /**
@@ -18,7 +25,12 @@ public class GameMaster {
      * @return The opening message.
      */
     private String getWelcomeMessage() {
-        return "";
+        return """
+                Welcome to the game of Scrabble!
+                Scrabble is a board spelling game.
+                Type 'help' if you need help.
+                How many players would be playing today?
+                """;
     }
 
     /**
@@ -26,7 +38,12 @@ public class GameMaster {
      * @param numPlayers The number of players playing the game.
      */
     private void initializePlayers(int numPlayers) {
+        players = new Player[numPlayers];
 
+        for(int i = 0; i < players.length; i++) {
+            String playerName = parser.getPlayerName(i);
+            players[i] = new Player(playerName);  // needs to initialize each player
+        }
     }
 
     /**
@@ -35,7 +52,31 @@ public class GameMaster {
      * @return true if the command ends the game, false otherwise.
      */
     private boolean processCommand(Command command) {
-        return false;
+        boolean wantToQuit = false;
+
+        if(command.isUnknown()) {
+            System.out.println("I don't know what you mean...");
+            return false;
+        }
+
+        String commandWord = command.getCommandWord();
+        if (commandWord.equals("help")) {
+            System.out.println(help());
+        }
+        else if (commandWord.equals("play")) {
+            attemptPlay(command);
+        }
+        else if (commandWord.equals("quit")) {
+            wantToQuit = quit(command);
+        }
+        else if (commandWord.equals("save")) {
+            save(command);
+        }
+        else if (commandWord.equals("load")) {
+            load(command);
+        }
+
+        return wantToQuit;
     }
 
     // TODO: 2022-10-18 complete implementation
@@ -46,7 +87,12 @@ public class GameMaster {
      * a list of command words.
      */
     private String help() {
-        return "";
+        return """
+                You are supposed to 
+                
+                Your command words are:
+                help, play, quit, save, load
+                """;
     }
 
     // TODO: 2022-10-18 complete implementation
@@ -57,6 +103,35 @@ public class GameMaster {
      * false otherwise.
      */
     private boolean attemptPlay(Command command) {
+        if(!command.hasSecondWord()) {
+            System.out.println("Play what?");
+            return false;
+        }
+
+        String wordAttempt = command.getSecondWord();
+
+        try {
+            Scanner dictionary = new Scanner(new File("WordList.txt"));
+            while(dictionary.hasNextLine()) {
+                if(wordAttempt.equals(dictionary.nextLine())) {
+                    this.board.attemptPlay();
+                }
+            }
+        }
+        catch (FileNotFoundException exception) {
+            System.out.println("Dictionary not found");
+            return false;
+        }
+
+        if (nextRoom == null) {
+            System.out.println("There is no door!");
+        }
+        else {
+            history.push(currentRoom);
+            currentRoom = nextRoom;
+            this.printDescription();
+        }
+
         return false;
     }
 
@@ -64,7 +139,7 @@ public class GameMaster {
      * Changes the players' turn.
      */
     private void changeTurn() {
-
+        this.turn = (this.turn + 1) % players.length;
     }
 
     // TODO: 2022-10-18 complete implementation
@@ -94,13 +169,27 @@ public class GameMaster {
      * false otherwise.
      */
     private boolean quit(Command command) {
-        return false;
+        if(command.hasSecondWord()) {
+            System.out.println("Quit what?");
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     /**
      * Main play routine.  Loops until end of play.
      */
     public void playGame() {
+        System.out.println(this.getWelcomeMessage());
+        int numPlayers = parser.getNumPlayers();
+        this.initializePlayers(numPlayers);
 
+        boolean finished = false;
+        while(!finished) {
+            Command command = parser.getCommand();
+            finished = this.processCommand(command);
+        }
     }
 }

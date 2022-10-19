@@ -2,6 +2,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+/**
+ * The GameMaster class.
+ *
+ * @author Osamudiamen Nwoko 101152520
+ * @version 1.0
+ */
 public class GameMaster {
 
     private Board board;
@@ -66,6 +72,9 @@ public class GameMaster {
         else if (commandWord.equals("play")) {
             attemptPlay(command);
         }
+        else if (commandWord.equals("exchange")) {
+            exchangeTile(command);
+        }
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
         }
@@ -91,7 +100,7 @@ public class GameMaster {
                 You are supposed to 
                 
                 Your command words are:
-                help, play, quit, save, load
+                help, play, exchange, quit, save, load
                 """;
     }
 
@@ -110,26 +119,61 @@ public class GameMaster {
 
         String wordAttempt = command.getSecondWord();
 
+        Tile[] tiles = new Tile[wordAttempt.length()];
+        for(int i = 0; i < wordAttempt.length(); i++) {
+            for(Tile tile : players[turn].getRack().getTiles()) {
+                if(tile.getLetter().equals(wordAttempt.charAt(i)))
+                    tiles[i] = tile;
+            }
+            if(tiles[i] == null) {
+                System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                return false;
+            }
+        }
+
         try {
             Scanner dictionary = new Scanner(new File("WordList.txt"));
             while(dictionary.hasNextLine()) {
                 if(wordAttempt.equals(dictionary.nextLine())) {
-                    this.board.attemptPlay();
+                    if(this.board.attemptPlay(tiles, parser.getCoordinates(), parser.getDirection())) {
+                        for(Tile tile : tiles)
+                            players[turn].getRack().removeTile(tile);
+                        players[turn].updateScore();
+                        this.changeTurn();
+                        return true;
+                    }
                 }
             }
+            System.out.println("\"" + wordAttempt + "\" does not exist.");
         }
         catch (FileNotFoundException exception) {
             System.out.println("Dictionary not found");
             return false;
         }
 
-        if (nextRoom == null) {
-            System.out.println("There is no door!");
+        return false;
+    }
+
+    /**
+     * Exchange one or more tiles in a player's rack
+     * @param command Command containing number of tiles to exchange.
+     * @return true if exchange was successful, false otherwise.
+     */
+    public boolean exchangeTile(Command command) {
+        if(!command.hasSecondWord()) {
+            System.out.println("Exchange what?");
+            return false;
         }
-        else {
-            history.push(currentRoom);
-            currentRoom = nextRoom;
-            this.printDescription();
+
+        try {
+            int exchangeNum = Integer.parseInt(command.getSecondWord());
+            if(players[turn].getRack().exchangeTiles(exchangeNum)) {
+                this.changeTurn();
+                return true;
+            }
+        }
+        catch(NumberFormatException e) {
+            System.out.println("Second word was not a number");
         }
 
         return false;

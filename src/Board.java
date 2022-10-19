@@ -1,3 +1,9 @@
+/**
+ * The Board class.
+ *
+ * @author Osamudiamen Nwoko 101152520
+ * @version 1.0
+ */
 public class Board {
 
     public enum Direction {FORWARD, DOWNWARD}

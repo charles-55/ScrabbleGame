@@ -5,4 +5,15 @@ public class Square {
     public Square() {
         tile = null;
     }
+
+    public Tile getTile() {
+        return tile;
+    }
+
+    public boolean placeTile(Tile tileToPlace){
+        if(tile != null)
+            return false;
+        tile = tileToPlace;
+        return true;
+    }
 }

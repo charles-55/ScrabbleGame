@@ -9,7 +9,7 @@ public class Board {
     public enum Direction {FORWARD, DOWNWARD}
 
     private Square[][] board;
-    private final int BOARD_SIZE = 15;
+    private static final int BOARD_SIZE = 15;
 
     /**
      * Create the board.
@@ -42,6 +42,12 @@ public class Board {
      * otherwise.
      */
     public boolean attemptPlay(Tile[] word, int[] coordinates, Direction direction) {
+        if(direction == Direction.FORWARD) {
+
+        }
+        else if(direction == Direction.DOWNWARD) {
+
+        }
         return false;
     }
 
@@ -72,11 +78,14 @@ public class Board {
                 boardString += verticalCoordinate + "|";
 
             for(Square square : squares) {
+                /*
                 Tile tile = square.getTile();
                 if(tile == null)
-                    boardString += " |   ";
+                    boardString += "|   ";
                 else
-                    boardString += " | " + tile.getLetter() + " ";
+                    boardString += "| " + tile.getLetter() + " ";
+                 */
+                // boardString += "| L ";
             }
             boardString += "\n";
 

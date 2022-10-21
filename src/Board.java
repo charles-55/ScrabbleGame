@@ -1,22 +1,33 @@
+/**
+ * The Board class.
+ *
+ * @author Osamudiamen Nwoko 101152520
+ * @version 1.0
+ */
 public class Board {
 
     public enum Direction {FORWARD, DOWNWARD}
 
     private Square[][] board;
-    private final int BOARD_SIZE = 15;
+    private static final int BOARD_SIZE = 15;
 
     /**
      * Create the board.
      */
     public Board() {
-
+        board = new Square[BOARD_SIZE][BOARD_SIZE];
+        this.initializeBoard();
     }
 
     /**
      * Initialize the board.
      */
     private void initializeBoard() {
-
+        for(Square[] squares : board) {
+            for(Square square : squares) {
+                square = new Square();
+            }
+        }
     }
 
     // TODO: 2022-10-19 complete implementation
@@ -31,6 +42,12 @@ public class Board {
      * otherwise.
      */
     public boolean attemptPlay(Tile[] word, int[] coordinates, Direction direction) {
+        if(direction == Direction.FORWARD) {
+
+        }
+        else if(direction == Direction.DOWNWARD) {
+
+        }
         return false;
     }
 
@@ -40,6 +57,41 @@ public class Board {
      */
     @Override
     public String toString() {
-        return "";
+        String boardString = "  || 0";
+
+        for(int i = 1; i < BOARD_SIZE; i++) {
+            if(i <= 10)
+                boardString += " | " + i;
+            else
+                boardString += "| " + i;
+        }
+        boardString += """
+
+                ---------------------------------------------------------------
+                """;
+
+        int verticalCoordinate = 0;
+        for(Square[] squares : board) {
+            if(verticalCoordinate < 10)
+                boardString += " " + verticalCoordinate + "|";
+            else
+                boardString += verticalCoordinate + "|";
+
+            for(Square square : squares) {
+                /*
+                Tile tile = square.getTile();
+                if(tile == null)
+                    boardString += "|   ";
+                else
+                    boardString += "| " + tile.getLetter() + " ";
+                 */
+                // boardString += "| L ";
+            }
+            boardString += "\n";
+
+            verticalCoordinate++;
+        }
+
+        return boardString;
     }
 }

@@ -22,8 +22,7 @@ public class Player {
         return this.score;
     }
     public Rack getRack(){
-        for(int i=7; i<=7;i++){
-
-        }
+        return rack;
     }
+
 }

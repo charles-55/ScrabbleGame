@@ -7,30 +7,37 @@ public class Rack {
     public Rack() {
         this.tiles = new Tile[MAX_RACK_SIZE];
     }
-    public void fillRack(){
-        for(int i=0; i<7;i++){
-            tiles[i]=new Tile();
+    public boolean fillRack(Bag bag){
+        boolean filled=true;
+        for(int i=0;i<MAX_RACK_SIZE;i++){
+            if(tiles[i]==null){
+                tiles[i]=bag.drawTile();
+                filled=!(tiles[i]==null);
+
+            }
+
         }
+        return filled;
     }
-    public void exchangeTiles(int[] tilesToExchangeIndex){
-        for(int i=0;i<7;i++){
-
+    public boolean exchangeTiles(Bag bag,int[] index){
+        for(int i : index) {
+            if(!bag.isEmpty()) {
+                tiles[i] = bag.swapTile(tiles[i]);
+            }
         }
-
-
-
+        return true;
     }
     public Tile[] getTiles(){
         return tiles;
     }
     public String toString(){
-        String characterAndPoints;
+        String characterAndPoints="";
         for(Tile t:tiles){
-            characterAndPoints="letter="+" "+t.getLetter()+" "+ t.getPoints()+"\n" ;
-            return characterAndPoints;
+            if(t!=null){
+                characterAndPoints=t.getLetter()+" : "+ t.getPoints()+" | ";
+            }
         }
-        return "this is all tiles";
-
+        return characterAndPoints;
     }
 
 }

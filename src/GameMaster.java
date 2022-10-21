@@ -195,10 +195,10 @@ public class GameMaster {
             int[] tilesToExchangeIndex = new int[exchangeNum];
 
             for(int tileIndex : tilesToExchangeIndex) {
-                tileIndex = parser.getTileIndex();
+                tileIndex = parser.getTileIndex(players[turn].getRack().getTiles());
             }
 
-            if(players[turn].getRack().exchangeTiles(tilesToExchangeIndex)) {
+            if(players[turn].getRack().exchangeTiles(bag, tilesToExchangeIndex)) {
                 this.changeTurn();
                 return true;
             }

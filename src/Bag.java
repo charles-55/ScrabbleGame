@@ -43,7 +43,9 @@ public class Bag
      */
     public Tile swapTile(Tile tile)
     {
-        return bag.remove(random.nextInt(bag.size()));
+        Tile returnTile = bag.remove(random.nextInt(bag.size()));
+        bag.add(tile);
+        return returnTile;
     }
 
     /**

@@ -15,7 +15,6 @@ public class Rack {
                 filled=!(tiles[i]==null);
 
             }
-
         }
         return filled;
     }
@@ -31,13 +30,19 @@ public class Rack {
         return tiles;
     }
     public String toString(){
-        String characterAndPoints="";
+        String characterAndPoints="| ";
         for(Tile t:tiles){
             if(t!=null){
-                characterAndPoints=t.getLetter()+" : "+ t.getPoints()+" | ";
+                characterAndPoints +=t.getLetter()+" : "+ t.getPoints()+" | ";
             }
         }
         return characterAndPoints;
     }
 
+    public void removeTile(Tile tile) {
+        for(Tile t : tiles) {
+            if(t == tile)
+                t = null;
+        }
+    }
 }

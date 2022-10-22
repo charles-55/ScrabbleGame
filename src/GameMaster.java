@@ -179,6 +179,8 @@ public class GameMaster {
                         }
                         players[turn].updateScore(board.getScore(coordinates, direction));
                         System.out.println(players[turn].getName() + " score: " + players[turn].getScore());
+                        players[turn].getRack().fillRack(bag);
+                        System.out.println(players[turn].getRack().toString());
                         changeTurn();
                         return true;
                     }
@@ -213,8 +215,8 @@ public class GameMaster {
             int exchangeNum = Integer.parseInt(command.getSecondWord());
             int[] tilesToExchangeIndex = new int[exchangeNum];
 
-            for(int tileIndex : tilesToExchangeIndex) {
-                tileIndex = parser.getTileIndex(players[turn].getRack().getTiles());
+            for(int i = 0; i < exchangeNum; i++) {
+                tilesToExchangeIndex[i] = parser.getTileIndex(players[turn].getRack().getTiles());
             }
 
             if(players[turn].getRack().exchangeTiles(bag, tilesToExchangeIndex)) {

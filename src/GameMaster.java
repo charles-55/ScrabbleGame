@@ -17,8 +17,9 @@ public class GameMaster {
     private Player[] players;
     private int turn;
     private final Parser parser;
-
     private String gameFileName;
+    private static final int MIN_PLAYERS = 2, MAX_PLAYERS = 4;
+    private static final String DICTIONARY = "src/WordList.txt";
 
     /**
      * Create and initialize the game.
@@ -28,7 +29,8 @@ public class GameMaster {
         bag = new Bag();
         turn = 0;
         parser = new Parser();
-        gameFileName = "";
+        gameFileName = "new Game";
+        playGame();
     }
 
     /**
@@ -40,7 +42,6 @@ public class GameMaster {
                 Welcome to the game of Scrabble!
                 Scrabble is a board spelling game.
                 Type 'help' if you need help.
-                How many players would be playing today?
                 """;
     }
 
@@ -52,8 +53,9 @@ public class GameMaster {
         players = new Player[numPlayers];
 
         for(int i = 0; i < players.length; i++) {
-            String playerName = parser.getPlayerName(i);
-            players[i] = new Player(playerName);  // needs to initialize each player
+            players[i] = new Player(parser.getPlayerName(i));
+            if(!players[i].getRack().fillRack(bag))
+                System.out.println("Bag is empty!");
         }
     }
 
@@ -66,46 +68,57 @@ public class GameMaster {
         boolean wantToQuit = false;
 
         if(command.isUnknown()) {
-            System.out.println("I don't know what you mean...");
+            System.out.println("Invalid command!");
             return false;
         }
 
         String commandWord = command.getCommandWord();
-        if(commandWord.equals("help")) {
-            System.out.println(help());
-        }
-        else if(commandWord.equals("play")) {
-            if(attemptPlay(command))
+        switch (commandWord) {
+            case "help":
+                System.out.println(help());
+                break;
+            case "play":
+                if(attemptPlay(command))
+                    System.out.println(board.toString());
+                else
+                    System.out.println("Play unsuccessful, try again.");
+                break;
+            case "exchange":
+                if(exchangeTile(command))
+                    System.out.println(players[turn].getRack().toString());
+                else
+                    System.out.println("Exchange unsuccessful, try again.");
+                break;
+            case "showBoard":
                 System.out.println(board.toString());
-            else
-                System.out.println("Play unsuccessful, try again.");
-        }
-        else if(commandWord.equals("exchange")) {
-            if(exchangeTile(command))
-                System.out.println(board.toString());
-            else
-                System.out.println("Play unsuccessful, try again.");
-        }
-        else if(commandWord.equals("quit")) {
-            wantToQuit = quit(command);
-        }
-        else if(commandWord.equals("save")) {
-            if(save(command))
-                System.out.println("Save successful");
-            else
-                System.out.println("Save unsuccessful.");
-        }
-        else if(commandWord.equals("saveAs")) {
-            if(saveAs(command))
-                System.out.println("Save As successful");
-            else
-                System.out.println("Save As unsuccessful.");
-        }
-        else if(commandWord.equals("load")) {
-            if(load(command))
-                System.out.println("Load successful");
-            else
-                System.out.println("Load unsuccessful.");
+                break;
+            case "showRack":
+                System.out.println(players[turn].getRack().toString());
+                break;
+            case "printGame":
+                System.out.println(this);
+                break;
+            case "quit":
+                wantToQuit = quit(command);
+                break;
+            case "save":
+                if(save(command))
+                    System.out.println("Save successful");
+                else
+                    System.out.println("Save unsuccessful.");
+                break;
+            case "saveAs":
+                if(saveAs(command))
+                    System.out.println("Save As successful");
+                else
+                    System.out.println("Save As unsuccessful.");
+                break;
+            case "load":
+                if(load(command))
+                    System.out.println("Load successful");
+                else
+                    System.out.println("Load unsuccessful.");
+                break;
         }
 
         return wantToQuit;
@@ -120,11 +133,10 @@ public class GameMaster {
     private String help() {
         return """
                 Your command words are:
-                help, play, exchange, quit, save, saveAs, load
+                help, play, exchange, showBoard, showRack, printGame, quit, save, saveAs, load
                 """;
     }
 
-    // TODO: 2022-10-18 complete implementation
     /**
      * Attempts to play a particular word on the board.
      * @param command Command containing the word to play.
@@ -137,13 +149,13 @@ public class GameMaster {
             return false;
         }
 
-        String wordAttempt = command.getSecondWord();
+        String wordAttempt = command.getSecondWord().toUpperCase();
 
         /* Get the tiles from the player */
         Tile[] tilesToPlay = new Tile[wordAttempt.length()];
         for(int i = 0; i < wordAttempt.length(); i++) {
             for(Tile tile : players[turn].getRack().getTiles()) {
-                if(tile.getLetter().equals(wordAttempt.charAt(i)))
+                if(tile.getLetter() == wordAttempt.charAt(i))
                     tilesToPlay[i] = tile;
             }
             if(tilesToPlay[i] == null) {
@@ -154,17 +166,25 @@ public class GameMaster {
 
         try {
             /* Check if the word exists */
-            Scanner dictionary = new Scanner(new File("WordList.txt"));
+            Scanner dictionary = new Scanner(new File(DICTIONARY));
             while(dictionary.hasNextLine()) {
-                if(wordAttempt.equals(dictionary.nextLine())) {
+                if(wordAttempt.equalsIgnoreCase(dictionary.nextLine())) {
                     /* If word exists, attempt to play it on the board */
-                    if(this.board.attemptPlay(tilesToPlay, parser.getCoordinates(), parser.getDirection())) {
+                    int[] coordinates = parser.getCoordinates();
+                    Board.Direction direction = parser.getDirection();
+                    if(board.attemptPlay(tilesToPlay, coordinates, direction)) {
                         /* If word is playable */
-                        for(Tile tile : tilesToPlay)
+                        for(Tile tile : tilesToPlay) {
                             players[turn].getRack().removeTile(tile);
-                        players[turn].updateScore();
-                        this.changeTurn();
+                        }
+                        players[turn].updateScore(board.getScore(coordinates, direction));
+                        System.out.println(players[turn].getName() + " score: " + players[turn].getScore());
+                        changeTurn();
                         return true;
+                    }
+                    else {
+                        System.out.println("You can not play there!");
+                        return false;
                     }
                 }
             }
@@ -178,7 +198,6 @@ public class GameMaster {
         return false;
     }
 
-    // TODO: 2022-10-20 complete implementation
     /**
      * Exchange one or more tiles in a player's rack
      * @param command Command containing number of tiles to exchange.
@@ -199,7 +218,7 @@ public class GameMaster {
             }
 
             if(players[turn].getRack().exchangeTiles(bag, tilesToExchangeIndex)) {
-                this.changeTurn();
+                changeTurn();
                 return true;
             }
         }
@@ -214,7 +233,7 @@ public class GameMaster {
      * Changes the players' turn.
      */
     private void changeTurn() {
-        this.turn = (this.turn + 1) % players.length;
+        turn = (turn + 1) % players.length;
     }
 
     // TODO: 2022-10-18 complete implementation
@@ -288,6 +307,7 @@ public class GameMaster {
             return false;
         }
         else {
+            System.out.println("Thank you for playing. Goodbye...");
             return true;
         }
     }
@@ -295,16 +315,36 @@ public class GameMaster {
     /**
      * Main play routine.  Loops until end of play.
      */
-    public void playGame() {
-        System.out.println(this.getWelcomeMessage());
-        int numPlayers = parser.getNumPlayers();
-        if(numPlayers >= 0)
-            this.initializePlayers(numPlayers);
+    private void playGame() {
+        System.out.println(getWelcomeMessage());
+        int numPlayers = -1;
+        while(numPlayers == -1)
+            numPlayers = parser.getNumPlayers(MIN_PLAYERS, MAX_PLAYERS);
+        initializePlayers(numPlayers);
+        System.out.println("\n" + help());
 
         boolean finished = false;
         while(!finished) {
             Command command = parser.getCommand();
-            finished = this.processCommand(command);
+            finished = processCommand(command);
         }
+    }
+
+    /**
+     * Return a string representation of the game.
+     * @return A string representation of the game.
+     */
+    @Override
+    public String toString() {
+        String gameToString = "---------------------------------------------------------------\n";
+        gameToString += gameFileName + "\n\n";
+
+        for(Player player : players) {
+            gameToString += player.toString() + "\n";
+        }
+        gameToString += "\n" + board.toString() + "\n";
+        gameToString += "---------------------------------------------------------------";
+
+        return gameToString;
     }
 }

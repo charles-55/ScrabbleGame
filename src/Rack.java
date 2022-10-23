@@ -33,7 +33,7 @@ public class Rack {
         String characterAndPoints="| ";
         for(Tile t:tiles){
             if(t!=null){
-                characterAndPoints +=t.getLetter()+" : "+ t.getPoints()+" | ";
+                characterAndPoints += t.toString() +" | ";;
             }
         }
         return characterAndPoints;

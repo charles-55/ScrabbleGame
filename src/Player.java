@@ -24,5 +24,9 @@ public class Player {
     public Rack getRack(){
         return rack;
     }
+    public String toString(){
+        String s = "name = " + getName()+" Score = "+getScore()+ "\n rack = "+rack.toString();
+        return s;
+    }
 
 }

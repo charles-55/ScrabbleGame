@@ -48,7 +48,7 @@ public class Parser
     }
 
     public String getPlayerName(int playerX){
-        System.out.print("player " + playerX + "name: ");
+        System.out.print("player " + (playerX + 1) + " name: ");
         return reader.nextLine();
     }
 
@@ -66,11 +66,11 @@ public class Parser
         return null;
     }
 
-    public int getNumPlayers(){
-        System.out.println("Number of Players(2-4): ");
+    public int getNumPlayers(int min, int max){
+        System.out.print("Number of Players(" + min + "-" + max +"): ");
         try {
             int numPlayers = Integer.parseInt(reader.nextLine());
-            if(numPlayers >= 2 && numPlayers <= 4)
+            if(numPlayers >= min && numPlayers <= max)
                 return numPlayers;
             else
                 System.out.println("Number of Players not in Range.");
@@ -83,7 +83,7 @@ public class Parser
 
     public Board.Direction getDirection(){
         System.out.println("Direction of Word(FORWARD or DOWNWARD): ");
-        String inputLine = reader.nextLine();
+        String inputLine = reader.nextLine().toUpperCase();
         if (inputLine.equals(Board.Direction.DOWNWARD.toString()))
             return Board.Direction.DOWNWARD;
         else if (inputLine.equals(Board.Direction.FORWARD.toString()))
@@ -91,5 +91,32 @@ public class Parser
         else
             System.out.println("Invalid Input");
         return null;
+    }
+
+    public int getTileIndex(Tile[] tiles) {
+        System.out.println("Choose the index of a tile to exchange");
+        System.out.print("| ");
+        for(int i = 0; i < tiles.length; i++) {
+            if(tiles[i] != null)
+                System.out.print("Letter: " + tiles[i].getLetter() + ", Index: " + i + " | ");
+        }
+
+        String inputLine = reader.nextLine();
+        try {
+            return Integer.parseInt(inputLine);
+        }
+        catch (NumberFormatException e) {
+            System.out.println("Invalid input, try again!");
+            getTileIndex(tiles);
+        }
+        return -1;
+    }
+
+    public char getBlankTileLetter() {
+        System.out.println("You attempted to play a blank tile.");
+        System.out.print("What letter should the blank tile represent: ");
+
+        String inputLine = reader.nextLine();
+        return inputLine.charAt(0);
     }
 }

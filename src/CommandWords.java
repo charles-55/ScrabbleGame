@@ -2,7 +2,7 @@ public class CommandWords
 {
     // a constant array that holds all valid command words
     private static final String[] validCommands = {
-            "help", "play", "exchange", "quit", "save", "saveAs", "load"
+            "help", "play", "exchange","showBoard", "showRack", "printGame", "quit", "save", "saveAs", "load"
     };
 
     /**

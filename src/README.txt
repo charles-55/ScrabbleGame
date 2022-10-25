@@ -53,6 +53,5 @@ If you make an illegal move or a wrong word, you will be notified and required t
 
 
 Known Issues:
-save/saveAs currently unable to save game
 load unable to load a previous game
 Incorrect score from play

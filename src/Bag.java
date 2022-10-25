@@ -91,7 +91,7 @@ public class Bag
     /**
      * Creates a new bag and add the default number of tiles into bag.
      */
-    public void resetBag() {
+    private void resetBag() {
         bag = new ArrayList <Tile>();
         addTiles (2, '-', 0);
         addTiles (12, 'E', 1);

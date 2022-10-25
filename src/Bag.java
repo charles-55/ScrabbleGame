@@ -1,7 +1,8 @@
 import java.util.*;
 
 /**
- * A Bag is an Arraylsit of Tiles.
+ * This class is part of the "Scrabble" application.
+ * A Bag is an ArrayList of Tiles consisting all the Tiles played in a scrabble game.
  *
  * @author Group 3
  * @version 1.0
@@ -12,7 +13,8 @@ public class Bag
     private Random random  = new Random ();
 
     /**
-     * Constructor for objects of class Bag
+     * Constructor for objects of class Bag, initializes bag to contain the default amount
+     * of tiles in a scrabble game as an ArrayList.
      */
     public Bag()
     {
@@ -20,7 +22,11 @@ public class Bag
     }
 
     /**
-     * Add the default number of Tile to bag
+     * Creates and insert the default tiles onto the board.
+     *
+     * @param frequency number of tiles
+     * @param letter char representation of scrabble tile
+     * @param points the point value for the letter
      */
     private void addTiles(int frequency, char letter, int points)
     {
@@ -31,7 +37,9 @@ public class Bag
     }
 
     /**
-     * Return true if the Bag is empty, else false
+     * Checks if there are any letters in the board.
+     *
+     * @return boolean true if the Bag is empty, else false
      */
     public boolean isEmpty()
     {
@@ -39,28 +47,47 @@ public class Bag
     }
 
     /**
-     * Swap tile for tile in bag if there is any
+     * Swap tile for any tile in bag if the bag size is greater than six and return the
+     * swapped tile, else return null.
+     *
+     * @param tile Tile requested to be swapped
+     * @return returnTile swapped Tile from the bag
      */
     public Tile swapTile(Tile tile)
     {
-        Tile returnTile = bag.remove(random.nextInt(bag.size()));
-        bag.add(tile);
-        return returnTile;
+        if(bag.size()>=7)
+        {
+        Tile returnTile = this.drawTile();
+            bag.add(tile);
+            return returnTile;
+        }
+        else {
+            return null;
+        }
     }
 
     /**
-     * Return a random Tile from bag
+     * Checks of there is any Tile in bag and return a random Tile from bag if there is, else
+     * return null.
+     *
+     * @return Tile a new Tile from the bag
      */
 
     public Tile drawTile()
     {
-        if(bag.isEmpty())
+        if(!isEmpty())
+        {
+            return bag.remove(random.nextInt(bag.size()));
+        }
+        else
         {
             return null;
         }
-        return bag.remove(random.nextInt(bag.size()));
     }
 
+    /**
+     * Creates a new bag and add the default number of tiles into bag.
+     */
     public void resetBag() {
         bag = new ArrayList <Tile>();
         addTiles (2, '-', 0);
@@ -91,5 +118,4 @@ public class Bag
         addTiles (1, 'Q', 10);
         addTiles (1, 'Z', 10);
     }
-
 }

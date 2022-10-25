@@ -70,13 +70,17 @@ public class Rack {
 
     /**
      * removes a tile from the rack
+     * @return true if tile removed else otherwise
      * @param tile to remove a tile
      */
 
-    public void removeTile(Tile tile) {
-        for(Tile t : tiles) {
-            if(t == tile)
-                t = null;
+    public boolean removeTile(Tile tile) {
+        for(int i = 0; i < MAX_RACK_SIZE; i++) {
+            if(tiles[i] == tile) {
+                tiles[i] = null;
+                return true;
+            }
         }
+        return false;
     }
 }

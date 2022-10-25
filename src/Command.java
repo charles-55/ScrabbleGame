@@ -1,3 +1,9 @@
+/**
+ * This class holds information about a command that was issued by the user.
+ *
+ * @author LONGJOHN DAGOGO
+ * @version 1.0
+ */
 public class Command
 {
     private String commandWord;

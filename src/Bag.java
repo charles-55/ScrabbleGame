@@ -47,7 +47,7 @@ public class Bag
     }
 
     /**
-     * Swap tile for any tile in bag if the bag size is greater than six and return the
+     * Swap tile for any tile in bag if there is any
      * swapped tile, else return null.
      *
      * @param tile Tile requested to be swapped
@@ -55,15 +55,18 @@ public class Bag
      */
     public Tile swapTile(Tile tile)
     {
-        if(bag.size()>=7)
-        {
         Tile returnTile = this.drawTile();
-            bag.add(tile);
-            return returnTile;
-        }
-        else {
-            return null;
-        }
+        bag.add(tile);
+        return returnTile;
+    }
+
+    /**
+     * Return the number of Tile in bag
+     * @return int size of bag
+     */
+    public int getBagSize()
+    {
+        return bag.size();
     }
 
     /**

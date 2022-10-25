@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 /**
  * The Board class.
  *
@@ -9,10 +7,9 @@ import java.util.Arrays;
 public class Board {
 
     public enum Direction {FORWARD, DOWNWARD}
-
     private Square[][] board;
     private static final int BOARD_SIZE = 15;
-    private static int[] ORIGIN_POINT = new int[] {BOARD_SIZE / 2, BOARD_SIZE / 2};
+    private static final int[] ORIGIN_POINT = new int[] {BOARD_SIZE / 2, BOARD_SIZE / 2};
 
     /**
      * Create the board.

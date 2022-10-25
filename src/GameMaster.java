@@ -265,6 +265,10 @@ public class GameMaster {
             System.out.println("Exchange how many tiles?");
             return false;
         }
+        if(bag.getBagSize() < 7) {
+            System.out.println("Bag size is below 7, cannot exchange tiles!");
+            return false;
+        }
 
         try {
             int exchangeNum = Integer.parseInt(command.getSecondWord());

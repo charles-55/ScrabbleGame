@@ -29,7 +29,7 @@ public class GameMaster {
         bag = new Bag();
         turn = 0;
         parser = new Parser();
-        gameFileName = "new Game";
+        gameFileName = "New Game";
         playGame();
     }
 
@@ -98,8 +98,12 @@ public class GameMaster {
                     System.out.println("Exchange unsuccessful, try again.");
                 break;
             case "pass":
-                changeTurn();
-                System.out.println("It is " + players[turn].getName() + "'s turn.\n");
+                if(players[turn].returnsPlayedWords().size() == 0)
+                    System.out.println("You cannot skip first turn!");
+                else {
+                    changeTurn();
+                    System.out.println("It is " + players[turn].getName() + "'s turn.\n");
+                }
                 break;
             case "showBoard":
                 System.out.println(board.toString());
@@ -229,6 +233,7 @@ public class GameMaster {
                     /* If word exists, attempt to play it on the board */
                     if(board.attemptPlay(tilesToPlay, coordinates, direction)) {
                         /* If word is playable */
+                        players[turn].addPlayedWords(wordAttempt);
                         for(Tile tile : tilesToPlay) {
                             players[turn].getRack().removeTile(tile);
                         }
@@ -260,7 +265,7 @@ public class GameMaster {
      * @param command Command containing number of tiles to exchange.
      * @return true if exchange was successful, false otherwise.
      */
-    public boolean exchangeTile(Command command) {
+    private boolean exchangeTile(Command command) {
         if(!command.hasSecondWord()) {
             System.out.println("Exchange how many tiles?");
             return false;
@@ -311,18 +316,16 @@ public class GameMaster {
         }
 
         try {
-            if(gameFileName.equals("")) {
+            if(gameFileName.equals("New Game")) {
                 System.out.println("Use the saveAs command to name the current game.");
                 return false;
             }
             File gameFile = new File(gameFileName + ".txt");
             if(gameFile.createNewFile()) {
                 FileWriter fileWriter = new FileWriter(gameFile);
-                fileWriter.write("");
-
-                for(Player player : players) {
-                    fileWriter.write("");
-                }
+                fileWriter.write(this.toString());
+                fileWriter.close();
+                return true;
             }
         }
         catch (IOException e) {

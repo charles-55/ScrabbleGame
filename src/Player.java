@@ -10,7 +10,7 @@ public class Player {
     private String name;
     private int score=0;
     private Rack rack;
-    private Stack playedWords;
+    private Stack<String> playedWords;
 
     /**
      * Create and initialize the Player.
@@ -18,7 +18,7 @@ public class Player {
     public Player(String name) {
         this.name = name;
         this.rack = new Rack();
-        this.playedWords = new Stack();
+        this.playedWords = new Stack<>();
     }
 
     /**
@@ -56,21 +56,26 @@ public class Player {
      * @return a string
      */
     public String toString(){
-        String s = "name = " + getName()+" Score = "+getScore()+ "\n rack = "+rack.toString();
+        String s = "Name = " + getName() + ", Score = "+getScore()+ "\nPlayer Rack = "+rack.toString() + "\n\n";
+        s += "PLAYED WORDS\n";
+        for(String word : playedWords) {
+            s += word + "\n";
+        }
+
         return s;
     }
     /**
      * Stores played words in a stack
-     * @param A strings of words
+     * @param  word of  type Strings
      */
-    public void AddplayedWords(String word){
+    public void addPlayedWords(String word){
         playedWords.add(word );
     }
     /**
      *Returns played words
      * @return a stack of played words
      */
-    public Stack returnsPlayedWords(){
+    public Stack<String> returnsPlayedWords(){
         return playedWords;
     }
 

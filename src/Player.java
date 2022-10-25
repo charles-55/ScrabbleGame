@@ -59,5 +59,20 @@ public class Player {
         String s = "name = " + getName()+" Score = "+getScore()+ "\n rack = "+rack.toString();
         return s;
     }
+    /**
+     * Stores played words in a stack
+     * @param A strings of words
+     */
+    public void AddplayedWords(String word){
+        playedWords.add(word );
+    }
+    /**
+     *Returns played words
+     * @return a stack of played words
+     */
+    public Stack returnsPlayedWords(){
+        return playedWords;
+    }
+
 
 }

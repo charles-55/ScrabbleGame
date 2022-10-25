@@ -7,7 +7,7 @@
 public class Rack {
 
     private Tile[] tiles;
-    private final int MAX_RACK_SIZE = 7;
+    private static final int MAX_RACK_SIZE = 7;
 
     /**
      * Create and initialize the Rack.

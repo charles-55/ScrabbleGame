@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 /**
  * The Board class.
  *
@@ -10,6 +12,7 @@ public class Board {
 
     private Square[][] board;
     private static final int BOARD_SIZE = 15;
+    private static int[] ORIGIN_POINT = new int[] {BOARD_SIZE / 2, BOARD_SIZE / 2};
 
     /**
      * Create the board.
@@ -22,10 +25,32 @@ public class Board {
         }
     }
 
+    /**
+     * Return the board in form of Square arrays.
+     * @return The board in form of Square arrays.
+     */
+    public Square[][] getBoard() {
+        return board;
+    }
+
+    /**
+     * Return if the board is empty or not.
+     * @return true if the board is empty, false otherwise.
+     */
+    public boolean isEmpty() {
+        for(Square[] squares : board) {
+            for(Square square : squares) {
+                if(square.getTile() != null)
+                    return false;
+            }
+        }
+        return true;
+    }
+
     // TODO: 2022-10-22 Does not connect to a previous play
     /**
      * Attempts to play a particular word on the board.
-     * @param word An array of tiles that spells the word.
+     * @param wordTiles An array of tiles that spells the word.
      * @param coordinates The coordinate of the starting
      *                    point of the word on the board.
      * @param direction The direction in which the word is
@@ -33,29 +58,52 @@ public class Board {
      * @return true if the attempt was successful, false
      * otherwise.
      */
-    public boolean attemptPlay(Tile[] word, int[] coordinates, Direction direction) {
+    public boolean attemptPlay(Tile[] wordTiles, int[] coordinates, Direction direction) {
         if(direction == Direction.FORWARD) {
-            if(coordinates[0] + word.length - 1 >= BOARD_SIZE)
+            if((coordinates[0] >= BOARD_SIZE) || (coordinates[1] >= BOARD_SIZE))
                 return false;
-            for(int i = 0; i < word.length; i++) {
-                boolean placed = board[coordinates[1]][coordinates[0] + i].placeTile(word[i]);
-                if(!placed)
+            if(coordinates[0] + wordTiles.length - 1 >= BOARD_SIZE)
+                return false;
+            if(isEmpty()) {
+                if(!((coordinates[1] == ORIGIN_POINT[1]) && (coordinates[0] <= ORIGIN_POINT[0]) && (coordinates[0] + wordTiles.length - 1 >= ORIGIN_POINT[0])))
                     return false;
+            }
+            for(int i = 0; i < wordTiles.length; i++) {
+                if(wordTiles[i] != null) {
+                    boolean placed = board[coordinates[1]][coordinates[0] + i].placeTile(wordTiles[i]);
+                    if(!placed) {
+                        for(int j = i - 1; j >= 0; j--) {
+                            board[coordinates[1]][coordinates[0] + i].removeTile();
+                        }
+                        return false;
+                    }
+                }
             }
         }
         else if(direction == Direction.DOWNWARD) {
-            if(coordinates[1] + word.length - 1 >= BOARD_SIZE)
+            if((coordinates[0] >= BOARD_SIZE) || (coordinates[1] >= BOARD_SIZE))
                 return false;
-            for(int i = 0; i < word.length; i++) {
-                boolean placed = board[coordinates[0] + i][coordinates[1]].placeTile(word[i]);
-                if(!placed)
+            if(coordinates[1] + wordTiles.length - 1 >= BOARD_SIZE)
+                return false;
+            if(isEmpty()) {
+                if(!((coordinates[0] == ORIGIN_POINT[0]) && (coordinates[1] <= ORIGIN_POINT[1]) && (coordinates[1] + wordTiles.length - 1 >= ORIGIN_POINT[1])))
                     return false;
+            }
+            for(int i = 0; i < wordTiles.length; i++) {
+                if(wordTiles[i] != null) {
+                    boolean placed = board[coordinates[0] + i][coordinates[1]].placeTile(wordTiles[i]);
+                    if(!placed) {
+                        for(int j = i - 1; j >= 0; j--) {
+                            board[coordinates[0] + i][coordinates[1]].removeTile();
+                        }
+                        return false;
+                    }
+                }
             }
         }
         return true;
     }
 
-    // TODO: 2022-10-22 fix scoring
     /**
      * Return the score of the play made.
      * @return Score of the play made.
@@ -66,10 +114,9 @@ public class Board {
         if(direction == Direction.FORWARD) {
             int i = 0;
             while(board[coordinates[1]][coordinates[0] - i].getTile() != null) {
-                int  j = 0;
+                int j = 0;
                 while(board[coordinates[1] - j][coordinates[0] - i].getTile() != null) {
                     score += board[coordinates[1] - j][coordinates[0] - i].getTile().getPoints();
-                    System.out.println(board[coordinates[1] - j][coordinates[0] - i].getTile().getLetter());
                     j++;
                     if(coordinates[1] - j < 0) {
                         j = 0;
@@ -79,7 +126,6 @@ public class Board {
 
                 while(board[coordinates[1] + j][coordinates[0] - i].getTile() != null) {
                     score += board[coordinates[1] + j][coordinates[0] - i].getTile().getPoints();
-                    System.out.println(board[coordinates[1] + j][coordinates[0] - i].getTile().getLetter());
                     j++;
                     if(coordinates[1] + j  >= BOARD_SIZE)
                         break;
@@ -94,7 +140,6 @@ public class Board {
 
             while(board[coordinates[1]][coordinates[0] + i].getTile() != null) {
                 score += board[coordinates[1]][coordinates[0] + i].getTile().getPoints();
-                System.out.println(board[coordinates[1]][coordinates[0] + i].getTile().getLetter());
                 i++;
                 if (coordinates[1] + i >= BOARD_SIZE)
                     break;
@@ -103,7 +148,7 @@ public class Board {
         else if(direction == Direction.DOWNWARD) {
             int j = 0;
             while(board[coordinates[1] - j][coordinates[0]].getTile() != null) {
-                int  i = 0;
+                int i = 0;
                 while(board[coordinates[1] - j][coordinates[0] - i].getTile() != null) {
                     score += board[coordinates[1] - j][coordinates[0] - i].getTile().getPoints();
                     i++;
@@ -128,7 +173,7 @@ public class Board {
             }
 
             while(board[coordinates[1] + j][coordinates[0]].getTile() != null) {
-                score += board[coordinates[1] - j][coordinates[0]].getTile().getPoints();
+                score += board[coordinates[1] + j][coordinates[0]].getTile().getPoints();
                 j++;
                 if (coordinates[1] + j >= BOARD_SIZE)
                     break;

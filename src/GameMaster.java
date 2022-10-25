@@ -40,7 +40,12 @@ public class GameMaster {
     private String getWelcomeMessage() {
         return """
                 Welcome to the game of Scrabble!
-                Scrabble is a board spelling game.
+                
+                Scrabble is a board-and-tile game in which two to four players compete in forming words with
+                lettered tiles on a 225-square board; words spelled out by letters on the tiles interlock like
+                words in a crossword puzzle. Players draw seven tiles from a pool at the start and replenish
+                their supply after each turn.
+                
                 Type 'help' if you need help.
                 """;
     }
@@ -78,16 +83,23 @@ public class GameMaster {
                 System.out.println(help());
                 break;
             case "play":
-                if(attemptPlay(command))
+                if(attemptPlay(command)) {
                     System.out.println(board.toString());
+                    System.out.println("It is " + players[turn].getName() + "'s turn.\n");
+                }
                 else
                     System.out.println("Play unsuccessful, try again.");
                 break;
             case "exchange":
-                if(exchangeTile(command))
-                    System.out.println(players[turn].getRack().toString());
+                if(exchangeTile(command)) {
+                    System.out.println("It is " + players[turn].getName() + "'s turn.\n");
+                }
                 else
                     System.out.println("Exchange unsuccessful, try again.");
+                break;
+            case "pass":
+                changeTurn();
+                System.out.println("It is " + players[turn].getName() + "'s turn.\n");
                 break;
             case "showBoard":
                 System.out.println(board.toString());
@@ -133,7 +145,7 @@ public class GameMaster {
     private String help() {
         return """
                 Your command words are:
-                help, play, exchange, showBoard, showRack, printGame, quit, save, saveAs, load
+                help, play, exchange, pass, showBoard, showRack, printGame, quit, save, saveAs, load
                 """;
     }
 
@@ -150,18 +162,63 @@ public class GameMaster {
         }
 
         String wordAttempt = command.getSecondWord().toUpperCase();
+        int[] coordinates = parser.getCoordinates();
+        Board.Direction direction = parser.getDirection();
+        boolean hasABlankTile = false;
 
         /* Get the tiles from the player */
         Tile[] tilesToPlay = new Tile[wordAttempt.length()];
+        boolean connected = false;
         for(int i = 0; i < wordAttempt.length(); i++) {
             for(Tile tile : players[turn].getRack().getTiles()) {
+                if(tile.getLetter() == '-')
+                    hasABlankTile = true;
                 if(tile.getLetter() == wordAttempt.charAt(i))
                     tilesToPlay[i] = tile;
             }
             if(tilesToPlay[i] == null) {
-                System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
-                return false;
+                if(direction == Board.Direction.FORWARD) {
+                    try {
+                        if (board.getBoard()[coordinates[1]][coordinates[0] + i].getTile().getLetter() == wordAttempt.charAt(i))
+                            connected = true;
+                        else if(hasABlankTile) {
+                            for(Tile tile : players[turn].getRack().getTiles()) {
+                                if (tile.getLetter() == '-')
+                                    tile.setBlankTileLetter(parser.getBlankTileLetter());
+                                if(tile.getLetter() == wordAttempt.charAt(i))
+                                    tilesToPlay[i] = tile;
+                            }
+                        }
+                        else {
+                            System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                            return false;
+                        }
+                    }
+                    catch(NullPointerException exception) {
+                        System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                        return false;
+                    }
+                }
+                if(direction == Board.Direction.DOWNWARD) {
+                    try {
+                        if (board.getBoard()[coordinates[1] + i][coordinates[0]].getTile().getLetter() == wordAttempt.charAt(i))
+                            connected = true;
+                        else {
+                            System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                            return false;
+                        }
+                    }
+                    catch(NullPointerException exception) {
+                        System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                        return false;
+                    }
+                }
             }
+        }
+
+        if((!connected) && (!board.isEmpty())) {
+            System.out.println("You have to connect your word to a previously spelt word!");
+            return false;
         }
 
         try {
@@ -170,8 +227,6 @@ public class GameMaster {
             while(dictionary.hasNextLine()) {
                 if(wordAttempt.equalsIgnoreCase(dictionary.nextLine())) {
                     /* If word exists, attempt to play it on the board */
-                    int[] coordinates = parser.getCoordinates();
-                    Board.Direction direction = parser.getDirection();
                     if(board.attemptPlay(tilesToPlay, coordinates, direction)) {
                         /* If word is playable */
                         for(Tile tile : tilesToPlay) {
@@ -220,6 +275,7 @@ public class GameMaster {
             }
 
             if(players[turn].getRack().exchangeTiles(bag, tilesToExchangeIndex)) {
+                System.out.println(players[turn].getRack().toString());
                 changeTurn();
                 return true;
             }
@@ -309,6 +365,7 @@ public class GameMaster {
             return false;
         }
         else {
+            System.out.println(this + "\n");
             System.out.println("Thank you for playing. Goodbye...");
             return true;
         }
@@ -323,7 +380,7 @@ public class GameMaster {
         while(numPlayers == -1)
             numPlayers = parser.getNumPlayers(MIN_PLAYERS, MAX_PLAYERS);
         initializePlayers(numPlayers);
-        System.out.println("\n" + help());
+        System.out.println("\nIt is " + players[turn].getName() + "'s turn." + help());
 
         boolean finished = false;
         while(!finished) {

@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 /**
  * The GameMaster class.
+ * This class is responsible for running the game and making sure the rules are kept.
  *
  * @author Osamudiamen Nwoko 101152520
  * @version 1.0

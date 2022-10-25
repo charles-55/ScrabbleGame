@@ -1,5 +1,6 @@
 /**
  * The Board class.
+ * This class is responsible for implementing the scrabble board.
  *
  * @author Osamudiamen Nwoko 101152520
  * @version 1.0

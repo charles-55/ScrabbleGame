@@ -5,22 +5,20 @@ Roadmap:
 Implemented stable Scrabble console game
 
 Deliverables:
-	Bag.java
-	Board.java
-	Command.java
-	CommandWords.java
-	GameMaster.java
-	Main.java
-	Parser.java
-	Player.java
-	Rack.java
-	Square.java
-	Tile.java
-	.$ScrabbleUML.png.bkp
-	.$ScrabbleUML.png.dtmp
-	ScrabbleUML.png
-	WordList.txt
-	README.txt
+	Bag.java  // @author Meyiwa Temile
+	Board.java  // @author Osamudiamen Nwoko
+	Command.java  // @author Longjohn Dagogo
+	CommandWords.java  // @author Longjohn Dagogo
+	GameMaster.java  // @author Osamudiamen Nwoko
+	Main.java  // @author Group 3
+	Parser.java  // @author Longjohn Dagogo
+	Player.java  // @author Ejeh Leslie
+	Rack.java  // @author Ejeh Leslie
+	Square.java  // @author Longjohn Dagogo
+	Tile.java  // @author Meyiwa Temile
+	ScrabbleUML.png  // @author Group 3
+	WordList.txt  //@author https://www.mit.edu/~ecprice/wordlist.10000
+	README.txt  // @author Group 3
 
 
 Game Rules:

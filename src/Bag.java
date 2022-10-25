@@ -4,7 +4,7 @@ import java.util.*;
  * This class is part of the "Scrabble" application.
  * A Bag is an ArrayList of Tiles consisting all the Tiles played in a scrabble game.
  *
- * @author Group 3
+ * @author Meyiwa Temile
  * @version 1.0
  */
 public class Bag

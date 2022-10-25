@@ -6,7 +6,7 @@
  * The Tile stores its point value and is used to get the letter, point or
  * a string description of each Tile of the game.
  *
- * @author Group 3
+ * @author Meyiwa Temile
  * @version 1.0
  */
 public class Tile

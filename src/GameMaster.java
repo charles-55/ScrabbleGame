@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -9,16 +10,17 @@ import java.util.Scanner;
  * This class is responsible for running the game and making sure the rules are kept.
  *
  * @author Osamudiamen Nwoko 101152520
- * @version 1.0
+ * @version 2.0
  */
 public class GameMaster {
 
-    private final Board board;
-    private final Bag bag;
+    private Board board;
+    private Bag bag;
     private Player[] players;
     private int turn;
     private final Parser parser;
     private String gameFileName;
+    private ArrayList<ScrabbleView> views;
     private static final int MIN_PLAYERS = 2, MAX_PLAYERS = 4;
     private static final String DICTIONARY = "src/WordList.txt";
 
@@ -28,18 +30,108 @@ public class GameMaster {
     public GameMaster() {
         board = new Board();
         bag = new Bag();
+        players = new Player[0];
         turn = 0;
         parser = new Parser();
         gameFileName = "New Game";
-        playGame();
+        views = new ArrayList<>();
     }
 
     /**
-     * Return the opening message for the player.
-     * @return The opening message.
+     * Return the board.
+     * @return The board.
      */
-    private String getWelcomeMessage() {
-        return """
+    public Board getBoard() {
+        return board;
+    }
+
+    /**
+     * Return the index of the current player's turn.
+     * @return The index of the current player's turn.
+     */
+    public int getTurn() {
+        return turn;
+    }
+
+    /**
+     * Return a list of the players in the game.
+     * @return List of players.
+     */
+    public Player[] getPlayers() {
+        return players;
+    }
+
+    /**
+     * Set the players of the game.
+     * @param players The players of the game.
+     */
+    public void setPlayers(Player[] players) {
+        this.players = players;
+    }
+
+    /**
+     * Return the game filename.
+     * @return The game file name.
+     */
+    public String getGameFileName() {
+        return gameFileName;
+    }
+
+    /**
+     * Set the game filename.
+     * @param gameFileName The game filename
+     */
+    public void setGameFileName(String gameFileName) {
+        this.gameFileName = gameFileName;
+    }
+
+    /**
+     * Add a view to the list of views.
+     * @param view The view to add.
+     */
+    public void addView(ScrabbleView view) {
+        views.add(view);
+    }
+
+    /**
+     * Return the min number of players.
+     * @return The min number of players.
+     */
+    public int getMinPlayers() {
+        return MIN_PLAYERS;
+    }
+
+    /**
+     * Return the max number of players.
+     * @return The max number of players.
+     */
+    public int getMaxPlayers() {
+        return MAX_PLAYERS;
+    }
+
+    /**
+     * Return a string representation of the game.
+     * @return A string representation of the game.
+     */
+    @Override
+    public String toString() {
+        StringBuilder gameToString = new StringBuilder("---------------------------------------------------------------\n");
+        gameToString.append(gameFileName).append("\n\n");
+
+        for(Player player : players) {
+            gameToString.append(player.toString()).append("\n");
+        }
+        gameToString.append("\n").append(board.toString()).append("\n");
+        gameToString.append("---------------------------------------------------------------");
+
+        return gameToString.toString();
+    }
+
+    /**
+     * Prompt a message about scrabble on all views.
+     */
+    public void about() {
+        String aboutMessage =  """
                 Welcome to the game of Scrabble!
                 
                 Scrabble is a board-and-tile game in which two to four players compete in forming words with
@@ -47,21 +139,10 @@ public class GameMaster {
                 words in a crossword puzzle. Players draw seven tiles from a pool at the start and replenish
                 their supply after each turn.
                 
-                Type 'help' if you need help.
+                Click 'help' if you need help.
                 """;
-    }
-
-    /**
-     * Initialize all the players.
-     * @param numPlayers The number of players playing the game.
-     */
-    private void initializePlayers(int numPlayers) {
-        players = new Player[numPlayers];
-
-        for(int i = 0; i < players.length; i++) {
-            players[i] = new Player(parser.getPlayerName(i));
-            if(!players[i].getRack().fillRack(bag))
-                System.out.println("Bag is empty!");
+        for(ScrabbleView view : views) {
+            view.handleAboutCall(aboutMessage);
         }
     }
 
@@ -80,9 +161,6 @@ public class GameMaster {
 
         String commandWord = command.getCommandWord();
         switch (commandWord) {
-            case "help":
-                System.out.println(help());
-                break;
             case "play":
                 if(attemptPlay(command)) {
                     System.out.println(board.toString());
@@ -115,9 +193,6 @@ public class GameMaster {
             case "printGame":
                 System.out.println(this);
                 break;
-            case "quit":
-                wantToQuit = quit(command);
-                break;
             case "save":
                 if(save(command))
                     System.out.println("Save successful");
@@ -142,16 +217,20 @@ public class GameMaster {
     }
 
     /**
-     * Return a message of help information and
-     * a list of command words.
-     * @return A message of help information and
-     * a list of command words.
+     * Prompt a help message on all views.
      */
-    private String help() {
-        return """
-                Your command words are:
-                help, play, exchange, pass, showBoard, showRack, printGame, quit, save, saveAs, load
+    public void help() {
+        String helpMessage = """
+                For making any move, enter "play" followed by the word to play.
+                Then enter the starting coordinates, and after the prompt of the direction to play, enter "DOWNWARD" or "FORWARD".
+                Every play must be connected to at least one previous tile, if it's not the first move of the game.
+                If you can't come up with a word, enter "pass" to skip your turn or "exchange" to get new tiles and skip your turn.
+                You can't give up turn in the first move.
+                If you make an illegal move or a wrong word, you will be notified and required to enter a new word and direction of play.
                 """;
+        for(ScrabbleView view : views) {
+            view.handleHelpCall(helpMessage);
+        }
     }
 
     /**
@@ -304,6 +383,15 @@ public class GameMaster {
         turn = (turn + 1) % players.length;
     }
 
+    /**
+     * Reset the current game to a new game.
+     */
+    public void newGame() {
+        for(ScrabbleView view : views) {
+            view.handleNewGameUpdate();
+        }
+    }
+
     // TODO: 2022-10-18 complete implementation
     /**
      * Save the current game being played.
@@ -363,55 +451,20 @@ public class GameMaster {
 
     /**
      * Quits the game.
-     * @param command command to quit the game.
-     * @return true if command quits the game,
-     * false otherwise.
      */
-    private boolean quit(Command command) {
-        if(command.hasSecondWord()) {
-            System.out.println("Quit what?");
-            return false;
-        }
-        else {
-            System.out.println(this + "\n");
-            System.out.println("Thank you for playing. Goodbye...");
-            return true;
+    public void quit() {
+        for(ScrabbleView view : views) {
+            view.handleQuitUpdate();
         }
     }
 
     /**
-     * Main play routine.  Loops until end of play.
+     * Update all the views based on a play event.
+     * @param event An event to update views with.
      */
-    private void playGame() {
-        System.out.println(getWelcomeMessage());
-        int numPlayers = -1;
-        while(numPlayers == -1)
-            numPlayers = parser.getNumPlayers(MIN_PLAYERS, MAX_PLAYERS);
-        initializePlayers(numPlayers);
-        System.out.println("\nIt is " + players[turn].getName() + "'s turn." + help());
+    public void updateViews(PlayEvent event) {
+        for(ScrabbleView view : views) {
 
-        boolean finished = false;
-        while(!finished) {
-            Command command = parser.getCommand();
-            finished = processCommand(command);
         }
-    }
-
-    /**
-     * Return a string representation of the game.
-     * @return A string representation of the game.
-     */
-    @Override
-    public String toString() {
-        String gameToString = "---------------------------------------------------------------\n";
-        gameToString += gameFileName + "\n\n";
-
-        for(Player player : players) {
-            gameToString += player.toString() + "\n";
-        }
-        gameToString += "\n" + board.toString() + "\n";
-        gameToString += "---------------------------------------------------------------";
-
-        return gameToString;
     }
 }

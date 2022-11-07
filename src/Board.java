@@ -32,6 +32,14 @@ public class Board {
     }
 
     /**
+     * Return the size of the board.
+     * @return The size of the board.
+     */
+    public int getBoardSize() {
+        return BOARD_SIZE;
+    }
+
+    /**
      * Return if the board is empty or not.
      * @return true if the board is empty, false otherwise.
      */
@@ -45,7 +53,6 @@ public class Board {
         return true;
     }
 
-    // TODO: 2022-10-22 Does not connect to a previous play
     /**
      * Attempts to play a particular word on the board.
      * @param wordTiles An array of tiles that spells the word.
@@ -187,38 +194,38 @@ public class Board {
      */
     @Override
     public String toString() {
-        String boardString = "  || 0";
+        StringBuilder boardString = new StringBuilder("  || 0");
 
         for(int i = 1; i < BOARD_SIZE; i++) {
             if(i <= 10)
-                boardString += " | " + i;
+                boardString.append(" | ").append(i);
             else
-                boardString += "| " + i;
+                boardString.append("| ").append(i);
         }
-        boardString += """
+        boardString.append("""
 
                 ---------------------------------------------------------------
-                """;
+                """);
 
         int verticalCoordinate = 0;
         for(Square[] squares : board) {
             if(verticalCoordinate < 10)
-                boardString += " " + verticalCoordinate + "|";
+                boardString.append(" ").append(verticalCoordinate).append("|");
             else
-                boardString += verticalCoordinate + "|";
+                boardString.append(verticalCoordinate).append("|");
 
             for(Square square : squares) {
                 Tile tile = square.getTile();
                 if(tile == null)
-                    boardString += "|   ";
+                    boardString.append("|   ");
                 else
-                    boardString += "| " + tile.getLetter() + " ";
+                    boardString.append("| ").append(tile.getLetter()).append(" ");
             }
-            boardString += "\n";
+            boardString.append("\n");
 
             verticalCoordinate++;
         }
 
-        return boardString;
+        return boardString.toString();
     }
 }

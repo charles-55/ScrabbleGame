@@ -228,6 +228,32 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             JOptionPane.showMessageDialog(this, "Game setup incomplete!");
     }
 
+    public String[] attemptPlay() {
+        JPanel attemptPlayPanel = new JPanel(new GridLayout(2, 2));
+
+        JTextField wordTextField = new JTextField(20);
+        attemptPlayPanel.add(new JLabel("Enter word to play: "));
+        attemptPlayPanel.add(wordTextField);
+
+        Choice directionOption = new Choice();
+        directionOption.add(Board.Direction.FORWARD.toString());
+        directionOption.add(Board.Direction.DOWNWARD.toString());
+
+        attemptPlayPanel.add(new JLabel("Direction: "));
+        attemptPlayPanel.add(directionOption);
+
+        if(JOptionPane.showConfirmDialog(this, attemptPlayPanel, "Game Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            String[] returnArray = new String[2];
+            returnArray[0] = wordTextField.getText();
+            returnArray[1] = directionOption.getSelectedItem();
+
+            return returnArray;
+        }
+        else
+            JOptionPane.showMessageDialog(this, "Play incomplete!");
+        return null;
+    }
+
     /**
      * Handle new game update to the view.
      */

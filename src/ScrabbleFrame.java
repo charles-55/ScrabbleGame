@@ -12,7 +12,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
     public ScrabbleFrame() {
         model = new GameMaster();
-        boardController = new BoardController();
+        boardController = new BoardController(this,model);
         commandController = new CommandController(model);
         board = new JButton[model.getBoard().getBoardSize()][model.getBoard().getBoardSize()];
         model.addView(this);

@@ -240,7 +240,7 @@ public class GameMaster {
      * @return true if the word is playable on the board,
      * false otherwise.
      */
-    private boolean attemptPlay(String wordAttempt, int[] coordinates, Board.Direction direction) {
+    public boolean attemptPlay(String wordAttempt, int[] coordinates, Board.Direction direction) {
         boolean hasABlankTile = false;
 
         /* Get the tiles from the player */

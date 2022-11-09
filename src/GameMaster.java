@@ -234,12 +234,6 @@ public class GameMaster {
         }
     }
 
-    /**
-     * Attempts to play a particular word on the board.
-     * @param command Command containing the word to play.
-     * @return true if the word is playable on the board,
-     * false otherwise.
-     */
     public boolean attemptPlay(String wordAttempt, int[] coordinates, Board.Direction direction) {
         boolean hasABlankTile = false;
 

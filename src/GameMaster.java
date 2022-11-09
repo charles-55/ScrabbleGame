@@ -400,7 +400,7 @@ public class GameMaster {
     /**
      * Changes the players' turn.
      */
-    private void changeTurn() {
+    public void changeTurn() {
         turn = (turn + 1) % players.length;
     }
 

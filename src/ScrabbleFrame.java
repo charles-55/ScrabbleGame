@@ -8,7 +8,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private CommandController commandController;
     private JButton[][] board;
     private JLabel gameName;
-    public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT}
+    public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, PLAY, EXCHANGE, PASS}
 
     public ScrabbleFrame() {
         model = new GameMaster();
@@ -129,8 +129,10 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             JLabel scoreLabel = new JLabel("Score: " + player.getScore());
             nameLabel.setAlignmentX(CENTER_ALIGNMENT);
             scoreLabel.setAlignmentX(CENTER_ALIGNMENT);
+
             playerPanel.add(nameLabel);
             playerPanel.add(scoreLabel);
+            playerPanel.add(getPlayerRackPanel(player));
         }
 
         playerPanel.setPreferredSize(new Dimension(200, 600));
@@ -138,6 +140,50 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         playerPanel.setMinimumSize(new Dimension(200, 450));
 
         return playerPanel;
+    }
+
+    private JPanel getPlayerRackPanel(Player player) {
+        JPanel rackPanel = new JPanel(new GridLayout(2, 7, 1, 0));
+
+        for(Tile tile : player.getRack().getTiles()) {
+            JLabel label = new JLabel(String.valueOf(tile.getLetter()));
+            label.setAlignmentX(LEFT_ALIGNMENT);
+            rackPanel.add(label);
+        }
+
+        for(Tile tile : player.getRack().getTiles()) {
+            JLabel label = new JLabel(String.valueOf(tile.getPoints()));
+            label.setAlignmentX(RIGHT_ALIGNMENT);
+            rackPanel.add(label);
+        }
+
+        return rackPanel;
+    }
+
+    private JPanel playCommandsPanel() {
+        JPanel playCommandsPanel = new JPanel(new GridLayout(1, 3));
+
+        JButton playButton = new JButton("Play");
+        playButton.setActionCommand(Commands.PLAY.toString());
+        playButton.addActionListener(commandController);
+
+        JButton exchangeButton = new JButton("Exchange");
+        exchangeButton.setActionCommand(Commands.EXCHANGE.toString());
+        exchangeButton.addActionListener(commandController);
+
+        JButton passButton = new JButton("Pass");
+        passButton.setActionCommand(Commands.PASS.toString());
+        passButton.addActionListener(commandController);
+
+        playCommandsPanel.add(playButton);
+        playCommandsPanel.add(exchangeButton);
+        playCommandsPanel.add(passButton);
+
+        playCommandsPanel.setPreferredSize(new Dimension(600, 100));
+        playCommandsPanel.setMaximumSize(new Dimension(900, 100));
+        playCommandsPanel.setMinimumSize(new Dimension(450, 100));
+
+        return playCommandsPanel;
     }
 
     private void initializeGame() {
@@ -156,21 +202,23 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
         if(JOptionPane.showConfirmDialog(this, initPanel, "Game Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             model.setGameFileName(gameNameTextField.getText());
-            Player[] players = new Player[Integer.parseInt(numPlayersOptions.getSelectedItem())];
+            model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem()));
             for(int i = 0; i < Integer.parseInt(numPlayersOptions.getSelectedItem()); i++) {
                 String playerName = JOptionPane.showInputDialog("Player " + (i + 1) + "'s name: ");
-                players[i] = new Player(playerName);
+                model.addPlayer(new Player(playerName), i);
             }
 
-            model.setPlayers(players);
             gameName = new JLabel(model.getGameFileName());
 
             JPanel mainPanel = new JPanel();
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
             JPanel gamePanel = new JPanel();
             gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.X_AXIS));
+            JPanel boardAndPlayCommandsPanel = new JPanel(new GridLayout(2, 1));
 
-            gamePanel.add(boardPanelSetup());
+            boardAndPlayCommandsPanel.add(boardPanelSetup());
+            boardAndPlayCommandsPanel.add(playCommandsPanel());
+            gamePanel.add(boardAndPlayCommandsPanel);
             gamePanel.add(playerPanelSetup());
             mainPanel.add(gameName);
             mainPanel.add(gamePanel);

@@ -30,7 +30,6 @@ public class GameMaster {
     public GameMaster() {
         board = new Board();
         bag = new Bag();
-        players = new Player[0];
         turn = 0;
         parser = new Parser();
         gameFileName = "New Game";
@@ -62,11 +61,21 @@ public class GameMaster {
     }
 
     /**
-     * Set the players of the game.
-     * @param players The players of the game.
+     * Add a player to the game
+     * @param player Player to add.
+     * @param playerIndex Index of the player.
      */
-    public void setPlayers(Player[] players) {
-        this.players = players;
+    public void addPlayer(Player player, int playerIndex) {
+        player.getRack().fillRack(bag);
+        players[playerIndex] = player;
+    }
+
+    /**
+     * Set the size of the players of the game.
+     * @param playerSize The size of the players of the game.
+     */
+    public void setPlayerSize(int playerSize) {
+        players = new Player[playerSize];
     }
 
     /**
@@ -254,6 +263,14 @@ public class GameMaster {
         Tile[] tilesToPlay = new Tile[wordAttempt.length()];
         boolean connected = false;
         for(int i = 0; i < wordAttempt.length(); i++) {
+            if((board.getBoard()[coordinates[1]][coordinates[0] + i].getTile().getLetter() == wordAttempt.charAt(i)) && (direction == Board.Direction.FORWARD)) {
+                connected = true;
+                continue;
+            }
+            else if((board.getBoard()[coordinates[1] + i][coordinates[0]].getTile().getLetter() == wordAttempt.charAt(i)) && (direction == Board.Direction.DOWNWARD)) {
+                connected = true;
+                continue;
+            }
             for(Tile tile : players[turn].getRack().getTiles()) {
                 if(tile.getLetter() == '-')
                     hasABlankTile = true;
@@ -263,9 +280,7 @@ public class GameMaster {
             if(tilesToPlay[i] == null) {
                 if(direction == Board.Direction.FORWARD) {
                     try {
-                        if (board.getBoard()[coordinates[1]][coordinates[0] + i].getTile().getLetter() == wordAttempt.charAt(i))
-                            connected = true;
-                        else if(hasABlankTile) {
+                        if(hasABlankTile) {
                             for(Tile tile : players[turn].getRack().getTiles()) {
                                 if (tile.getLetter() == '-')
                                     tile.setBlankTileLetter(parser.getBlankTileLetter());
@@ -285,8 +300,14 @@ public class GameMaster {
                 }
                 if(direction == Board.Direction.DOWNWARD) {
                     try {
-                        if (board.getBoard()[coordinates[1] + i][coordinates[0]].getTile().getLetter() == wordAttempt.charAt(i))
-                            connected = true;
+                        if(hasABlankTile) {
+                            for(Tile tile : players[turn].getRack().getTiles()) {
+                                if (tile.getLetter() == '-')
+                                    tile.setBlankTileLetter(parser.getBlankTileLetter());
+                                if(tile.getLetter() == wordAttempt.charAt(i))
+                                    tilesToPlay[i] = tile;
+                            }
+                        }
                         else {
                             System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
                             return false;

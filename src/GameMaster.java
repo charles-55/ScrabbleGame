@@ -170,14 +170,6 @@ public class GameMaster {
 
         String commandWord = command.getCommandWord();
         switch (commandWord) {
-            case "play":
-                if(attemptPlay(command)) {
-                    System.out.println(board.toString());
-                    System.out.println("It is " + players[turn].getName() + "'s turn.\n");
-                }
-                else
-                    System.out.println("Play unsuccessful, try again.");
-                break;
             case "exchange":
                 if(exchangeTile(command)) {
                     System.out.println("It is " + players[turn].getName() + "'s turn.\n");
@@ -248,15 +240,7 @@ public class GameMaster {
      * @return true if the word is playable on the board,
      * false otherwise.
      */
-    private boolean attemptPlay(Command command) {
-        if(!command.hasSecondWord()) {
-            System.out.println("Play what?");
-            return false;
-        }
-
-        String wordAttempt = command.getSecondWord().toUpperCase();
-        int[] coordinates = parser.getCoordinates();
-        Board.Direction direction = parser.getDirection();
+    private boolean attemptPlay(String wordAttempt, int[] coordinates, Board.Direction direction) {
         boolean hasABlankTile = false;
 
         /* Get the tiles from the player */

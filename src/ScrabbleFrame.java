@@ -3,10 +3,10 @@ import java.awt.*;
 
 public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
-    private GameMaster model;
-    private BoardController boardController;
-    private CommandController commandController;
-    private JButton[][] board;
+    private final GameMaster model;
+    private final BoardController boardController;
+    private final CommandController commandController;
+    private final JButton[][] board;
     private JLabel gameName;
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, PLAY, EXCHANGE, PASS}
 
@@ -202,7 +202,12 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
         if(JOptionPane.showConfirmDialog(this, initPanel, "Game Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             model.setGameFileName(gameNameTextField.getText());
-            model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem()));
+            try {
+                model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem()));
+            }
+            catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            }
             for(int i = 0; i < Integer.parseInt(numPlayersOptions.getSelectedItem()); i++) {
                 String playerName = JOptionPane.showInputDialog("Player " + (i + 1) + "'s name: ");
                 model.addPlayer(new Player(playerName), i);
@@ -290,5 +295,13 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     @Override
     public void handleAboutCall(String message) {
         JOptionPane.showMessageDialog(this, message);
+    }
+
+    /**
+     * Handle the score update.
+     */
+    @Override
+    public void handleScoreUpdate() {
+
     }
 }

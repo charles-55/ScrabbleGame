@@ -21,4 +21,9 @@ public interface ScrabbleView {
      * @param message About message to display.
      */
     void handleAboutCall(String message);
+
+    /**
+     * Handle the score update.
+     */
+    void handleScoreUpdate();
 }

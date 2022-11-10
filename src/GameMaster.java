@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -74,8 +75,10 @@ public class GameMaster {
      * Set the size of the players of the game.
      * @param playerSize The size of the players of the game.
      */
-    public void setPlayerSize(int playerSize) {
-        players = new Player[playerSize];
+    public void setPlayerSize(int playerSize) throws Exception {
+        if((MIN_PLAYERS <= playerSize) && (playerSize  <= MAX_PLAYERS))
+            players = new Player[playerSize];
+        throw new Exception("Player size out of range!");
     }
 
     /**
@@ -267,12 +270,16 @@ public class GameMaster {
                             }
                         }
                         else {
-                            System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                            for(ScrabbleView view : views) {
+                                JOptionPane.showMessageDialog((JFrame) view, "You do not have the tiles to spell \"" + wordAttempt + "\".");
+                            }
                             return false;
                         }
                     }
                     catch(NullPointerException exception) {
-                        System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                        for(ScrabbleView view : views) {
+                            JOptionPane.showMessageDialog((JFrame) view, "You do not have the tiles to spell \"" + wordAttempt + "\".");
+                        }
                         return false;
                     }
                 }
@@ -287,12 +294,16 @@ public class GameMaster {
                             }
                         }
                         else {
-                            System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                            for(ScrabbleView view : views) {
+                                JOptionPane.showMessageDialog((JFrame) view, "You do not have the tiles to spell \"" + wordAttempt + "\".");
+                            }
                             return false;
                         }
                     }
                     catch(NullPointerException exception) {
-                        System.out.println("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                        for(ScrabbleView view : views) {
+                            JOptionPane.showMessageDialog((JFrame) view, "You do not have the tiles to spell \"" + wordAttempt + "\".");
+                        }
                         return false;
                     }
                 }
@@ -300,7 +311,9 @@ public class GameMaster {
         }
 
         if((!connected) && (!board.isEmpty())) {
-            System.out.println("You have to connect your word to a previously spelt word!");
+            for(ScrabbleView view : views) {
+                JOptionPane.showMessageDialog((JFrame) view, "You have to connect your word to a previously spelt word!");
+            }
             return false;
         }
 
@@ -317,6 +330,9 @@ public class GameMaster {
                             players[turn].getRack().removeTile(tile);
                         }
                         players[turn].updateScore(board.getScore(coordinates, direction));
+                        for(ScrabbleView view : views) {
+                            view.handleScoreUpdate();
+                        }
                         System.out.println(players[turn].getName() + " score: " + players[turn].getScore());
                         players[turn].getRack().fillRack(bag);
                         System.out.println(players[turn].getRack().toString());
@@ -324,15 +340,21 @@ public class GameMaster {
                         return true;
                     }
                     else {
-                        System.out.println("You can not play there!");
+                        for(ScrabbleView view : views) {
+                            JOptionPane.showMessageDialog((JFrame) view, "You can not play there!");
+                        }
                         return false;
                     }
                 }
             }
-            System.out.println("\"" + wordAttempt + "\" does not exist.");
+            for(ScrabbleView view : views) {
+                JOptionPane.showMessageDialog((JFrame) view, "\"" + wordAttempt + "\" does not exist.");
+            }
         }
         catch (FileNotFoundException exception) {
-            System.out.println("Dictionary not found");
+            for(ScrabbleView view : views) {
+                JOptionPane.showMessageDialog((JFrame) view, "Dictionary not found");
+            }
             return false;
         }
 
@@ -454,16 +476,6 @@ public class GameMaster {
     public void quit() {
         for(ScrabbleView view : views) {
             view.handleQuitUpdate();
-        }
-    }
-
-    /**
-     * Update all the views based on a play event.
-     * @param event An event to update views with.
-     */
-    public void updateViews(PlayEvent event) {
-        for(ScrabbleView view : views) {
-
         }
     }
 }

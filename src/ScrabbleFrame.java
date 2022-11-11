@@ -10,7 +10,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private JLabel gameName;
     private JLabel[] playerScores;
     private JPanel[] playerRacks;
-    public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, PLAY, EXCHANGE, PASS}
+    public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
 
     public ScrabbleFrame() {
         model = new GameMaster();
@@ -28,7 +28,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("Scrabble Game");
-        this.setSize(getMaximumSize());
+        this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
@@ -107,7 +107,11 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         JPanel boardPanel = new JPanel(new GridLayout(model.getBoard().getBoardSize() + 1, model.getBoard().getBoardSize() + 1));
 
         for(int i = 0; i < model.getBoard().getBoardSize(); i++) {
-            boardPanel.add(new JLabel(String.valueOf(i)));
+            JLabel label = new JLabel(String.valueOf(i));
+            boardPanel.add(label);
+        }
+        boardPanel.add(new JLabel());
+        for(int i = 0; i < model.getBoard().getBoardSize(); i++) {
             for(int j = 0; j < model.getBoard().getBoardSize(); j++) {
                 JButton button = new JButton();
                 button.setActionCommand(i + " " + j);
@@ -115,10 +119,11 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
                 button.addActionListener(boardController);
                 boardPanel.add(button);
             }
+            boardPanel.add(new JLabel(String.valueOf(i)));
         }
         boardPanel.setPreferredSize(new Dimension(600, 600));
-        boardPanel.setMaximumSize(new Dimension(900, 900));
-        boardPanel.setMinimumSize(new Dimension(450, 450));
+        boardPanel.setMaximumSize(new Dimension(600, 600));
+        boardPanel.setMinimumSize(new Dimension(600, 600));
 
         return boardPanel;
     }
@@ -138,10 +143,6 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             playerPanel.add(playerScores[i]);
             playerPanel.add(playerRacks[i]);
         }
-
-        playerPanel.setPreferredSize(new Dimension(200, 600));
-        playerPanel.setMaximumSize(new Dimension(200, 900));
-        playerPanel.setMinimumSize(new Dimension(200, 450));
 
         return playerPanel;
     }
@@ -165,11 +166,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     private JPanel playCommandsPanel() {
-        JPanel playCommandsPanel = new JPanel(new GridLayout(1, 3));
-
-        JButton playButton = new JButton("Play");
-        playButton.setActionCommand(Commands.PLAY.toString());
-        playButton.addActionListener(commandController);
+        JPanel playCommandsPanel = new JPanel(new GridLayout(1, 2));
 
         JButton exchangeButton = new JButton("Exchange");
         exchangeButton.setActionCommand(Commands.EXCHANGE.toString());
@@ -179,13 +176,8 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         passButton.setActionCommand(Commands.PASS.toString());
         passButton.addActionListener(commandController);
 
-        playCommandsPanel.add(playButton);
         playCommandsPanel.add(exchangeButton);
         playCommandsPanel.add(passButton);
-
-        playCommandsPanel.setPreferredSize(new Dimension(600, 100));
-        playCommandsPanel.setMaximumSize(new Dimension(900, 100));
-        playCommandsPanel.setMinimumSize(new Dimension(450, 100));
 
         return playCommandsPanel;
     }

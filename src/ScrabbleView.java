@@ -26,4 +26,9 @@ public interface ScrabbleView {
      * Handle the score update.
      */
     void handleScoreUpdate();
+
+    /**
+     * Handle the rack update();
+     */
+    void handleRackUpdate();
 }

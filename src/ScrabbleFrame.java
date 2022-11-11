@@ -8,6 +8,8 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private final CommandController commandController;
     private final JButton[][] board;
     private JLabel gameName;
+    private JLabel[] playerScores;
+    private JPanel[] playerRacks;
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, PLAY, EXCHANGE, PASS}
 
     public ScrabbleFrame() {
@@ -102,9 +104,10 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     private JPanel boardPanelSetup() {
-        JPanel boardPanel = new JPanel(new GridLayout(model.getBoard().getBoardSize(), model.getBoard().getBoardSize()));
+        JPanel boardPanel = new JPanel(new GridLayout(model.getBoard().getBoardSize() + 1, model.getBoard().getBoardSize() + 1));
 
         for(int i = 0; i < model.getBoard().getBoardSize(); i++) {
+            boardPanel.add(new JLabel(String.valueOf(i)));
             for(int j = 0; j < model.getBoard().getBoardSize(); j++) {
                 JButton button = new JButton();
                 button.setActionCommand(i + " " + j);
@@ -124,15 +127,16 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         JPanel playerPanel = new JPanel();
         playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.PAGE_AXIS));
 
-        for(Player player : model.getPlayers()) {
-            JLabel nameLabel = new JLabel("Name: " + player.getName());
-            JLabel scoreLabel = new JLabel("Score: " + player.getScore());
+        for(int i = 0; i < model.getPlayers().length; i++) {
+            JLabel nameLabel = new JLabel("Name: " + model.getPlayers()[i].getName());
+            playerScores[i] = new JLabel("Score: " + model.getPlayers()[i].getScore());
             nameLabel.setAlignmentX(CENTER_ALIGNMENT);
-            scoreLabel.setAlignmentX(CENTER_ALIGNMENT);
+            playerScores[i].setAlignmentX(CENTER_ALIGNMENT);
+            playerRacks[i] = getPlayerRackPanel(model.getPlayers()[i]);
 
             playerPanel.add(nameLabel);
-            playerPanel.add(scoreLabel);
-            playerPanel.add(getPlayerRackPanel(player));
+            playerPanel.add(playerScores[i]);
+            playerPanel.add(playerRacks[i]);
         }
 
         playerPanel.setPreferredSize(new Dimension(200, 600));
@@ -200,17 +204,13 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         initPanel.add(new JLabel("Number of players: "));
         initPanel.add(numPlayersOptions);
 
-        if(JOptionPane.showConfirmDialog(this, initPanel, "Game Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if((JOptionPane.showConfirmDialog(this, initPanel, "Game Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) && (model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem())))) {
             model.setGameFileName(gameNameTextField.getText());
-            try {
-                model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem()));
-            }
-            catch (Exception e) {
-                JOptionPane.showMessageDialog(this, e.getMessage());
-            }
+            playerScores = new JLabel[Integer.parseInt(numPlayersOptions.getSelectedItem())];
+            playerRacks = new JPanel[Integer.parseInt(numPlayersOptions.getSelectedItem())];
             for(int i = 0; i < Integer.parseInt(numPlayersOptions.getSelectedItem()); i++) {
                 String playerName = JOptionPane.showInputDialog("Player " + (i + 1) + "'s name: ");
-                model.addPlayer(new Player(playerName), i);
+                model.addPlayer(new Player(playerName));
             }
 
             gameName = new JLabel(model.getGameFileName());
@@ -302,6 +302,14 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
      */
     @Override
     public void handleScoreUpdate() {
+        playerScores[model.getTurn()].setText("Score: " + model.getPlayers()[model.getTurn()].getScore());
+    }
 
+    /**
+     * Handle the rack update();
+     */
+    @Override
+    public void handleRackUpdate() {
+        playerRacks[model.getTurn()] = getPlayerRackPanel(model.getPlayers()[model.getTurn()]);
     }
 }

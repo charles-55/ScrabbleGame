@@ -54,6 +54,13 @@ public class GameMaster {
     }
 
     /**
+     * Changes the players' turn.
+     */
+    public void changeTurn() {
+        turn = (turn + 1) % players.length;
+    }
+
+    /**
      * Return a list of the players in the game.
      * @return List of players.
      */
@@ -402,13 +409,6 @@ public class GameMaster {
         }
 
         return false;
-    }
-
-    /**
-     * Changes the players' turn.
-     */
-    public void changeTurn() {
-        turn = (turn + 1) % players.length;
     }
 
     /**

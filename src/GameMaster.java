@@ -64,11 +64,17 @@ public class GameMaster {
     /**
      * Add a player to the game
      * @param player Player to add.
-     * @param playerIndex Index of the player.
+     * @return true if player was added, false otherwise.
      */
-    public void addPlayer(Player player, int playerIndex) {
-        player.getRack().fillRack(bag);
-        players[playerIndex] = player;
+    public boolean addPlayer(Player player) {
+        for(int i = 0; i < players.length; i++) {
+            if(players[i] == null) {
+                player.getRack().fillRack(bag);
+                players[i] = player;
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -332,12 +338,11 @@ public class GameMaster {
                             players[turn].getRack().removeTile(tile);
                         }
                         players[turn].updateScore(board.getScore(coordinates, direction));
+                        players[turn].getRack().fillRack(bag);
                         for(ScrabbleView view : views) {
                             view.handleScoreUpdate();
+                            view.handleRackUpdate();
                         }
-                        System.out.println(players[turn].getName() + " score: " + players[turn].getScore());
-                        players[turn].getRack().fillRack(bag);
-                        System.out.println(players[turn].getRack().toString());
                         changeTurn();
                         return true;
                     }

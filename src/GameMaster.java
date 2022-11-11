@@ -75,10 +75,12 @@ public class GameMaster {
      * Set the size of the players of the game.
      * @param playerSize The size of the players of the game.
      */
-    public void setPlayerSize(int playerSize) throws Exception {
-        if((MIN_PLAYERS <= playerSize) && (playerSize  <= MAX_PLAYERS))
+    public boolean setPlayerSize(int playerSize) {
+        if((MIN_PLAYERS <= playerSize) && (playerSize  <= MAX_PLAYERS)) {
             players = new Player[playerSize];
-        throw new Exception("Player size out of range!");
+            return true;
+        }
+        return false;
     }
 
     /**

@@ -1,3 +1,6 @@
+import javax.swing.*;
+import java.awt.*;
+
 /**
  * This class concerns the squares on the scrabble board.
  *
@@ -7,12 +10,16 @@
 public class Square {
 
     private Tile tile;
+    private SquareType squareType;
+    private ImageIcon icon;
+    public enum SquareType {ORIGIN, DLS, TLS, DWS, TWS}
 
     /**
      * Constructor for Square class.
      */
     public Square() {
         tile = null;
+        icon = new ImageIcon();
     }
 
     /**
@@ -21,6 +28,20 @@ public class Square {
      */
     public Tile getTile() {
         return tile;
+    }
+
+    public SquareType getSquareType() {
+        return squareType;
+    }
+
+    public void setSquareType(SquareType squareType) {
+        this.squareType = squareType;
+//        ImageIcon imageIcon = n
+//        icon.setImage(new ImageIcon());
+    }
+
+    public ImageIcon getIcon() {
+        return icon;
     }
 
     /**

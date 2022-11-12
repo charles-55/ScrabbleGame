@@ -161,7 +161,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             }
         }
         boardPanel.setPreferredSize(new Dimension(685, 685));
-        boardPanel.setMaximumSize(new Dimension(getMaximumSize()));
+        boardPanel.setMaximumSize(new Dimension(685, 685));
         boardPanel.setMinimumSize(new Dimension(685, 685));
 
         return boardPanel;
@@ -200,6 +200,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         playCommandsPanel.add(passButton);
 
         playCommandsPanel.setPreferredSize(new Dimension(685, 100));
+        playCommandsPanel.setMaximumSize(new Dimension(685, 100));
         playCommandsPanel.setMinimumSize(new Dimension(685, 100));
 
         return playCommandsPanel;

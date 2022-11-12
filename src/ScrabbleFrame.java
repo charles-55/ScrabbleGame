@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
+import javax.sound.sampled.*;
 
 public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
@@ -13,12 +15,16 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private JLabel[] playerRacks;
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
 
+    private Clip clip;
+
     public ScrabbleFrame() {
         model = new GameMaster();
         boardController = new BoardController(this,model);
         commandController = new CommandController(model, this);
         board = new JButton[model.getBoard().getBoardSize()][model.getBoard().getBoardSize()];
         model.addView(this);
+
+        playMusic("Audio/backgroundMusic.wav");
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenuSetup());
@@ -33,6 +39,37 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+    }
+
+    private void playMusic(String fileName) {
+        try {
+            File file = new File(fileName);
+            if (file.exists())
+            {
+                AudioInputStream sound = AudioSystem.getAudioInputStream(file);
+                clip = AudioSystem.getClip();
+                clip.open(sound);
+                clip.setFramePosition(0);
+                clip.start();
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+            }
+            else
+            {
+                throw new RuntimeException("Sound: file not found: " + fileName);
+            }
+        }
+        catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Sound: Unsupported Audio File: " + e);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Sound: Input/Output Error: " + e);
+        }
+        catch (LineUnavailableException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Sound: Line Unavailable Exception Error: " + e);
+        }
     }
 
     private JMenu fileMenuSetup() {
@@ -266,6 +303,8 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
         return new int[0];
     }
+
+
 
     /**
      * Handle new game update to the view.

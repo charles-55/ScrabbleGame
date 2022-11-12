@@ -19,7 +19,6 @@ public class GameMaster {
     private Bag bag;
     private Player[] players;
     private int turn;
-    private final Parser parser;
     private String gameFileName;
     private ArrayList<ScrabbleView> views;
     private static final int MIN_PLAYERS = 2, MAX_PLAYERS = 4;
@@ -32,7 +31,6 @@ public class GameMaster {
         board = new Board();
         bag = new Bag();
         turn = 0;
-        parser = new Parser();
         gameFileName = "New Game";
         views = new ArrayList<>();
     }
@@ -58,6 +56,8 @@ public class GameMaster {
      */
     public void changeTurn() {
         turn = (turn + 1) % players.length;
+        for(ScrabbleView view : views)
+            view.handleChangeTurn(players[turn].getName());
     }
 
     /**
@@ -174,68 +174,6 @@ public class GameMaster {
     }
 
     /**
-     * Given a command, process (that is: execute) the command
-     * @param command The command to be processed.
-     * @return true if the command ends the game, false otherwise.
-     */
-    private boolean processCommand(Command command) {
-        boolean wantToQuit = false;
-
-        if(command.isUnknown()) {
-            System.out.println("Invalid command!");
-            return false;
-        }
-
-        String commandWord = command.getCommandWord();
-        switch (commandWord) {
-            case "exchange":
-                if(exchangeTile(command)) {
-                    System.out.println("It is " + players[turn].getName() + "'s turn.\n");
-                }
-                else
-                    System.out.println("Exchange unsuccessful, try again.");
-                break;
-            case "pass":
-                if(players[turn].returnsPlayedWords().size() == 0)
-                    System.out.println("You cannot skip first turn!");
-                else {
-                    changeTurn();
-                    System.out.println("It is " + players[turn].getName() + "'s turn.\n");
-                }
-                break;
-            case "showBoard":
-                System.out.println(board.toString());
-                break;
-            case "showRack":
-                System.out.println(players[turn].getRack().toString());
-                break;
-            case "printGame":
-                System.out.println(this);
-                break;
-            case "save":
-                if(save(command))
-                    System.out.println("Save successful");
-                else
-                    System.out.println("Save unsuccessful.");
-                break;
-            case "saveAs":
-                if(saveAs(command))
-                    System.out.println("Save As successful");
-                else
-                    System.out.println("Save As unsuccessful.");
-                break;
-            case "load":
-                if(load(command))
-                    System.out.println("Load successful");
-                else
-                    System.out.println("Load unsuccessful.");
-                break;
-        }
-
-        return wantToQuit;
-    }
-
-    /**
      * Prompt a help message on all views.
      */
     public void help() {
@@ -252,36 +190,56 @@ public class GameMaster {
         }
     }
 
+    /**
+     * Attempt to play a word on the board.
+     * @param wordAttempt The word to attempt to play.
+     * @param coordinates The coordinates of the starting point to play.
+     * @param direction The direction of the play.
+     * @return true if the play was successful, false otherwise.
+     */
     public boolean attemptPlay(String wordAttempt, int[] coordinates, Board.Direction direction) {
-        boolean hasABlankTile = false;
+        int blankTileAmount = 0;
 
         /* Get the tiles from the player */
         Tile[] tilesToPlay = new Tile[wordAttempt.length()];
         boolean connected = false;
         for(int i = 0; i < wordAttempt.length(); i++) {
-            if((board.getBoard()[coordinates[1]][coordinates[0] + i].getTile().getLetter() == wordAttempt.charAt(i)) && (direction == Board.Direction.FORWARD)) {
-                connected = true;
-                continue;
+            if(board.getBoard()[coordinates[1]][coordinates[0] + i].getTile() != null) {
+                if((board.getBoard()[coordinates[1]][coordinates[0] + i].getTile().getLetter() == wordAttempt.charAt(i)) && (direction == Board.Direction.FORWARD)) {
+                    connected = true;
+                    tilesToPlay[i] = board.getBoard()[coordinates[1]][coordinates[0] + i].getTile();
+                    continue;
+                }
             }
-            else if((board.getBoard()[coordinates[1] + i][coordinates[0]].getTile().getLetter() == wordAttempt.charAt(i)) && (direction == Board.Direction.DOWNWARD)) {
-                connected = true;
-                continue;
+            if(board.getBoard()[coordinates[1] + i][coordinates[0]].getTile() != null) {
+                if((board.getBoard()[coordinates[1] + i][coordinates[0]].getTile().getLetter() == wordAttempt.charAt(i)) && (direction == Board.Direction.DOWNWARD)) {
+                    connected = true;
+                    tilesToPlay[i] = board.getBoard()[coordinates[1] + i][coordinates[0]].getTile();
+                    continue;
+                }
             }
             for(Tile tile : players[turn].getRack().getTiles()) {
                 if(tile.getLetter() == '-')
-                    hasABlankTile = true;
-                if(tile.getLetter() == wordAttempt.charAt(i))
+                    blankTileAmount++;
+                else if(tile.getLetter() == wordAttempt.charAt(i)) {
                     tilesToPlay[i] = tile;
+                    break;
+                }
             }
             if(tilesToPlay[i] == null) {
                 if(direction == Board.Direction.FORWARD) {
                     try {
-                        if(hasABlankTile) {
+                        if(blankTileAmount > 0) {
                             for(Tile tile : players[turn].getRack().getTiles()) {
-                                if (tile.getLetter() == '-')
-                                    tile.setBlankTileLetter(parser.getBlankTileLetter());
-                                if(tile.getLetter() == wordAttempt.charAt(i))
+                                if(tile.getLetter() == '-') {
+                                    for(ScrabbleView view : views) {
+                                        tile.setBlankTileLetter(view.handleBlankTile());
+                                    }
+                                }
+                                if(tile.getLetter() == wordAttempt.charAt(i)) {
                                     tilesToPlay[i] = tile;
+                                    blankTileAmount--;
+                                }
                             }
                         }
                         else {
@@ -300,12 +258,17 @@ public class GameMaster {
                 }
                 if(direction == Board.Direction.DOWNWARD) {
                     try {
-                        if(hasABlankTile) {
+                        if(blankTileAmount > 0) {
                             for(Tile tile : players[turn].getRack().getTiles()) {
-                                if (tile.getLetter() == '-')
-                                    tile.setBlankTileLetter(parser.getBlankTileLetter());
-                                if(tile.getLetter() == wordAttempt.charAt(i))
+                                if (tile.getLetter() == '-') {
+                                    for(ScrabbleView view : views) {
+                                        tile.setBlankTileLetter(view.handleBlankTile());
+                                    }
+                                }
+                                if(tile.getLetter() == wordAttempt.charAt(i)) {
                                     tilesToPlay[i] = tile;
+                                    blankTileAmount--;
+                                }
                             }
                         }
                         else {
@@ -347,6 +310,7 @@ public class GameMaster {
                         players[turn].updateScore(board.getScore(coordinates, direction));
                         players[turn].getRack().fillRack(bag);
                         for(ScrabbleView view : views) {
+                            view.handleBoardUpdate(wordAttempt, coordinates, direction);
                             view.handleScoreUpdate();
                             view.handleRackUpdate();
                         }
@@ -376,36 +340,26 @@ public class GameMaster {
     }
 
     /**
-     * Exchange one or more tiles in a player's rack
-     * @param command Command containing number of tiles to exchange.
-     * @return true if exchange was successful, false otherwise.
+     * Exchange the tiles in a player's rack given the indices of the tiles to exchange
+     * @param tilesToExchangeIndices The indices of the tiles to exchange
+     * @return true if exchange was successful, false otherwise
      */
-    private boolean exchangeTile(Command command) {
-        if(!command.hasSecondWord()) {
-            System.out.println("Exchange how many tiles?");
+    public boolean exchangeTile(int[] tilesToExchangeIndices) {
+        if((tilesToExchangeIndices.length < 1) || (tilesToExchangeIndices.length > 7))
             return false;
-        }
+
         if(bag.getBagSize() < 7) {
             System.out.println("Bag size is below 7, cannot exchange tiles!");
             return false;
         }
 
-        try {
-            int exchangeNum = Integer.parseInt(command.getSecondWord());
-            int[] tilesToExchangeIndex = new int[exchangeNum];
-
-            for(int i = 0; i < exchangeNum; i++) {
-                tilesToExchangeIndex[i] = parser.getTileIndex(players[turn].getRack().getTiles());
+        if(players[turn].getRack().exchangeTiles(bag, tilesToExchangeIndices)) {
+            for(ScrabbleView view : views) {
+                view.handleRackUpdate();
             }
-
-            if(players[turn].getRack().exchangeTiles(bag, tilesToExchangeIndex)) {
-                System.out.println(players[turn].getRack().toString());
-                changeTurn();
-                return true;
-            }
-        }
-        catch(NumberFormatException e) {
-            System.out.println("Second word was not a number");
+            System.out.println(players[turn].getRack().toString());
+            changeTurn();
+            return true;
         }
 
         return false;
@@ -420,7 +374,16 @@ public class GameMaster {
         }
     }
 
+    /**
+     * Quits the game.
+     */
+    public void quit() {
+        for(ScrabbleView view : views) {
+            view.handleQuitUpdate();
+        }
+    }
     // TODO: 2022-10-18 complete implementation
+
     /**
      * Save the current game being played.
      * @param command Command to save the game.
@@ -466,8 +429,8 @@ public class GameMaster {
         gameFileName = command.getSecondWord();
         return save(new Command("save", null));
     }
-
     // TODO: 2022-10-18 complete implementation
+
     /**
      * Load a saved game.
      * @param command Command to load the saved game
@@ -475,14 +438,5 @@ public class GameMaster {
      */
     private boolean load(Command command) {
         return false;
-    }
-
-    /**
-     * Quits the game.
-     */
-    public void quit() {
-        for(ScrabbleView view : views) {
-            view.handleQuitUpdate();
-        }
     }
 }

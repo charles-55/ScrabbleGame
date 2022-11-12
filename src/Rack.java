@@ -55,17 +55,31 @@ public class Rack {
     }
 
     /**
-     * gets the tiles character and string
-     * @return String  of the tiles character and points
+     * returns the tiles letters and points as string
+     * @return String of the tiles letters and points
      */
     public String toString(){
-        String characterAndPoints="| ";
-        for(Tile t:tiles){
-            if(t!=null){
-                characterAndPoints += t.toString() +" | ";
+        StringBuilder lettersAndPoints= new StringBuilder("| ");
+        for(Tile t : tiles){
+            if(t != null){
+                lettersAndPoints.append(t).append(" | ");
             }
         }
-        return characterAndPoints;
+        return lettersAndPoints.toString();
+    }
+
+    /**
+     * returns the tiles letters as string
+     * @return String of the letter
+     */
+    public String getRackLetters() {
+        StringBuilder rackLetters = new StringBuilder(" | ");
+        for(Tile t : tiles){
+            if(t != null){
+                rackLetters.append(t.getLetter()).append(" | ");
+            }
+        }
+        return rackLetters.toString();
     }
 
     /**

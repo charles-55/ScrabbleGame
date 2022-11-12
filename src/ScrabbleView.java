@@ -23,6 +23,17 @@ public interface ScrabbleView {
     void handleAboutCall(String message);
 
     /**
+     * Handle the change turn update.
+     * @param playerName The name of the player with the updated turn.
+     */
+    void handleChangeTurn(String playerName);
+
+    /**
+     * Handle the board update.
+     */
+    void handleBoardUpdate(String word, int[] coordinates, Board.Direction direction);
+
+    /**
      * Handle the score update.
      */
     void handleScoreUpdate();
@@ -31,4 +42,9 @@ public interface ScrabbleView {
      * Handle the rack update();
      */
     void handleRackUpdate();
+
+    /**
+     * Get a letter to set the blank tile.
+     */
+    char handleBlankTile();
 }

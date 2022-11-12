@@ -9,13 +9,13 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private final JButton[][] board;
     private JLabel gameName;
     private JLabel[] playerScores;
-    private JPanel[] playerRacks;
+    private JLabel[] playerRacks;
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
 
     public ScrabbleFrame() {
         model = new GameMaster();
         boardController = new BoardController(this,model);
-        commandController = new CommandController(model);
+        commandController = new CommandController(model, this);
         board = new JButton[model.getBoard().getBoardSize()][model.getBoard().getBoardSize()];
         model.addView(this);
 
@@ -28,6 +28,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("Scrabble Game");
+        this.setMinimumSize(new Dimension(500, 500));
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -106,12 +107,13 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private JPanel boardPanelSetup() {
         JPanel boardPanel = new JPanel(new GridLayout(model.getBoard().getBoardSize() + 1, model.getBoard().getBoardSize() + 1));
 
+        boardPanel.add(new JLabel());
         for(int i = 0; i < model.getBoard().getBoardSize(); i++) {
             JLabel label = new JLabel(String.valueOf(i));
             boardPanel.add(label);
         }
-        boardPanel.add(new JLabel());
         for(int i = 0; i < model.getBoard().getBoardSize(); i++) {
+            boardPanel.add(new JLabel(String.valueOf(i)));
             for(int j = 0; j < model.getBoard().getBoardSize(); j++) {
                 JButton button = new JButton();
                 button.setActionCommand(i + " " + j);
@@ -119,11 +121,10 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
                 button.addActionListener(boardController);
                 boardPanel.add(button);
             }
-            boardPanel.add(new JLabel(String.valueOf(i)));
         }
-        boardPanel.setPreferredSize(new Dimension(600, 600));
-        boardPanel.setMaximumSize(new Dimension(600, 600));
-        boardPanel.setMinimumSize(new Dimension(600, 600));
+        boardPanel.setPreferredSize(new Dimension(685, 685));
+        boardPanel.setMaximumSize(new Dimension(getMaximumSize()));
+        boardPanel.setMinimumSize(new Dimension(685, 685));
 
         return boardPanel;
     }
@@ -135,9 +136,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         for(int i = 0; i < model.getPlayers().length; i++) {
             JLabel nameLabel = new JLabel("Name: " + model.getPlayers()[i].getName());
             playerScores[i] = new JLabel("Score: " + model.getPlayers()[i].getScore());
-            nameLabel.setAlignmentX(CENTER_ALIGNMENT);
-            playerScores[i].setAlignmentX(CENTER_ALIGNMENT);
-            playerRacks[i] = getPlayerRackPanel(model.getPlayers()[i]);
+            playerRacks[i] = new JLabel(model.getPlayers()[i].getRack().getRackLetters());
 
             playerPanel.add(nameLabel);
             playerPanel.add(playerScores[i]);
@@ -145,24 +144,6 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         }
 
         return playerPanel;
-    }
-
-    private JPanel getPlayerRackPanel(Player player) {
-        JPanel rackPanel = new JPanel(new GridLayout(2, 7, 1, 0));
-
-        for(Tile tile : player.getRack().getTiles()) {
-            JLabel label = new JLabel(String.valueOf(tile.getLetter()));
-            label.setAlignmentX(LEFT_ALIGNMENT);
-            rackPanel.add(label);
-        }
-
-        for(Tile tile : player.getRack().getTiles()) {
-            JLabel label = new JLabel(String.valueOf(tile.getPoints()));
-            label.setAlignmentX(RIGHT_ALIGNMENT);
-            rackPanel.add(label);
-        }
-
-        return rackPanel;
     }
 
     private JPanel playCommandsPanel() {
@@ -199,7 +180,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         if((JOptionPane.showConfirmDialog(this, initPanel, "Game Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) && (model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem())))) {
             model.setGameFileName(gameNameTextField.getText());
             playerScores = new JLabel[Integer.parseInt(numPlayersOptions.getSelectedItem())];
-            playerRacks = new JPanel[Integer.parseInt(numPlayersOptions.getSelectedItem())];
+            playerRacks = new JLabel[Integer.parseInt(numPlayersOptions.getSelectedItem())];
             for(int i = 0; i < Integer.parseInt(numPlayersOptions.getSelectedItem()); i++) {
                 String playerName = JOptionPane.showInputDialog("Player " + (i + 1) + "'s name: ");
                 model.addPlayer(new Player(playerName));
@@ -211,7 +192,8 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
             JPanel gamePanel = new JPanel();
             gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.X_AXIS));
-            JPanel boardAndPlayCommandsPanel = new JPanel(new GridLayout(2, 1));
+            JPanel boardAndPlayCommandsPanel = new JPanel();
+            boardAndPlayCommandsPanel.setLayout(new BoxLayout(boardAndPlayCommandsPanel, BoxLayout.PAGE_AXIS));
 
             boardAndPlayCommandsPanel.add(boardPanelSetup());
             boardAndPlayCommandsPanel.add(playCommandsPanel());
@@ -239,9 +221,9 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         attemptPlayPanel.add(new JLabel("Direction: "));
         attemptPlayPanel.add(directionOption);
 
-        if(JOptionPane.showConfirmDialog(this, attemptPlayPanel, "Game Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        if(JOptionPane.showConfirmDialog(this, attemptPlayPanel, "Play Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             String[] returnArray = new String[2];
-            returnArray[0] = wordTextField.getText();
+            returnArray[0] = wordTextField.getText().toUpperCase();
             returnArray[1] = directionOption.getSelectedItem();
 
             return returnArray;
@@ -249,6 +231,34 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         else
             JOptionPane.showMessageDialog(this, "Play incomplete!");
         return null;
+    }
+
+    public int[] getExchangeTileIndex() {
+        JPanel exchangeNumPanel = new JPanel(new GridLayout(1, 2));
+        Choice exchangeNumOptions = new Choice();
+        for(int i = 1; i <= 7; i++) {
+            exchangeNumOptions.add(String.valueOf(i));
+        }
+        exchangeNumPanel.add(new JLabel("Number of tiles to exchange:"));
+        exchangeNumPanel.add(exchangeNumOptions);
+
+        if(JOptionPane.showConfirmDialog(this, exchangeNumPanel, "Exchange Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            Character[] tiles = new Character[7];
+            for(int i = 0; i < 7; i++) {
+                tiles[i] = model.getPlayers()[model.getTurn()].getRack().getTiles()[i].getLetter();
+            }
+
+            JList<Character> rack = new JList<>(tiles);
+            rack.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            if(JOptionPane.showConfirmDialog(this, rack, "Exchange Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                return rack.getSelectedIndices();
+            else
+                JOptionPane.showMessageDialog(this, "Exchange incomplete!");
+        }
+        else
+            JOptionPane.showMessageDialog(this, "Exchange incomplete!");
+
+        return new int[0];
     }
 
     /**
@@ -290,6 +300,28 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     /**
+     * Handle the change turn update.
+     * @param playerName The name of the player with the updated turn.
+     */
+    @Override
+    public void handleChangeTurn(String playerName) {
+        JOptionPane.showMessageDialog(this, "It is " + playerName + "'s turn!");
+    }
+
+    /**
+     * Handle the board update.
+     */
+    @Override
+    public void handleBoardUpdate(String word, int[] coordinates, Board.Direction direction) {
+        for(int i = 0; i < word.length(); i++) {
+            if(direction == Board.Direction.FORWARD)
+                board[coordinates[0]][coordinates[1] + i].setText(String.valueOf(word.charAt(i)));
+            else if(direction == Board.Direction.DOWNWARD)
+                board[coordinates[0] + i][coordinates[1]].setText(String.valueOf(word.charAt(i)));
+        }
+    }
+
+    /**
      * Handle the score update.
      */
     @Override
@@ -302,6 +334,14 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
      */
     @Override
     public void handleRackUpdate() {
-        playerRacks[model.getTurn()] = getPlayerRackPanel(model.getPlayers()[model.getTurn()]);
+        playerRacks[model.getTurn()].setText(model.getPlayers()[model.getTurn()].getRack().getRackLetters());
+    }
+
+    /**
+     * Get a letter to set the blank tile.
+     */
+    @Override
+    public char handleBlankTile() {
+        return JOptionPane.showInputDialog("What letter should the blank tile represent?").charAt(0);
     }
 }

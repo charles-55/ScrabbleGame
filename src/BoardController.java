@@ -21,10 +21,12 @@ public class BoardController implements ActionListener {
         int x = Integer.parseInt(input[0]);
         int y = Integer.parseInt(input[1]);
 
-        String[] strings = frame.attemptPlay();
-        if(strings[1].equals(Board.Direction.FORWARD.toString()))
-            model.attemptPlay(strings[0], new int[]{x, y}, Board.Direction.FORWARD);
-        else if(strings[1].equals(Board.Direction.DOWNWARD.toString()))
-            model.attemptPlay(strings[0], new int[]{x, y}, Board.Direction.DOWNWARD);
+        String[] wordAndDirection = frame.attemptPlay();
+        if(wordAndDirection != null) {
+            if (wordAndDirection[1].equals(Board.Direction.FORWARD.toString()))
+                model.attemptPlay(wordAndDirection[0], new int[]{x, y}, Board.Direction.FORWARD);
+            else if (wordAndDirection[1].equals(Board.Direction.DOWNWARD.toString()))
+                model.attemptPlay(wordAndDirection[0], new int[]{x, y}, Board.Direction.DOWNWARD);
+        }
     }
 }

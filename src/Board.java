@@ -44,9 +44,9 @@ public class Board {
      * @return true if the board is empty, false otherwise.
      */
     public boolean isEmpty() {
-        for(Square[] squares : board) {
-            for(Square square : squares) {
-                if(square.getTile() != null)
+        for(int i = 0; i < BOARD_SIZE; i++) {
+            for(int j = 0; j < BOARD_SIZE; j++) {
+                if(board[i][j].getTile() != null)
                     return false;
             }
         }
@@ -78,7 +78,7 @@ public class Board {
                     boolean placed = board[coordinates[1]][coordinates[0] + i].placeTile(wordTiles[i]);
                     if(!placed) {
                         for(int j = i - 1; j >= 0; j--) {
-                            board[coordinates[1]][coordinates[0] + i].removeTile();
+                            board[coordinates[1]][coordinates[0] + j].removeTile();
                         }
                         return false;
                     }
@@ -99,7 +99,7 @@ public class Board {
                     boolean placed = board[coordinates[0] + i][coordinates[1]].placeTile(wordTiles[i]);
                     if(!placed) {
                         for(int j = i - 1; j >= 0; j--) {
-                            board[coordinates[0] + i][coordinates[1]].removeTile();
+                            board[coordinates[0] + j][coordinates[1]].removeTile();
                         }
                         return false;
                     }

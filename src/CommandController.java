@@ -4,9 +4,11 @@ import java.awt.event.ActionListener;
 public class CommandController implements ActionListener {
 
     private final GameMaster model;
+    private final ScrabbleFrame frame;
 
-    public CommandController(GameMaster model) {
+    public CommandController(GameMaster model, ScrabbleFrame frame) {
         this.model = model;
+        this.frame = frame;
     }
 
     /**
@@ -27,6 +29,9 @@ public class CommandController implements ActionListener {
         }
         else if(e.getActionCommand().equals(ScrabbleFrame.Commands.ABOUT.toString())) {
             model.about();
+        }
+        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.EXCHANGE.toString())) {
+            model.exchangeTile(frame.getExchangeTileIndex());
         }
         else if(e.getActionCommand().equals(ScrabbleFrame.Commands.PASS.toString())) {
             model.changeTurn();

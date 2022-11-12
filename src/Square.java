@@ -29,6 +29,8 @@ public class Square {
      * @return false if the tile is null(no tile) else return true.
      */
     public boolean placeTile(Tile tileToPlace){
+        if(tile == tileToPlace)
+            return true;
         if(tile != null)
             return false;
         tile = tileToPlace;

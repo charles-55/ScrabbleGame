@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 /**
  * This class is part of the "Scrabble" application.
  * A (playing) Tile in a scrabble game representing a letter and point.
@@ -13,6 +15,7 @@ public class Tile
 {
     private char letter;
     public int points;
+    private ImageIcon icon;
 
     /**
      * Constructor for objects of class Tile, initializes letter and points with the given parameters.

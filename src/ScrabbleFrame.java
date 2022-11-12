@@ -8,6 +8,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private final CommandController commandController;
     private final JButton[][] board;
     private JLabel gameName;
+    private JLabel currentPlayer;
     private JLabel[] playerScores;
     private JLabel[] playerRacks;
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
@@ -132,6 +133,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private JPanel playerPanelSetup() {
         JPanel playerPanel = new JPanel();
         playerPanel.setLayout(new BoxLayout(playerPanel, BoxLayout.PAGE_AXIS));
+        playerPanel.add(currentPlayer);
 
         for(int i = 0; i < model.getPlayers().length; i++) {
             JLabel nameLabel = new JLabel("Name: " + model.getPlayers()[i].getName());
@@ -160,6 +162,9 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         playCommandsPanel.add(exchangeButton);
         playCommandsPanel.add(passButton);
 
+        playCommandsPanel.setPreferredSize(new Dimension(685, 100));
+        playCommandsPanel.setMinimumSize(new Dimension(685, 100));
+
         return playCommandsPanel;
     }
 
@@ -187,6 +192,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             }
 
             gameName = new JLabel(model.getGameFileName());
+            currentPlayer = new JLabel("Player turn: " + model.getPlayers()[model.getTurn()].getName());
 
             JPanel mainPanel = new JPanel();
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
@@ -306,6 +312,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     @Override
     public void handleChangeTurn(String playerName) {
         JOptionPane.showMessageDialog(this, "It is " + playerName + "'s turn!");
+        currentPlayer.setText("Player turn: " + playerName);
     }
 
     /**
@@ -314,8 +321,10 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     @Override
     public void handleBoardUpdate(String word, int[] coordinates, Board.Direction direction) {
         for(int i = 0; i < word.length(); i++) {
-            if(direction == Board.Direction.FORWARD)
+            if(direction == Board.Direction.FORWARD) {
                 board[coordinates[0]][coordinates[1] + i].setText(String.valueOf(word.charAt(i)));
+                board[coordinates[0]][coordinates[1] + i].setIcon(new ImageIcon());
+            }
             else if(direction == Board.Direction.DOWNWARD)
                 board[coordinates[0] + i][coordinates[1]].setText(String.valueOf(word.charAt(i)));
         }

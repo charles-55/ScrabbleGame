@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.awt.*;
+import java.awt.color.ICC_ColorSpace;
 
 /**
  * This class is part of the "Scrabble" application.
@@ -15,7 +17,7 @@ public class Tile
 {
     private char letter;
     public int points;
-    private ImageIcon icon;
+    private final ImageIcon icon;
 
     /**
      * Constructor for objects of class Tile, initializes letter and points with the given parameters.
@@ -27,6 +29,15 @@ public class Tile
     {
         this.letter = letter;
         this.points = points;
+
+
+        Image img = new ImageIcon("Graphics/" + letter + ".png").getImage();
+        Image resizeImaged = img.getScaledInstance(50,50, Image.SCALE_SMOOTH);
+        icon = new ImageIcon(resizeImaged);
+    }
+
+    public ImageIcon getIcon() {
+        return icon;
     }
 
     /**

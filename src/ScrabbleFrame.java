@@ -361,8 +361,8 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     public void handleBoardUpdate(String word, int[] coordinates, Board.Direction direction) {
         for(int i = 0; i < word.length(); i++) {
             if(direction == Board.Direction.FORWARD) {
-                board[coordinates[0]][coordinates[1] + i].setText(String.valueOf(word.charAt(i)));
-                board[coordinates[0]][coordinates[1] + i].setIcon(new ImageIcon());
+                //board[coordinates[0]][coordinates[1] + i].setText(String.valueOf(word.charAt(i)));
+                board[coordinates[0]][coordinates[1] + i].setIcon(model.getBoard().getBoard()[coordinates[0]][coordinates[1] + i].getTile().getIcon());
             }
             else if(direction == Board.Direction.DOWNWARD)
                 board[coordinates[0] + i][coordinates[1]].setText(String.valueOf(word.charAt(i)));

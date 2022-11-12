@@ -8,7 +8,7 @@
 public class Board {
 
     public enum Direction {FORWARD, DOWNWARD}
-    private Square[][] board;
+    private final Square[][] board;
     private static final int BOARD_SIZE = 15;
     private static final int[] ORIGIN_POINT = new int[] {BOARD_SIZE / 2, BOARD_SIZE / 2};
 
@@ -71,6 +71,8 @@ public class Board {
                 return false;
             if(isEmpty()) {
                 if(!((coordinates[1] == ORIGIN_POINT[1]) && (coordinates[0] <= ORIGIN_POINT[0]) && (coordinates[0] + wordTiles.length - 1 >= ORIGIN_POINT[0])))
+                    return false;
+                else if(!((coordinates[0] == ORIGIN_POINT[0]) && (coordinates[1] <= ORIGIN_POINT[1]) && (coordinates[1] + wordTiles.length - 1 >= ORIGIN_POINT[1])))
                     return false;
             }
             for(int i = 0; i < wordTiles.length; i++) {

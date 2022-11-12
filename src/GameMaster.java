@@ -386,15 +386,9 @@ public class GameMaster {
 
     /**
      * Save the current game being played.
-     * @param command Command to save the game.
      * @return true if the game saved, false otherwise.
      */
-    private boolean save(Command command) {
-        if(command.hasSecondWord()) {
-            System.out.println("Use the saveAs command to change the current game name.");
-            return false;
-        }
-
+    private boolean save() {
         try {
             if(gameFileName.equals("New Game")) {
                 System.out.println("Use the saveAs command to name the current game.");
@@ -417,26 +411,20 @@ public class GameMaster {
 
     /**
      * Save the current game using the specified name.
-     * @param command Command containing the specified name.
+     * @param newName New game name.
      * @return true if the game saved, false otherwise.
      */
-    private boolean saveAs(Command command) {
-        if(!command.hasSecondWord()) {
-            System.out.println("saveAs what?");
-            return false;
-        }
-
-        gameFileName = command.getSecondWord();
-        return save(new Command("save", null));
+    private boolean saveAs(String newName) {
+        gameFileName = newName;
+        return save();
     }
     // TODO: 2022-10-18 complete implementation
 
     /**
      * Load a saved game.
-     * @param command Command to load the saved game
      * @return true if the game loaded, false otherwise.
      */
-    private boolean load(Command command) {
+    private boolean load() {
         return false;
     }
 }

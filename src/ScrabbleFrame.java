@@ -23,6 +23,9 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private static Clip clip;
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
 
+    /**
+     * Create
+     */
     public ScrabbleFrame() {
         model = new GameMaster();
         boardController = new BoardController(this,model);
@@ -160,6 +163,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             boardPanel.add(new JLabel(String.valueOf(i)));
             for(int j = 0; j < model.getBoard().getBoardSize(); j++) {
                 JButton button = new JButton();
+                button.setBorder(BorderFactory.createLineBorder(Color.RED));
                 button.setIcon(model.getBoard().getBoard()[i][j].getIcon());
                 button.setActionCommand(i + " " + j);
                 button.addActionListener(boardController);

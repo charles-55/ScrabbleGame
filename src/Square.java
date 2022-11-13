@@ -36,8 +36,9 @@ public class Square {
 
     public void setSquareType(SquareType squareType) {
         this.squareType = squareType;
-//        ImageIcon imageIcon = n
-//        icon.setImage(new ImageIcon());
+        Image image = new ImageIcon("Graphics/" + squareType.toString() + ".png").getImage();
+        Image resizeImaged = image.getScaledInstance(50,50, Image.SCALE_SMOOTH);
+        icon.setImage(resizeImaged);
     }
 
     public ImageIcon getIcon() {

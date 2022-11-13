@@ -3,6 +3,13 @@ import java.awt.*;
 import java.io.*;
 import javax.sound.sampled.*;
 
+/**
+ * The Frame Class.
+ *
+ * @author Osamudiamen 101152520
+ * @author Meyiwa Temile
+ * @version 1.0
+ */
 public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
     private final GameMaster model;
@@ -13,9 +20,8 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private JLabel currentPlayer;
     private JLabel[] playerScores;
     private JLabel[] playerRacks;
+    private static Clip clip;
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
-
-    private Clip clip;
 
     public ScrabbleFrame() {
         model = new GameMaster();
@@ -154,10 +160,11 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             boardPanel.add(new JLabel(String.valueOf(i)));
             for(int j = 0; j < model.getBoard().getBoardSize(); j++) {
                 JButton button = new JButton();
+                button.setIcon(model.getBoard().getBoard()[i][j].getIcon());
                 button.setActionCommand(i + " " + j);
-                board[i][j] = button;
                 button.addActionListener(boardController);
-                boardPanel.add(button);
+                board[i][j] = button;
+                boardPanel.add(board[i][j]);
             }
         }
         boardPanel.setPreferredSize(new Dimension(685, 685));
@@ -304,8 +311,6 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
         return new int[0];
     }
-
-
 
     /**
      * Handle new game update to the view.

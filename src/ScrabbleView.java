@@ -9,19 +9,6 @@ public interface ScrabbleView {
      * Handle quit update to the view.
      */
     void handleQuitUpdate();
-
-    /**
-     * Handle help call in the view.
-     * @param message Help message to display.
-     */
-    void handleHelpCall(String message);
-
-    /**
-     * Handle about call in the view.
-     * @param message About message to display.
-     */
-    void handleAboutCall(String message);
-
     /**
      * Handle the change turn update.
      * @param playerName The name of the player with the updated turn.
@@ -47,4 +34,10 @@ public interface ScrabbleView {
      * Get a letter to set the blank tile.
      */
     char handleBlankTile();
+
+    /**
+     * Handle a message from the model.
+     * @param message The message from the model.
+     */
+    void handleMessage(String message);
 }

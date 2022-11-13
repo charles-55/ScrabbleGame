@@ -335,26 +335,6 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     /**
-     * Handle help call in the view.
-     *
-     * @param message Help message to display.
-     */
-    @Override
-    public void handleHelpCall(String message) {
-        JOptionPane.showMessageDialog(this, message);
-    }
-
-    /**
-     * Handle about call in the view.
-     *
-     * @param message About message to display.
-     */
-    @Override
-    public void handleAboutCall(String message) {
-        JOptionPane.showMessageDialog(this, message);
-    }
-
-    /**
      * Handle the change turn update.
      * @param playerName The name of the player with the updated turn.
      */
@@ -401,5 +381,14 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     @Override
     public char handleBlankTile() {
         return JOptionPane.showInputDialog("What letter should the blank tile represent?").charAt(0);
+    }
+
+    /**
+     * Handle a message from the model.
+     * @param message The message from the model.
+     */
+    @Override
+    public void handleMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
     }
 }

@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.util.ArrayList;
 import javax.sound.sampled.*;
+import javax.swing.border.LineBorder;
 
 /**
  * The Frame Class.
@@ -21,6 +23,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private JLabel[] playerScores;
     private JLabel[] playerRacks;
     private static Clip clip;
+    private final static Color BORDER_COLOR = Color.RED;
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
 
     /**
@@ -156,18 +159,12 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     private JPanel boardPanelSetup() {
-        JPanel boardPanel = new JPanel(new GridLayout(model.getBoard().getBoardSize() + 1, model.getBoard().getBoardSize() + 1));
+        JPanel boardPanel = new JPanel(new GridLayout(model.getBoard().getBoardSize(), model.getBoard().getBoardSize()));
 
-        boardPanel.add(new JLabel());
         for(int i = 0; i < model.getBoard().getBoardSize(); i++) {
-            JLabel label = new JLabel(String.valueOf(i));
-            boardPanel.add(label);
-        }
-        for(int i = 0; i < model.getBoard().getBoardSize(); i++) {
-            boardPanel.add(new JLabel(String.valueOf(i)));
             for(int j = 0; j < model.getBoard().getBoardSize(); j++) {
                 JButton button = new JButton();
-                button.setBorder(BorderFactory.createLineBorder(Color.RED));
+                button.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
                 button.setIcon(model.getBoard().getBoard()[i][j].getIcon());
                 button.setActionCommand(i + " " + j);
                 button.addActionListener(boardController);
@@ -175,9 +172,9 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
                 boardPanel.add(board[i][j]);
             }
         }
-        boardPanel.setPreferredSize(new Dimension(685, 685));
-        boardPanel.setMaximumSize(new Dimension(685, 685));
-        boardPanel.setMinimumSize(new Dimension(685, 685));
+        boardPanel.setPreferredSize(new Dimension(670, 670));
+        boardPanel.setMaximumSize(new Dimension(670, 670));
+        boardPanel.setMinimumSize(new Dimension(670, 670));
 
         return boardPanel;
     }
@@ -203,20 +200,24 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private JPanel playCommandsPanel() {
         JPanel playCommandsPanel = new JPanel(new GridLayout(1, 2));
 
-        JButton exchangeButton = new JButton("Exchange");
+        JButton exchangeButton = new JButton();
+        exchangeButton.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
+        exchangeButton.setIcon(new ImageIcon("Graphics/EXCHANGE.png"));
         exchangeButton.setActionCommand(Commands.EXCHANGE.toString());
         exchangeButton.addActionListener(commandController);
 
-        JButton passButton = new JButton("Pass");
+        JButton passButton = new JButton();
+        passButton.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
+        passButton.setIcon(new ImageIcon("Graphics/PASS.png"));
         passButton.setActionCommand(Commands.PASS.toString());
         passButton.addActionListener(commandController);
 
         playCommandsPanel.add(exchangeButton);
         playCommandsPanel.add(passButton);
 
-        playCommandsPanel.setPreferredSize(new Dimension(685, 100));
-        playCommandsPanel.setMaximumSize(new Dimension(685, 100));
-        playCommandsPanel.setMinimumSize(new Dimension(685, 100));
+        playCommandsPanel.setPreferredSize(new Dimension(670, 100));
+        playCommandsPanel.setMaximumSize(new Dimension(670, 100));
+        playCommandsPanel.setMinimumSize(new Dimension(670, 50));
 
         return playCommandsPanel;
     }
@@ -302,26 +303,26 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
      * @return int[] array of exchanged tiles
      */
     public int[] getExchangeTileIndex() {
-        JPanel exchangeNumPanel = new JPanel(new GridLayout(1, 2));
-        Choice exchangeNumOptions = new Choice();
-        for(int i = 1; i <= 7; i++) {
-            exchangeNumOptions.add(String.valueOf(i));
-        }
-        exchangeNumPanel.add(new JLabel("Number of tiles to exchange:"));
-        exchangeNumPanel.add(exchangeNumOptions);
+        JPanel panel = new JPanel(new GridLayout(2, 7));
+        JCheckBox[] checkBoxes = new JCheckBox[7];
+        ArrayList<Integer> tileIndexes = new ArrayList<>();
 
-        if(JOptionPane.showConfirmDialog(this, exchangeNumPanel, "Exchange Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            Character[] tiles = new Character[7];
+        for(int i = 0; i < 7; i++) {
+            panel.add(new JLabel(model.getPlayers()[model.getTurn()].getRack().getTiles()[i].getIcon()));
+        }
+
+        for(int i = 0; i < 7; i++) {
+            checkBoxes[i] = new JCheckBox();
+            panel.add(checkBoxes[i]);
+        }
+
+        if(JOptionPane.showConfirmDialog(this, panel, "Exchange Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             for(int i = 0; i < 7; i++) {
-                tiles[i] = model.getPlayers()[model.getTurn()].getRack().getTiles()[i].getLetter();
+                if(checkBoxes[i].isSelected())
+                    tileIndexes.add(i);
             }
 
-            JList<Character> rack = new JList<>(tiles);
-            rack.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-            if(JOptionPane.showConfirmDialog(this, rack, "Exchange Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-                return rack.getSelectedIndices();
-            else
-                JOptionPane.showMessageDialog(this, "Exchange incomplete!");
+            return tileIndexes.stream().mapToInt(i -> i).toArray();
         }
         else
             JOptionPane.showMessageDialog(this, "Exchange incomplete!");

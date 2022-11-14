@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 /**
  * The Board class.
  * This class is responsible for implementing the scrabble board.
@@ -23,9 +25,10 @@ public class Board {
     private void boardSetUp(){
 
         for(int i = 0; i < BOARD_SIZE; i++) {
-            for(int j = 0; j < BOARD_SIZE; j++)
+            for(int j = 0; j < BOARD_SIZE; j++) {
                 board[i][j] = new Square();
-
+                board[i][j].getIcon().setImage(new ImageIcon("Graphics/BLANK.png").getImage());
+            }
         }
         board[ORIGIN_POINT[0]][ORIGIN_POINT[1]].setSquareType(Square.SquareType.ORIGIN);
         for(int k=0;k<BOARD_SIZE;k++){

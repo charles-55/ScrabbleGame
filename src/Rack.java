@@ -72,7 +72,6 @@ public class Rack {
      * removes a tile from the rack
      * @param tile to remove a tile
      */
-
     public void removeTile(Tile tile) {
         for(int i = 0; i < MAX_RACK_SIZE; i++) {
             if(tiles[i] == tile) {

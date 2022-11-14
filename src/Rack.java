@@ -6,7 +6,7 @@
  */
 public class Rack {
 
-    private Tile[] tiles;
+    private final Tile[] tiles;
     private static final int MAX_RACK_SIZE = 7;
 
     /**

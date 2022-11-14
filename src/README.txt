@@ -12,7 +12,7 @@ Deliverables:
     Rack.java  // @author Ejeh Leslie
     Square.java  // @author Longjohn Dagogo
     Tile.java  // @author Meyiwa Temile
-    ScrabbleUML.png  // @author Group 3
+    ScrabbleUML.png  // @author Longjohn Dagogo
 	GameMaster.java  // @author Osamudiamen Nwoko, Meyiwa Temile
 	GameMasterTest.java // @author Ejeh Leslie, Longjohn Dagogo
 	BoardController.java // @author Ejeh Leslie, Osamudiamen Nwoko

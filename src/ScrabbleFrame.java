@@ -3,7 +3,6 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import javax.sound.sampled.*;
-import javax.swing.border.LineBorder;
 
 /**
  * The Frame Class.
@@ -21,7 +20,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private JLabel gameName;
     private JLabel currentPlayer;
     private JLabel[] playerScores;
-    private JLabel[] playerRacks;
+    private ArrayList<JLabel[]> playerRacks;
     private static Clip clip;
     private final static Color BORDER_COLOR = Color.RED;
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
@@ -187,11 +186,17 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         for(int i = 0; i < model.getPlayers().length; i++) {
             JLabel nameLabel = new JLabel("Name: " + model.getPlayers()[i].getName());
             playerScores[i] = new JLabel("Score: " + model.getPlayers()[i].getScore());
-            playerRacks[i] = new JLabel(model.getPlayers()[i].getRack().getRackLetters());
+            playerRacks.add(new JLabel[7]);
+            JPanel rackPanel = new JPanel(new GridLayout(1, 7));
+
+            for(int j = 0; j < 7; j++) {
+                playerRacks.get(i)[j] = new JLabel(model.getPlayers()[i].getRack().getTiles()[j].getIcon());
+                rackPanel.add(playerRacks.get(i)[j]);
+            }
 
             playerPanel.add(nameLabel);
             playerPanel.add(playerScores[i]);
-            playerPanel.add(playerRacks[i]);
+            playerPanel.add(rackPanel);
         }
 
         return playerPanel;
@@ -239,7 +244,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         if((JOptionPane.showConfirmDialog(this, initPanel, "Game Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) && (model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem())))) {
             model.setGameFileName(gameNameTextField.getText());
             playerScores = new JLabel[Integer.parseInt(numPlayersOptions.getSelectedItem())];
-            playerRacks = new JLabel[Integer.parseInt(numPlayersOptions.getSelectedItem())];
+            playerRacks = new ArrayList<>();
             for(int i = 0; i < Integer.parseInt(numPlayersOptions.getSelectedItem()); i++) {
                 String playerName = JOptionPane.showInputDialog("Player " + (i + 1) + "'s name: ");
                 model.addPlayer(new Player(playerName));
@@ -387,7 +392,9 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
      */
     @Override
     public void handleRackUpdate() {
-        playerRacks[model.getTurn()].setText(model.getPlayers()[model.getTurn()].getRack().getRackLetters());
+        for(int i = 0; i < 7; i++) {
+            playerRacks.get(model.getTurn())[i].setIcon(model.getPlayers()[model.getTurn()].getRack().getTiles()[i].getIcon());
+        }
     }
 
     /**

@@ -178,11 +178,9 @@ public class GameMaster {
      */
     public void help() {
         String helpMessage = """
-                For making any move, enter "play" followed by the word to play.
-                Then enter the starting coordinates, and after the prompt of the direction to play, enter "DOWNWARD" or "FORWARD".
+                For making any move, select the position on the board you intend to play, then enter the word and direction to play.
                 Every play must be connected to at least one previous tile, if it's not the first move of the game.
-                If you can't come up with a word, enter "pass" to skip your turn or "exchange" to get new tiles and skip your turn.
-                You can't give up turn in the first move.
+                If you can't come up with a word, select "pass" to skip your turn or "exchange" to get new tiles and skip your turn.
                 If you make an illegal move or a wrong word, you will be notified and required to enter a new word and direction of play.
                 """;
         for(ScrabbleView view : views) {

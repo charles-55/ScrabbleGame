@@ -13,11 +13,11 @@ Deliverables:
     Square.java  // @author Longjohn Dagogo
     Tile.java  // @author Meyiwa Temile
     ScrabbleUML.png  // @author Group 3
-	GameMaster.java  // @author Osamudiamen Nwoko
+	GameMaster.java  // @author Osamudiamen Nwoko, Meyiwa Temile
 	GameMasterTest.java // @author Ejeh Leslie, Longjohn Dagogo
 	BoardController.java // @author Ejeh Leslie, Osamudiamen Nwoko
 	CommandController.java // @author Ejeh Leslie, Osamudiamen Nwoko
-	ScrabbleView.java // Osamudiamen Nwoko
+	ScrabbleView.java // Osamudiamen Nwoko, Meyiywa Temile
 	ScrabbleFrame.java // Osamudiamen Nwoko, Meyiwa Temile
 	WordList.txt  //@author https://www.mit.edu/~ecprice/wordlist.10000
 	README.txt  // @author Group 3
@@ -38,7 +38,7 @@ Players may use a turn to exchange all, some, or none of the letters, this ends 
 The two blank tiles may be used as any letters. When playing a blank, you must state which letter it represents. It remains that letter for the rest of the game.
 The game ends when all letters have been drawn and one player uses his or her last letter; or when all possible plays have been made.
 
-New words may be formed by;
+New words may be formed by:
 Adding one or more letters to a word or letters already on the board.
 Placing a word at right angles to a word already on the board. The new word must use one of the letters already on the board or must add a letter to it.
 Placing a complete word parallel to a word already played so that adjacent letters also form complete words.
@@ -53,5 +53,6 @@ If you make an illegal move or a wrong word, you will be notified and required t
 
 
 Known Issues:
+save/saveAs unable to save game
 load unable to load a previous game
 Incorrect score from play

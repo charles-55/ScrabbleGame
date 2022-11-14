@@ -69,20 +69,6 @@ public class Rack {
     }
 
     /**
-     * returns the tiles letters as string
-     * @return String of the letter
-     */
-    public String getRackLetters() {
-        StringBuilder rackLetters = new StringBuilder(" | ");
-        for(Tile t : tiles){
-            if(t != null){
-                rackLetters.append(t.getLetter()).append(" | ");
-            }
-        }
-        return rackLetters.toString();
-    }
-
-    /**
      * removes a tile from the rack
      * @param tile to remove a tile
      */

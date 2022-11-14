@@ -164,13 +164,21 @@ public class Board {
      */
     public int getScore(int[] coordinates, Direction direction) {
         int score = 0;
+        int multiplier = 1;
 
         if(direction == Direction.FORWARD) {
             int i = 0;
             while(board[coordinates[1]][coordinates[0] - i].getTile() != null) {
                 int j = 0;
                 while(board[coordinates[1] - j][coordinates[0] - i].getTile() != null) {
-                    score += board[coordinates[1] - j][coordinates[0] - i].getTile().getPoints();
+                    if(board[coordinates[1] - j][coordinates[0] - i].getSquareType() == Square.SquareType.TWS)
+                        multiplier *= 3;
+                    else if(board[coordinates[1] - j][coordinates[0] - i].getSquareType() == Square.SquareType.DWS)
+                        multiplier *= 2;
+                    else if(board[coordinates[1] - j][coordinates[0] - i].getSquareType() == Square.SquareType.TLS)
+                        score += board[coordinates[1] - j][coordinates[0] - i].getTile().getPoints() * 3;
+                    else if(board[coordinates[1] - j][coordinates[0] - i].getSquareType() == Square.SquareType.DLS)
+                        score += board[coordinates[1] - j][coordinates[0] - i].getTile().getPoints() * 2;
                     j++;
                     if(coordinates[1] - j < 0) {
                         j = 0;
@@ -179,7 +187,14 @@ public class Board {
                 }
 
                 while(board[coordinates[1] + j][coordinates[0] - i].getTile() != null) {
-                    score += board[coordinates[1] + j][coordinates[0] - i].getTile().getPoints();
+                    if(board[coordinates[1] + j][coordinates[0] - i].getSquareType() == Square.SquareType.TWS)
+                        multiplier *= 3;
+                    else if(board[coordinates[1] + j][coordinates[0] - i].getSquareType() == Square.SquareType.DWS)
+                        multiplier *= 2;
+                    else if(board[coordinates[1] + j][coordinates[0] - i].getSquareType() == Square.SquareType.TLS)
+                        score += board[coordinates[1] + j][coordinates[0] - i].getTile().getPoints() * 3;
+                    else if(board[coordinates[1] + j][coordinates[0] - i].getSquareType() == Square.SquareType.DLS)
+                        score += board[coordinates[1] + j][coordinates[0] - i].getTile().getPoints() * 2;
                     j++;
                     if(coordinates[1] + j  >= BOARD_SIZE)
                         break;
@@ -193,7 +208,14 @@ public class Board {
             }
 
             while(board[coordinates[1]][coordinates[0] + i].getTile() != null) {
-                score += board[coordinates[1]][coordinates[0] + i].getTile().getPoints();
+                if(board[coordinates[1]][coordinates[0] + i].getSquareType() == Square.SquareType.TWS)
+                    multiplier *= 3;
+                else if(board[coordinates[1]][coordinates[0] + i].getSquareType() == Square.SquareType.DWS)
+                    multiplier *= 2;
+                else if(board[coordinates[1]][coordinates[0] + i].getSquareType() == Square.SquareType.TLS)
+                    score += board[coordinates[1]][coordinates[0] + i].getTile().getPoints() * 3;
+                else if(board[coordinates[1]][coordinates[0] + i].getSquareType() == Square.SquareType.DLS)
+                    score += board[coordinates[1]][coordinates[0] + i].getTile().getPoints() * 2;
                 i++;
                 if (coordinates[1] + i >= BOARD_SIZE)
                     break;
@@ -204,7 +226,14 @@ public class Board {
             while(board[coordinates[1] - j][coordinates[0]].getTile() != null) {
                 int i = 0;
                 while(board[coordinates[1] - j][coordinates[0] - i].getTile() != null) {
-                    score += board[coordinates[1] - j][coordinates[0] - i].getTile().getPoints();
+                    if(board[coordinates[1] - j][coordinates[0] - i].getSquareType() == Square.SquareType.TWS)
+                        multiplier *= 3;
+                    else if(board[coordinates[1] - j][coordinates[0] - i].getSquareType() == Square.SquareType.DWS)
+                        multiplier *= 2;
+                    else if(board[coordinates[1] - j][coordinates[0] - i].getSquareType() == Square.SquareType.TLS)
+                        score += board[coordinates[1] - j][coordinates[0] - i].getTile().getPoints() * 3;
+                    else if(board[coordinates[1] - j][coordinates[0] - i].getSquareType() == Square.SquareType.DLS)
+                        score += board[coordinates[1] - j][coordinates[0] - i].getTile().getPoints() * 2;
                     i++;
                     if(coordinates[1] - i  < 0) {
                         i = 0;
@@ -213,7 +242,14 @@ public class Board {
                 }
 
                 while(board[coordinates[1] - j][coordinates[0] + i].getTile() != null) {
-                    score += board[coordinates[1] - j][coordinates[0] + i].getTile().getPoints();
+                    if(board[coordinates[1] - j][coordinates[0] + i].getSquareType() == Square.SquareType.TWS)
+                        multiplier *= 3;
+                    else if(board[coordinates[1] - j][coordinates[0] + i].getSquareType() == Square.SquareType.DWS)
+                        multiplier *= 2;
+                    else if(board[coordinates[1] - j][coordinates[0] + i].getSquareType() == Square.SquareType.TLS)
+                        score += board[coordinates[1] - j][coordinates[0] + i].getTile().getPoints() * 3;
+                    else if(board[coordinates[1] - j][coordinates[0] + i].getSquareType() == Square.SquareType.DLS)
+                        score += board[coordinates[1] - j][coordinates[0] + i].getTile().getPoints() * 2;
                     i++;
                     if(coordinates[1] + i >= BOARD_SIZE)
                         break;
@@ -227,7 +263,14 @@ public class Board {
             }
 
             while(board[coordinates[1] + j][coordinates[0]].getTile() != null) {
-                score += board[coordinates[1] + j][coordinates[0]].getTile().getPoints();
+                if(board[coordinates[1] + j][coordinates[0]].getSquareType() == Square.SquareType.TWS)
+                    multiplier *= 3;
+                else if(board[coordinates[1] + j][coordinates[0]].getSquareType() == Square.SquareType.DWS)
+                    multiplier *= 2;
+                else if(board[coordinates[1] + j][coordinates[0]].getSquareType() == Square.SquareType.TLS)
+                    score += board[coordinates[1] + j][coordinates[0]].getTile().getPoints() * 3;
+                else if(board[coordinates[1] + j][coordinates[0]].getSquareType() == Square.SquareType.DLS)
+                    score += board[coordinates[1] + j][coordinates[0]].getTile().getPoints() * 2;
                 j++;
                 if (coordinates[1] + j >= BOARD_SIZE)
                     break;

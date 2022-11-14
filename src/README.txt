@@ -2,21 +2,23 @@ SYSC3110 Project, Group 3 Milestone 1 README
 Scrabble Game
 
 Roadmap:
-Implemented stable Scrabble console game
+Implemented GUI based version of the Scrabble game
 
 Deliverables:
 	Bag.java  // @author Meyiwa Temile
 	Board.java  // @author Osamudiamen Nwoko
-	Command.java  // @author Longjohn Dagogo
-	CommandWords.java  // @author Longjohn Dagogo
-	GameMaster.java  // @author Osamudiamen Nwoko
 	Main.java  // @author Group 3
-	Parser.java  // @author Longjohn Dagogo
 	Player.java  // @author Ejeh Leslie
-	Rack.java  // @author Ejeh Leslie
-	Square.java  // @author Longjohn Dagogo
-	Tile.java  // @author Meyiwa Temile
-	ScrabbleUML.png  // @author Group 3
+    Rack.java  // @author Ejeh Leslie
+    Square.java  // @author Longjohn Dagogo
+    Tile.java  // @author Meyiwa Temile
+    ScrabbleUML.png  // @author Group 3
+	GameMaster.java  // @author Osamudiamen Nwoko
+	GameMasterTest.java // @author Ejeh Leslie, Longjohn Dagogo
+	BoardController.java // @author Ejeh Leslie, Osamudiamen Nwoko
+	CommandController.java // @author Ejeh Leslie, Osamudiamen Nwoko
+	ScrabbleView.java // Osamudiamen Nwoko
+	ScrabbleFrame.java // Osamudiamen Nwoko, Meyiwa Temile
 	WordList.txt  //@author https://www.mit.edu/~ecprice/wordlist.10000
 	README.txt  // @author Group 3
 
@@ -44,11 +46,9 @@ No tile may be shifted or replaced after it has been played and scored.
 
 
 How to Play:
-For making any move, enter "play" followed by the word to play.
-Then enter the starting coordinates, and after the prompt of the direction to play, enter "DOWNWARD" or "FORWARD".
+For making any move, select the position on the board you intend to play, then enter the word and direction to play.
 Every play must be connected to at least one previous tile, if it's not the first move of the game.
-If you can't come up with a word, enter "pass" to skip your turn or "exchange" to get new tiles and skip your turn.
-You can't give up turn in the first move.
+If you can't come up with a word, select "pass" to skip your turn or "exchange" to get new tiles and skip your turn.
 If you make an illegal move or a wrong word, you will be notified and required to enter a new word and direction of play.
 
 

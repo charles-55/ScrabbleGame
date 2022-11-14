@@ -24,7 +24,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
 
     /**
-     * Create
+     * Create a scrabble frame
      */
     public ScrabbleFrame() {
         model = new GameMaster();
@@ -50,6 +50,10 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         this.setVisible(true);
     }
 
+    /**
+     * Play music in an infinite loop
+     * @param fileName name of music file to be played
+     */
     private void playMusic(String fileName) {
         try {
             File file = new File(fileName);
@@ -262,6 +266,10 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             JOptionPane.showMessageDialog(this, "Game setup incomplete!");
     }
 
+    /**
+     * Attemps a play on the board, if the move is valid the play will be made else return null
+     * @return returnArray[] array of the word and direction to be played
+     */
     public String[] attemptPlay() {
         JPanel attemptPlayPanel = new JPanel(new GridLayout(2, 2));
 
@@ -288,6 +296,11 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         return null;
     }
 
+    /**
+     * Handles the exchange action if a player want to exchange their current
+     * tile(s) on the rack.
+     * @return int[] array of exchanged tiles
+     */
     public int[] getExchangeTileIndex() {
         JPanel exchangeNumPanel = new JPanel(new GridLayout(1, 2));
         Choice exchangeNumOptions = new Choice();
@@ -322,6 +335,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     @Override
     public void handleNewGameUpdate() {
         this.dispose();
+        clip.stop();
         new ScrabbleFrame();
     }
 
@@ -332,26 +346,6 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     public void handleQuitUpdate() {
         JOptionPane.showMessageDialog(this, "Thank you for playing. Goodbye...");
         this.dispose();
-    }
-
-    /**
-     * Handle help call in the view.
-     *
-     * @param message Help message to display.
-     */
-    @Override
-    public void handleHelpCall(String message) {
-        JOptionPane.showMessageDialog(this, message);
-    }
-
-    /**
-     * Handle about call in the view.
-     *
-     * @param message About message to display.
-     */
-    @Override
-    public void handleAboutCall(String message) {
-        JOptionPane.showMessageDialog(this, message);
     }
 
     /**
@@ -401,5 +395,14 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     @Override
     public char handleBlankTile() {
         return JOptionPane.showInputDialog("What letter should the blank tile represent?").charAt(0);
+    }
+
+    /**
+     * Handle a message from the model.
+     * @param message The message from the model.
+     */
+    @Override
+    public void handleMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
     }
 }

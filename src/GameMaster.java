@@ -169,7 +169,7 @@ public class GameMaster {
                 Click 'help' if you need help.
                 """;
         for(ScrabbleView view : views) {
-            view.handleAboutCall(aboutMessage);
+            view.handleMessage(aboutMessage);
         }
     }
 
@@ -186,7 +186,7 @@ public class GameMaster {
                 If you make an illegal move or a wrong word, you will be notified and required to enter a new word and direction of play.
                 """;
         for(ScrabbleView view : views) {
-            view.handleHelpCall(helpMessage);
+            view.handleMessage(helpMessage);
         }
     }
 
@@ -243,16 +243,14 @@ public class GameMaster {
                             }
                         }
                         else {
-                            for(ScrabbleView view : views) {
-                                JOptionPane.showMessageDialog((JFrame) view, "You do not have the tiles to spell \"" + wordAttempt + "\".");
-                            }
+                            for(ScrabbleView view : views)
+                                view.handleMessage("You do not have the tiles to spell \"" + wordAttempt + "\".");
                             return false;
                         }
                     }
                     catch(NullPointerException exception) {
-                        for(ScrabbleView view : views) {
-                            JOptionPane.showMessageDialog((JFrame) view, "You do not have the tiles to spell \"" + wordAttempt + "\".");
-                        }
+                        for(ScrabbleView view : views)
+                            view.handleMessage("You do not have the tiles to spell \"" + wordAttempt + "\".");
                         return false;
                     }
                 }
@@ -272,16 +270,14 @@ public class GameMaster {
                             }
                         }
                         else {
-                            for(ScrabbleView view : views) {
-                                JOptionPane.showMessageDialog((JFrame) view, "You do not have the tiles to spell \"" + wordAttempt + "\".");
-                            }
+                            for(ScrabbleView view : views)
+                                view.handleMessage("You do not have the tiles to spell \"" + wordAttempt + "\".");
                             return false;
                         }
                     }
                     catch(NullPointerException exception) {
-                        for(ScrabbleView view : views) {
-                            JOptionPane.showMessageDialog((JFrame) view, "You do not have the tiles to spell \"" + wordAttempt + "\".");
-                        }
+                        for(ScrabbleView view : views)
+                            view.handleMessage("You do not have the tiles to spell \"" + wordAttempt + "\".");
                         return false;
                     }
                 }
@@ -289,9 +285,8 @@ public class GameMaster {
         }
 
         if((!connected) && (!board.isEmpty())) {
-            for(ScrabbleView view : views) {
-                JOptionPane.showMessageDialog((JFrame) view, "You have to connect your word to a previously spelt word!");
-            }
+            for(ScrabbleView view : views)
+                view.handleMessage("You have to connect your word to a previously spelt word!");
             return false;
         }
 
@@ -318,21 +313,18 @@ public class GameMaster {
                         return true;
                     }
                     else {
-                        for(ScrabbleView view : views) {
-                            JOptionPane.showMessageDialog((JFrame) view, "You can not play there!");
-                        }
+                        for(ScrabbleView view : views)
+                            view.handleMessage("You can not play there!");
                         return false;
                     }
                 }
             }
-            for(ScrabbleView view : views) {
-                JOptionPane.showMessageDialog((JFrame) view, "\"" + wordAttempt + "\" does not exist.");
-            }
+            for(ScrabbleView view : views)
+                view.handleMessage("\"" + wordAttempt + "\" does not exist.");
         }
         catch (FileNotFoundException exception) {
-            for(ScrabbleView view : views) {
-                JOptionPane.showMessageDialog((JFrame) view, "Dictionary not found");
-            }
+            for(ScrabbleView view : views)
+                view.handleMessage("Dictionary not found");
             return false;
         }
 
@@ -349,7 +341,8 @@ public class GameMaster {
             return false;
 
         if(bag.getBagSize() < 7) {
-            System.out.println("Bag size is below 7, cannot exchange tiles!");
+            for(ScrabbleView view : views)
+                view.handleMessage("Bag size is below 7, cannot exchange tiles!");
             return false;
         }
 
@@ -357,7 +350,6 @@ public class GameMaster {
             for(ScrabbleView view : views) {
                 view.handleRackUpdate();
             }
-            System.out.println(players[turn].getRack().toString());
             changeTurn();
             return true;
         }
@@ -390,10 +382,6 @@ public class GameMaster {
      */
     private boolean save() {
         try {
-            if(gameFileName.equals("New Game")) {
-                System.out.println("Use the saveAs command to name the current game.");
-                return false;
-            }
             File gameFile = new File(gameFileName + ".txt");
             if(gameFile.createNewFile()) {
                 FileWriter fileWriter = new FileWriter(gameFile);
@@ -403,7 +391,8 @@ public class GameMaster {
             }
         }
         catch (IOException e) {
-            System.out.println("An error occurred!");
+            for(ScrabbleView view : views)
+                view.handleMessage("An error occurred!");
         }
 
         return false;

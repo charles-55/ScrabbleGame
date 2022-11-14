@@ -23,9 +23,8 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private ArrayList<JLabel[]> playerRacks;
     private static Clip clip;
     private final static Color BORDER_COLOR = Color.RED;
+    private final static Font FONT = new Font(Font.SERIF, Font.PLAIN|Font.BOLD,  30);
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
-
-    private static Font  textFont  = new Font(Font.SERIF, Font.PLAIN|Font.BOLD,  30);
 
     /**
      * Create a scrabble frame
@@ -187,9 +186,9 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
         for(int i = 0; i < model.getPlayers().length; i++) {
             JLabel nameLabel = new JLabel("Name: " + model.getPlayers()[i].getName());
-            nameLabel.setFont(textFont);
+            nameLabel.setFont(FONT);
             playerScores[i] = new JLabel("Score: " + model.getPlayers()[i].getScore());
-            playerScores[i].setFont(textFont);
+            playerScores[i].setFont(FONT);
             playerRacks.add(new JLabel[7]);
             JPanel rackPanel = new JPanel(new GridLayout(1, 7));
 
@@ -255,9 +254,9 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             }
 
             gameName = new JLabel(model.getGameFileName());
-            gameName.setFont(textFont);
+            gameName.setFont(FONT);
             currentPlayer = new JLabel("Player turn: " + model.getPlayers()[model.getTurn()].getName());
-            currentPlayer.setFont(textFont);
+            currentPlayer.setFont(FONT);
 
             JPanel mainPanel = new JPanel();
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));

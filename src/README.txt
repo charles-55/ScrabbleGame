@@ -53,6 +53,7 @@ If you make an illegal move or a wrong word, you will be notified and required t
 
 
 Known Issues:
+play using tiles on board doesn't work correctly
 save/saveAs unable to save game
 load unable to load a previous game
 Incorrect score from play

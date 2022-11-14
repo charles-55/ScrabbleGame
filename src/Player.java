@@ -7,16 +7,17 @@
 import java.util.*;
 public class Player {
 
-    private String name;
-    private int score=0;
-    private Rack rack;
-    private Stack<String> playedWords;
+    private final String name;
+    private int score;
+    private final Rack rack;
+    private final Stack<String> playedWords;
 
     /**
      * Create and initialize the Player.
      */
     public Player(String name) {
         this.name = name;
+        this.score = 0;
         this.rack = new Rack();
         this.playedWords = new Stack<>();
     }

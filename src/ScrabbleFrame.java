@@ -249,8 +249,23 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             playerScores = new JLabel[Integer.parseInt(numPlayersOptions.getSelectedItem())];
             playerRacks = new ArrayList<>();
             for(int i = 0; i < Integer.parseInt(numPlayersOptions.getSelectedItem()); i++) {
-                String playerName = JOptionPane.showInputDialog("Player " + (i + 1) + "'s name: ");
-                model.addPlayer(new Player(playerName));
+                JPanel playerPanel = new JPanel(new GridLayout(1, 4));
+                playerPanel.add(new JLabel("Player " + (i + 1) + "'s name: "));
+                JTextField playerName = new JTextField();
+                playerPanel.add(playerName);
+                playerPanel.add(new JLabel("Is AI: "));
+                Choice isAiOptions = new Choice();
+                isAiOptions.add("Yes");
+                isAiOptions.add("No");
+                playerPanel.add(isAiOptions);
+                if((JOptionPane.showConfirmDialog(this, playerPanel, "Player Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) && (model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem())))) {
+                    if(isAiOptions.getSelectedItem().equals("Yes"))
+                        model.addPlayer(new Player(playerName.getText(), true));
+                    else if(isAiOptions.getSelectedItem().equals("No"))
+                        model.addPlayer(new Player(playerName.getText(), false));
+                }
+                else
+                    JOptionPane.showMessageDialog(this, "Player setup incomplete!");
             }
 
             gameName = new JLabel(model.getGameFileName());

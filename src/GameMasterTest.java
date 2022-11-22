@@ -26,15 +26,14 @@ public class GameMasterTest {
     }
     @Test
     public void testAttemptPlay(){
-
-        assertSame(true,test.attemptPlay("ability",new int[]{1,3}, Board.Direction.FORWARD));
+        assertSame(true,test.attemptPlay(new PlayEvent("ability",new int[]{1,3}, Board.Direction.FORWARD)));
     }
     @Test
     public void testChangeTurn(){
         test.setPlayerSize(3);
-        test.addPlayer(new Player("leslie"));
-        test.addPlayer(new Player("james"));
-        test.addPlayer(new Player("meyiwa"));
+        test.addPlayer(new Player("leslie", true));
+        test.addPlayer(new Player("james", true));
+        test.addPlayer(new Player("meyiwa", true));
         assertEquals(0,test.getTurn());
         test.changeTurn();
         assertEquals(1,test.getTurn());
@@ -46,8 +45,8 @@ public class GameMasterTest {
     @Test
     public void testAddPlayer(){
         test.setPlayerSize(2);
-        test.addPlayer(new Player("charles"));
-        test.addPlayer(new Player("leslie"));
+        test.addPlayer(new Player("charles", true));
+        test.addPlayer(new Player("leslie", true));
 
 
         assertEquals("charles",test.getPlayers()[0].getName());

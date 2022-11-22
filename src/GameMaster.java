@@ -189,42 +189,40 @@ public class GameMaster {
 
     /**
      * Attempt to play a word on the board.
-     * @param wordAttempt The word to attempt to play.
-     * @param coordinates The coordinates of the starting point to play.
-     * @param direction The direction of the play.
+     * @param event The play event.
      * @return true if the play was successful, false otherwise.
      */
-    public boolean attemptPlay(String wordAttempt, int[] coordinates, Board.Direction direction) {
+    public boolean attemptPlay(PlayEvent event) {
         int blankTileAmount = 0;
 
         /* Get the tiles from the player */
-        Tile[] tilesToPlay = new Tile[wordAttempt.length()];
+        Tile[] tilesToPlay = new Tile[event.getWordAttempt().length()];
         boolean connected = false;
-        for(int i = 0; i < wordAttempt.length(); i++) {
-            if(board.getBoard()[coordinates[1]][coordinates[0] + i].getTile() != null) {
-                if((board.getBoard()[coordinates[1]][coordinates[0] + i].getTile().getLetter() == wordAttempt.charAt(i)) && (direction == Board.Direction.FORWARD)) {
+        for(int i = 0; i < event.getWordAttempt().length(); i++) {
+            if(board.getBoard()[event.getCoordinates()[1]][event.getCoordinates()[0] + i].getTile() != null) {
+                if((board.getBoard()[event.getCoordinates()[1]][event.getCoordinates()[0] + i].getTile().getLetter() == event.getWordAttempt().charAt(i)) && (event.getDirection() == Board.Direction.FORWARD)) {
                     connected = true;
-                    tilesToPlay[i] = board.getBoard()[coordinates[1]][coordinates[0] + i].getTile();
+                    tilesToPlay[i] = board.getBoard()[event.getCoordinates()[1]][event.getCoordinates()[0] + i].getTile();
                     continue;
                 }
             }
-            if(board.getBoard()[coordinates[1] + i][coordinates[0]].getTile() != null) {
-                if((board.getBoard()[coordinates[1] + i][coordinates[0]].getTile().getLetter() == wordAttempt.charAt(i)) && (direction == Board.Direction.DOWNWARD)) {
+            if(board.getBoard()[event.getCoordinates()[1] + i][event.getCoordinates()[0]].getTile() != null) {
+                if((board.getBoard()[event.getCoordinates()[1] + i][event.getCoordinates()[0]].getTile().getLetter() == event.getWordAttempt().charAt(i)) && (event.getDirection() == Board.Direction.DOWNWARD)) {
                     connected = true;
-                    tilesToPlay[i] = board.getBoard()[coordinates[1] + i][coordinates[0]].getTile();
+                    tilesToPlay[i] = board.getBoard()[event.getCoordinates()[1] + i][event.getCoordinates()[0]].getTile();
                     continue;
                 }
             }
             for(Tile tile : players[turn].getRack().getTiles()) {
                 if(tile.getLetter() == '-')
                     blankTileAmount++;
-                else if(tile.getLetter() == wordAttempt.charAt(i)) {
+                else if(tile.getLetter() == event.getWordAttempt().charAt(i)) {
                     tilesToPlay[i] = tile;
                     break;
                 }
             }
             if(tilesToPlay[i] == null) {
-                if(direction == Board.Direction.FORWARD) {
+                if(event.getDirection() == Board.Direction.FORWARD) {
                     try {
                         if(blankTileAmount > 0) {
                             for(Tile tile : players[turn].getRack().getTiles()) {
@@ -233,7 +231,7 @@ public class GameMaster {
                                         tile.setBlankTileLetter(view.handleBlankTile());
                                     }
                                 }
-                                if(tile.getLetter() == wordAttempt.charAt(i)) {
+                                if(tile.getLetter() == event.getWordAttempt().charAt(i)) {
                                     tilesToPlay[i] = tile;
                                     blankTileAmount--;
                                 }
@@ -241,17 +239,17 @@ public class GameMaster {
                         }
                         else {
                             for(ScrabbleView view : views)
-                                view.handleMessage("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                                view.handleMessage("You do not have the tiles to spell \"" + event.getWordAttempt() + "\".");
                             return false;
                         }
                     }
                     catch(NullPointerException exception) {
                         for(ScrabbleView view : views)
-                            view.handleMessage("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                            view.handleMessage("You do not have the tiles to spell \"" + event.getWordAttempt() + "\".");
                         return false;
                     }
                 }
-                if(direction == Board.Direction.DOWNWARD) {
+                if(event.getDirection() == Board.Direction.DOWNWARD) {
                     try {
                         if(blankTileAmount > 0) {
                             for(Tile tile : players[turn].getRack().getTiles()) {
@@ -260,7 +258,7 @@ public class GameMaster {
                                         tile.setBlankTileLetter(view.handleBlankTile());
                                     }
                                 }
-                                if(tile.getLetter() == wordAttempt.charAt(i)) {
+                                if(tile.getLetter() == event.getWordAttempt().charAt(i)) {
                                     tilesToPlay[i] = tile;
                                     blankTileAmount--;
                                 }
@@ -268,13 +266,13 @@ public class GameMaster {
                         }
                         else {
                             for(ScrabbleView view : views)
-                                view.handleMessage("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                                view.handleMessage("You do not have the tiles to spell \"" + event.getWordAttempt() + "\".");
                             return false;
                         }
                     }
                     catch(NullPointerException exception) {
                         for(ScrabbleView view : views)
-                            view.handleMessage("You do not have the tiles to spell \"" + wordAttempt + "\".");
+                            view.handleMessage("You do not have the tiles to spell \"" + event.getWordAttempt() + "\".");
                         return false;
                     }
                 }
@@ -291,18 +289,18 @@ public class GameMaster {
             /* Check if the word exists */
             Scanner dictionary = new Scanner(new File(DICTIONARY));
             while(dictionary.hasNextLine()) {
-                if(wordAttempt.equalsIgnoreCase(dictionary.nextLine())) {
+                if(event.getWordAttempt().equalsIgnoreCase(dictionary.nextLine())) {
                     /* If word exists, attempt to play it on the board */
-                    if(board.attemptPlay(tilesToPlay, coordinates, direction)) {
+                    if(board.attemptPlay(tilesToPlay, event.getCoordinates(), event.getDirection())) {
                         /* If word is playable */
-                        players[turn].addPlayedWords(wordAttempt);
+                        players[turn].addPlayedWords(event.getWordAttempt());
                         for(Tile tile : tilesToPlay) {
                             players[turn].getRack().removeTile(tile);
                         }
-                        players[turn].updateScore(board.getScore(coordinates, direction));
+                        players[turn].updateScore(board.getScore(event.getCoordinates(), event.getDirection()));
                         players[turn].getRack().fillRack(bag);
                         for(ScrabbleView view : views) {
-                            view.handleBoardUpdate(wordAttempt, coordinates, direction);
+                            view.handleBoardUpdate(event.getWordAttempt(), event.getCoordinates(), event.getDirection());
                             view.handleScoreUpdate();
                             view.handleRackUpdate();
                         }
@@ -317,7 +315,7 @@ public class GameMaster {
                 }
             }
             for(ScrabbleView view : views)
-                view.handleMessage("\"" + wordAttempt + "\" does not exist.");
+                view.handleMessage("\"" + event.getWordAttempt() + "\" does not exist.");
         }
         catch (FileNotFoundException exception) {
             for(ScrabbleView view : views)

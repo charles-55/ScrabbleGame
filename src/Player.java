@@ -11,12 +11,14 @@ public class Player {
     private int score;
     private final Rack rack;
     private final Stack<String> playedWords;
+    private final boolean IS_AI;
 
     /**
      * Create and initialize the Player.
      */
-    public Player(String name) {
+    public Player(String name, boolean isAi) {
         this.name = name;
+        this.IS_AI = isAi;
         this.score = 0;
         this.rack = new Rack();
         this.playedWords = new Stack<>();
@@ -24,10 +26,18 @@ public class Player {
 
     /**
      * gets the players name
-     * @return string  0f the players name.
+     * @return string of the players name.
      */
     public String getName(){
         return this.name;
+    }
+
+    /**
+     * Get if the player is an AI
+     * @return if the player is an AI
+     */
+    public boolean isIS_AI() {
+        return IS_AI;
     }
 
     /**

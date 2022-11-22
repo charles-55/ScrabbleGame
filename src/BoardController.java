@@ -24,9 +24,9 @@ public class BoardController implements ActionListener {
         String[] wordAndDirection = frame.attemptPlay();
         if(wordAndDirection != null) {
             if (wordAndDirection[1].equals(Board.Direction.FORWARD.toString()))
-                model.attemptPlay(wordAndDirection[0], new int[]{x, y}, Board.Direction.FORWARD);
+                model.attemptPlay(new PlayEvent(wordAndDirection[0], new int[]{x, y}, Board.Direction.FORWARD));
             else if (wordAndDirection[1].equals(Board.Direction.DOWNWARD.toString()))
-                model.attemptPlay(wordAndDirection[0], new int[]{x, y}, Board.Direction.DOWNWARD);
+                model.attemptPlay(new PlayEvent(wordAndDirection[0], new int[]{x, y}, Board.Direction.DOWNWARD));
         }
     }
 }

@@ -58,7 +58,7 @@ public class GameMaster {
         for(ScrabbleView view : views)
             view.handleChangeTurn(players[turn].getName());
         if(players[turn].isAI())
-            attemptPlay(((AiPlayer) players[turn]).play());
+            attemptPlay(((AIPlayer) players[turn]).play());
     }
 
     /**

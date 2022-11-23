@@ -3,12 +3,12 @@
  *
  * @version 1.0
  */
-public class AiPlayer extends Player {
+public class AIPlayer extends Player {
 
     /**
      * Create and initialize the AI Player.
      */
-    public AiPlayer(String name) {
+    public AIPlayer(String name) {
         super(name, true);
     }
 

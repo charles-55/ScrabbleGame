@@ -6,9 +6,10 @@ Implemented GUI based version of the Scrabble game
 
 Deliverables:
 	Bag.java  // @author Meyiwa Temile
-	Board.java  // @author Osamudiamen Nwoko
+	Board.java  // @author Osamudiamen Nwoko, Ejeh Leslie
 	Main.java  // @author Group 3
 	Player.java  // @author Ejeh Leslie
+	AIPlayer.java //@author Osamudiamen Nwoko
     Rack.java  // @author Ejeh Leslie
     Square.java  // @author Longjohn Dagogo
     Tile.java  // @author Meyiwa Temile

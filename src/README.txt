@@ -58,4 +58,3 @@ Known Issues:
 play using tiles on board doesn't work correctly
 save/saveAs unable to save game
 load unable to load a previous game
-Incorrect score from play

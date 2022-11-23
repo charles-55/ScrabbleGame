@@ -1,14 +1,22 @@
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class GameMasterTest {
         GameMaster test;
+
     @Before
     public void setup(){
         test=new GameMaster();
-    }
+
+
+        }
+
     @Test
     public void testPlayerSize() throws Exception {
         test.setPlayerSize(2);
@@ -51,6 +59,19 @@ public class GameMasterTest {
 
         assertEquals("charles",test.getPlayers()[0].getName());
         assertEquals("leslie",test.getPlayers()[1].getName());
+    }
+    @Test
+    public void testAddViews(){
+        ScrabbleView v=new ScrabbleFrame();
+        ScrabbleView h=new ScrabbleFrame();;
+        ScrabbleView m=new ScrabbleFrame();;
+        test.addView(v);
+        test.addView(h);
+        test.addView(m);
+        assertEquals(v,test.getView(0));
+        assertEquals(h,test.getView(1));
+        assertEquals(m,test.getView(2));
+
     }
 
 

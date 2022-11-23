@@ -121,6 +121,10 @@ public class GameMaster {
         views.add(view);
     }
 
+    public ScrabbleView getView(int i) {
+        return views.get(i);
+    }
+
     /**
      * Return the min number of players.
      * @return The min number of players.

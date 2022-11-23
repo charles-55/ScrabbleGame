@@ -30,10 +30,13 @@ public class Tile
         this.letter = letter;
         this.points = points;
 
-
-        Image img = new ImageIcon("Graphics/" + letter + ".png").getImage();
-        Image resizeImaged = img.getScaledInstance(50,50, Image.SCALE_SMOOTH);
-        icon = new ImageIcon(resizeImaged);
+        try {
+            Image img = new ImageIcon("Graphics/" + letter + ".png").getImage();
+            Image resizeImaged = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+            icon = new ImageIcon(resizeImaged);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ImageIcon getIcon() {

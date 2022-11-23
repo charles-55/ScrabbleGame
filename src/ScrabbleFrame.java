@@ -59,8 +59,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private void playMusic(String fileName) {
         try {
             File file = new File(fileName);
-            if (file.exists())
-            {
+            if (file.exists()) {
                 AudioInputStream sound = AudioSystem.getAudioInputStream(file);
                 clip = AudioSystem.getClip();
                 clip.open(sound);
@@ -68,8 +67,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
                 clip.start();
                 clip.loop(Clip.LOOP_CONTINUOUSLY);
             }
-            else
-            {
+            else {
                 throw new RuntimeException("Sound: file not found: " + fileName);
             }
         }
@@ -390,7 +388,6 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     public void handleBoardUpdate(String word, int[] coordinates, Board.Direction direction) {
         for(int i = 0; i < word.length(); i++) {
             if(direction == Board.Direction.FORWARD) {
-                //board[coordinates[0]][coordinates[1] + i].setText(String.valueOf(word.charAt(i)));
                 board[coordinates[0]][coordinates[1] + i].setIcon(model.getBoard().getBoard()[coordinates[0]][coordinates[1] + i].getTile().getIcon());
             }
             else if(direction == Board.Direction.DOWNWARD)
@@ -412,7 +409,11 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     @Override
     public void handleRackUpdate() {
         for(int i = 0; i < 7; i++) {
-            playerRacks.get(model.getTurn())[i].setIcon(model.getPlayers()[model.getTurn()].getRack().getTiles()[i].getIcon());
+            try {
+                playerRacks.get(model.getTurn())[i].setIcon(model.getPlayers()[model.getTurn()].getRack().getTiles()[i].getIcon());
+            } catch (Exception e) {
+                playerRacks.get(model.getTurn())[i].setText(String.valueOf(model.getPlayers()[model.getTurn()].getRack().getTiles()[i].getLetter()));
+            }
         }
     }
 

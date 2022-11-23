@@ -13,6 +13,7 @@ public class GameMasterTest {
     @Before
     public void setup(){
         test=new GameMaster();
+        test.setPlayerSize(2);
 
 
         }
@@ -31,17 +32,58 @@ public class GameMasterTest {
     public void testGameFileName(){
         test.setGameFileName("game");
         assertEquals("game",test.getGameFileName());
+
     }
+
     @Test
     public void testAttemptPlay(){
-        assertSame(true,test.attemptPlay(new PlayEvent("ability",new int[]{1,3}, Board.Direction.FORWARD)));
+
+
+        Tile[] tiles=new Tile[7];
+        tiles[0]=new Tile('L',2);
+        tiles[1]=new Tile('A',2);
+        tiles[2]=new Tile('T',2);
+        tiles[3]=new Tile('E',2);
+
+
+
+        test.addPlayer(new Player("charles", false));
+        test.addPlayer(new Player("leslie", false));
+        test.getPlayers()[test.getTurn()].getRack().setTiles(tiles);
+        assertSame(true,test.attemptPlay(new PlayEvent("LATE",new int[]{7,7}, Board.Direction.DOWNWARD)));
+
+
+
+    }
+    @Test
+    public void testExchangeTile(){
+
+
+        Tile[] tiles=new Tile[7];
+        tiles[0]=new Tile('L',2);
+        tiles[1]=new Tile('A',2);
+        tiles[2]=new Tile('T',2);
+        tiles[3]=new Tile('E',2);
+
+        Tile[] t=new Tile[7];
+        tiles[0]=new Tile('L',2);
+
+        test.addPlayer(new Player("charles", false));
+        test.addPlayer(new Player("leslie", false));
+        test.getPlayers()[test.getTurn()].getRack().setTiles(tiles);
+        assertSame(true,test.exchangeTile(new int[]{1,2}));
+
+
+
+
+
     }
     @Test
     public void testChangeTurn(){
         test.setPlayerSize(3);
-        test.addPlayer(new Player("leslie", true));
-        test.addPlayer(new Player("james", true));
-        test.addPlayer(new Player("meyiwa", true));
+        test.addPlayer(new Player("leslie", false));
+        test.addPlayer(new Player("james", false));
+        test.addPlayer(new Player("meyiwa", false));
         assertEquals(0,test.getTurn());
         test.changeTurn();
         assertEquals(1,test.getTurn());
@@ -53,13 +95,15 @@ public class GameMasterTest {
     @Test
     public void testAddPlayer(){
         test.setPlayerSize(2);
-        test.addPlayer(new Player("charles", true));
-        test.addPlayer(new Player("leslie", true));
-
+        test.addPlayer(new Player("charles", false));
+        test.addPlayer(new Player("leslie", false));
 
         assertEquals("charles",test.getPlayers()[0].getName());
         assertEquals("leslie",test.getPlayers()[1].getName());
+
+        assertFalse(test.addPlayer(new Player("jjThompson",false)));
     }
+
     @Test
     public void testAddViews(){
         ScrabbleView v=new ScrabbleFrame();
@@ -72,6 +116,14 @@ public class GameMasterTest {
         assertEquals(h,test.getView(1));
         assertEquals(m,test.getView(2));
 
+    }
+    @Test
+    public void TestAi(){
+        test.addPlayer(new Player("charles", true));
+        test.addPlayer(new Player("leslie", false));
+        assertTrue(test.getPlayers()[test.getTurn()].isAI());
+        test.changeTurn();
+        assertFalse(test.getPlayers()[test.getTurn()].isAI());
     }
 
 

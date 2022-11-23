@@ -6,7 +6,7 @@
  */
 public class Rack {
 
-    private final Tile[] tiles;
+    private Tile[] tiles;
     private static final int MAX_RACK_SIZE = 7;
 
     /**
@@ -52,6 +52,14 @@ public class Rack {
      */
     public Tile[] getTiles(){
         return tiles;
+    }
+
+    /**
+     * Set the array of tiles of the rack. // for test purposes.
+     * @param tiles the array of tiles
+     */
+    public void setTiles(Tile[] tiles) {
+        this.tiles = tiles;
     }
 
     /**

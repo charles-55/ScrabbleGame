@@ -30,6 +30,7 @@ We will follow the official game rules.
 
 
 Game Play:
+In this game you can choose to play with real players or AI players programmed to play the game with you.
 The first player combines words from his/her rack to form a word and places it on the board to read either across or down with one letter on the center square.
 Diagonal words are not allowed. Then draw as many new letters as you played; always keep seven letters on your rack, as long as there are enough tiles left in the bag.
 The play order is in order of Player creation. The second player, and then each in turn, adds one or more letters to those already played to form new words.

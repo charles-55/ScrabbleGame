@@ -1,3 +1,8 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 /**
  * The AI Player Class
  *
@@ -12,13 +17,5 @@ public class AIPlayer extends Player {
         super(name, true);
     }
 
-    public PlayEvent play() {
-        String wordAttempt = "";
-        int[] coordinates = new int[2];
-        Board.Direction direction = Board.Direction.FORWARD;
 
-
-
-        return new PlayEvent(wordAttempt, coordinates, direction);
-    }
 }

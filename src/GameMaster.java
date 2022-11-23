@@ -21,7 +21,7 @@ public class GameMaster {
     private String gameFileName;
     private ArrayList<ScrabbleView> views;
     private static final int MIN_PLAYERS = 2, MAX_PLAYERS = 4;
-    private static final String DICTIONARY = "src/WordList.txt";
+    public static final String DICTIONARY = "src/WordList.txt";
 
     /**
      * Create and initialize the game.
@@ -58,7 +58,7 @@ public class GameMaster {
         for(ScrabbleView view : views)
             view.handleChangeTurn(players[turn].getName());
         if(players[turn].isAI())
-            attemptPlay(((AIPlayer) players[turn]).play());
+            attemptPlay(players[turn].play());
     }
 
     /**

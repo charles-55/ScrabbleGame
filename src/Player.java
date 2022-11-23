@@ -4,6 +4,8 @@
  * @author Ejeh Leslie 101161386
  * @version 2.0
  */
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 public class Player {
 
@@ -90,5 +92,44 @@ public class Player {
         return playedWords;
     }
 
+    public PlayEvent play() {
+        if(!IS_AI)
+            throw new RuntimeException("Not an AI!");
 
+        String wordAttempt = "";
+        int[] coordinates = new int[2];
+        Board.Direction direction = Board.Direction.FORWARD;
+
+        String word = "";
+        for(int i = 0; i < 7; i++)
+            word += getRack().getTiles()[i].getLetter();
+
+        ArrayList<String> possibleWords = combine(word, new StringBuffer(), 0);
+        possibleWords.sort(Comparator.comparingInt(String::length).reversed());
+
+        for(String s : possibleWords)
+            System.out.println(s);
+
+        return new PlayEvent(wordAttempt, coordinates, direction);
+    }
+
+    private ArrayList<String> combine(String instr, StringBuffer outstr, int index) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        for (int i = index; i < instr.length(); i++) {
+            outstr.append(instr.charAt(i));
+            String word = outstr.toString();
+            try {
+                Scanner dictionary = new Scanner(new File(GameMaster.DICTIONARY));
+                while(dictionary.hasNextLine()) {
+                    if(word.equalsIgnoreCase(dictionary.nextLine()))
+                        arrayList.add(word);
+                }
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            arrayList.addAll(combine(instr, outstr, i + 1));
+            outstr.deleteCharAt(outstr.length() - 1);
+        }
+        return arrayList;
+    }
 }

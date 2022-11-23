@@ -1,3 +1,8 @@
+/**
+ * The AI Player Class
+ *
+ * @version 1.0
+ */
 public class AiPlayer extends Player {
 
     /**
@@ -7,9 +12,13 @@ public class AiPlayer extends Player {
         super(name, true);
     }
 
-    public String[] playWord() {
-        String[] play = new String[3];
+    public PlayEvent play() {
+        String wordAttempt = "";
+        int[] coordinates = new int[2];
+        Board.Direction direction = Board.Direction.FORWARD;
 
-        return play;
+
+
+        return new PlayEvent(wordAttempt, coordinates, direction);
     }
 }

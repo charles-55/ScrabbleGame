@@ -9,7 +9,7 @@ import javax.sound.sampled.*;
  *
  * @author Osamudiamen 101152520
  * @author Meyiwa Temile
- * @version 1.0
+ * @version 2.0
  */
 public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
@@ -17,7 +17,6 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private final BoardController boardController;
     private final CommandController commandController;
     private final JButton[][] board;
-    private JLabel gameName;
     private JLabel currentPlayer;
     private JLabel[] playerScores;
     private ArrayList<JLabel[]> playerRacks;
@@ -30,6 +29,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
      * Create a scrabble frame
      */
     public ScrabbleFrame() {
+        super("Scrabble Game");
         model = new GameMaster();
         boardController = new BoardController(this,model);
         commandController = new CommandController(model, this);
@@ -46,7 +46,6 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         initializeGame();
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setTitle("Scrabble Game");
         this.setMinimumSize(new Dimension(500, 500));
         this.pack();
         this.setLocationRelativeTo(null);
@@ -250,15 +249,17 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             playerRacks = new ArrayList<>();
             for(int i = 0; i < Integer.parseInt(numPlayersOptions.getSelectedItem()); i++) {
                 JPanel playerPanel = new JPanel(new GridLayout(1, 4));
-                playerPanel.add(new JLabel("Player " + (i + 1) + "'s name: "));
                 JTextField playerName = new JTextField();
-                playerPanel.add(playerName);
-                playerPanel.add(new JLabel("Is AI: "));
                 Choice isAiOptions = new Choice();
                 isAiOptions.add("Yes");
                 isAiOptions.add("No");
+
+                playerPanel.add(new JLabel("Player " + (i + 1) + "'s name: "));
+                playerPanel.add(playerName);
+                playerPanel.add(new JLabel("Is AI: "));
                 playerPanel.add(isAiOptions);
-                if((JOptionPane.showConfirmDialog(this, playerPanel, "Player Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) && (model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem())))) {
+
+                if(JOptionPane.showConfirmDialog(this, playerPanel, "Player Configuration", JOptionPane.OK_OPTION) == JOptionPane.YES_OPTION) {
                     if(isAiOptions.getSelectedItem().equals("Yes"))
                         model.addPlayer(new Player(playerName.getText(), true));
                     else if(isAiOptions.getSelectedItem().equals("No"))
@@ -268,13 +269,10 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
                     JOptionPane.showMessageDialog(this, "Player setup incomplete!");
             }
 
-            gameName = new JLabel(model.getGameFileName());
-            gameName.setFont(FONT);
+            this.setTitle(model.getGameFileName());
             currentPlayer = new JLabel("Player turn: " + model.getPlayers()[model.getTurn()].getName());
             currentPlayer.setFont(FONT);
 
-            JPanel mainPanel = new JPanel();
-            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
             JPanel gamePanel = new JPanel();
             gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.X_AXIS));
             JPanel boardAndPlayCommandsPanel = new JPanel();
@@ -284,9 +282,10 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             boardAndPlayCommandsPanel.add(playCommandsPanel());
             gamePanel.add(boardAndPlayCommandsPanel);
             gamePanel.add(playerPanelSetup());
-            mainPanel.add(gameName);
-            mainPanel.add(gamePanel);
-            this.add(mainPanel);
+            this.add(gamePanel);
+
+            if(model.getPlayers()[model.getTurn()].isAI())
+                model.attemptPlay(((AiPlayer) model.getPlayers()[model.getTurn()]).play());
         }
         else
             JOptionPane.showMessageDialog(this, "Game setup incomplete!");

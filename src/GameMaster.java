@@ -10,7 +10,7 @@ import java.util.Scanner;
  * This class is responsible for running the game and making sure the rules are kept.
  *
  * @author Osamudiamen Nwoko 101152520
- * @version 2.0
+ * @version 3.0
  */
 public class GameMaster {
 
@@ -57,6 +57,8 @@ public class GameMaster {
         turn = (turn + 1) % players.length;
         for(ScrabbleView view : views)
             view.handleChangeTurn(players[turn].getName());
+        if(players[turn].isAI())
+            attemptPlay(((AiPlayer) players[turn]).play());
     }
 
     /**

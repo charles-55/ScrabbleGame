@@ -2,7 +2,7 @@
  * The Player class.
  *
  * @author Ejeh Leslie 101161386
- * @version 1.0
+ * @version 2.0
  */
 import java.util.*;
 public class Player {
@@ -36,7 +36,7 @@ public class Player {
      * Get if the player is an AI
      * @return if the player is an AI
      */
-    public boolean isIS_AI() {
+    public boolean isAI() {
         return IS_AI;
     }
 

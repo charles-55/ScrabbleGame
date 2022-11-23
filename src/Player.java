@@ -92,23 +92,46 @@ public class Player {
         return playedWords;
     }
 
+    /**
+     * Return a play event if player is an AI
+     * @param board Board to play on
+     * @return the play event
+     */
     public PlayEvent play(Board board) {
         if(!IS_AI)
             throw new RuntimeException("Not an AI!");
 
+        Board tempBoard = board;
         String wordAttempt = "";
         int[] coordinates = new int[2];
         Board.Direction direction = Board.Direction.FORWARD;
 
-        String word = "";
+        String allTileLetters = "";
         for(int i = 0; i < 7; i++)
-            word += getRack().getTiles()[i].getLetter();
+            allTileLetters += getRack().getTiles()[i].getLetter();
 
-        ArrayList<String> possibleWords = combine(word, new StringBuffer(), 0);
+        ArrayList<String> possibleWords = combine(allTileLetters, new StringBuffer(), 0);
         possibleWords.sort(Comparator.comparingInt(String::length).reversed());
 
-        for(String s : possibleWords)
-            System.out.println(s);
+        for(int i = 0; i < tempBoard.getBoardSize(); i++) {
+            for(int j = 0; j < tempBoard.getBoardSize(); j++) {
+                for(String word : possibleWords) {
+                    Tile[] wordTiles = new Tile[word.length()];
+                    for(int k = 0; k < word.length(); k++) {
+                        for(Tile tile : rack.getTiles()) {
+                            if(tile.getLetter() == word.charAt(k))
+                                wordTiles[k] = tile;
+                        }
+                    }
+
+                    if(tempBoard.attemptPlay(wordTiles, new int[]{i, j}, Board.Direction.FORWARD))
+                        return new PlayEvent(word, new int[]{i, j}, Board.Direction.FORWARD);
+                    else if(tempBoard.attemptPlay(wordTiles, new int[]{i, j}, Board.Direction.DOWNWARD))
+                        return new PlayEvent(word, new int[]{i, j}, Board.Direction.DOWNWARD);
+                }
+
+            }
+        }
 
         return new PlayEvent(wordAttempt, coordinates, direction);
     }

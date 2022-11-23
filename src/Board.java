@@ -135,6 +135,8 @@ public class Board {
             if(isEmpty()) {
                 if(!((coordinates[0] == ORIGIN_POINT[0]) && (coordinates[1] <= ORIGIN_POINT[1]) && (coordinates[1] + wordTiles.length - 1 >= ORIGIN_POINT[1])))
                     return false;
+                else if(!((coordinates[1] == ORIGIN_POINT[1]) && (coordinates[0] <= ORIGIN_POINT[0]) && (coordinates[0] + wordTiles.length - 1 >= ORIGIN_POINT[0])))
+                    return false;
             }
             for(int i = 0; i < wordTiles.length; i++) {
                 if(wordTiles[i] != null) {

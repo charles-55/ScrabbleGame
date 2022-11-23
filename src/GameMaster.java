@@ -59,7 +59,7 @@ public class GameMaster {
         if(players[turn].isAI()) {
             int randomNumber = (new Random()).nextInt(3);
             switch (randomNumber) {
-                case (0) -> attemptPlay(players[turn].play());
+                case (0) -> attemptPlay(players[turn].play(board));
                 case (1) -> changeTurn();
                 case (2) -> {
                     randomNumber = (new Random()).nextInt(8);

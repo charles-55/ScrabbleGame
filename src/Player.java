@@ -92,7 +92,7 @@ public class Player {
         return playedWords;
     }
 
-    public PlayEvent play() {
+    public PlayEvent play(Board board) {
         if(!IS_AI)
             throw new RuntimeException("Not an AI!");
 

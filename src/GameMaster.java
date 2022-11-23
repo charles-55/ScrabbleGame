@@ -2,8 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * The GameMaster class.
@@ -14,12 +13,12 @@ import java.util.Scanner;
  */
 public class GameMaster {
 
-    private Board board;
-    private Bag bag;
+    private final Board board;
+    private final Bag bag;
     private Player[] players;
     private int turn;
     private String gameFileName;
-    private ArrayList<ScrabbleView> views;
+    private final ArrayList<ScrabbleView> views;
     private static final int MIN_PLAYERS = 2, MAX_PLAYERS = 4;
     public static final String DICTIONARY = "src/WordList.txt";
 
@@ -57,8 +56,26 @@ public class GameMaster {
         turn = (turn + 1) % players.length;
         for(ScrabbleView view : views)
             view.handleChangeTurn(players[turn].getName());
-        if(players[turn].isAI())
-            attemptPlay(players[turn].play());
+        if(players[turn].isAI()) {
+            int randomNumber = (new Random()).nextInt(3);
+            switch (randomNumber) {
+                case (0) -> attemptPlay(players[turn].play());
+                case (1) -> changeTurn();
+                case (2) -> {
+                    randomNumber = (new Random()).nextInt(8);
+                    int[] indices = new int[randomNumber];
+                    for (int i = 0; i < randomNumber; i++) {
+                        int randomIndex = (new Random()).nextInt(randomNumber);
+                        while (List.of(indices).contains(randomIndex)) {
+                            randomIndex = (new Random()).nextInt(randomNumber);
+                        }
+                        indices[i] = randomIndex;
+                    }
+                    exchangeTile(indices);
+                }
+            }
+
+        }
     }
 
     /**

@@ -17,6 +17,9 @@ public class BoardController implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
+        if(model.getPlayers()[model.getTurn()].isAI())
+            return;
+
         String[] input = e.getActionCommand().split(" ");
         int x = Integer.parseInt(input[0]);
         int y = Integer.parseInt(input[1]);

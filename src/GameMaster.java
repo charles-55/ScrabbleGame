@@ -59,20 +59,17 @@ public class GameMaster {
         if(players[turn].isAI()) {
             int randomNumber = (new Random()).nextInt(3);
             switch (randomNumber) {
-                case (0) -> attemptPlay(players[turn].play(board));
-                case (1) -> changeTurn();
-                case (2) -> {
-                    randomNumber = (new Random()).nextInt(8);
-                    int[] indices = new int[randomNumber];
-                    for (int i = 0; i < randomNumber; i++) {
-                        int randomIndex = (new Random()).nextInt(randomNumber);
-                        while (List.of(indices).contains(randomIndex)) {
-                            randomIndex = (new Random()).nextInt(randomNumber);
-                        }
-                        indices[i] = randomIndex;
+                case (0) -> {
+                    if(!attemptPlay(((AIPlayer)players[turn]).play(board))) {
+                        randomNumber = (new Random()).nextInt(2);
+                        if(randomNumber == 0)
+                            changeTurn();
+                        else
+                            exchangeTile(((AIPlayer)players[turn]).getExchangeTileIndices());
                     }
-                    exchangeTile(indices);
                 }
+                case (1) -> changeTurn();
+                case (2) -> exchangeTile(((AIPlayer)players[turn]).getExchangeTileIndices());
             }
 
         }

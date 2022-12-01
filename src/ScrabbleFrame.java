@@ -283,7 +283,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             this.add(gamePanel);
 
             if(model.getPlayers()[model.getTurn()].isAI())
-                model.attemptPlay(model.getPlayers()[model.getTurn()].play(model.getBoard()));
+                model.attemptPlay(((AIPlayer) model.getPlayers()[model.getTurn()]).play(model.getBoard()));
         }
         else
             JOptionPane.showMessageDialog(this, "Game setup incomplete!");

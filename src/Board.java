@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.io.File;
 
 /**
  * The Board class.
@@ -27,7 +28,9 @@ public class Board {
         for(int i = 0; i < BOARD_SIZE; i++) {
             for(int j = 0; j < BOARD_SIZE; j++) {
                 board[i][j] = new Square();
-                board[i][j].getIcon().setImage(new ImageIcon("Graphics/BLANK.png").getImage());
+                File image = new File("Graphics/BLANK.png");
+                if(image.exists())
+                    board[i][j].setIcon(new ImageIcon(image.toString()));
             }
         }
         board[ORIGIN_POINT[0]][ORIGIN_POINT[1]].setSquareType(Square.SquareType.ORIGIN);
@@ -93,6 +96,19 @@ public class Board {
         return true;
     }
 
+    public boolean checkFirstPlayConditions(int wordLength, int[] coordinates, Direction direction) {
+        if(isEmpty()) {
+            if(direction == Direction.FORWARD) {
+                return (coordinates[1] == ORIGIN_POINT[1]) && (coordinates[0] <= ORIGIN_POINT[0]) && (coordinates[0] + wordLength - 1 >= ORIGIN_POINT[0]);
+            }
+            else if(direction == Direction.DOWNWARD) {
+                return (coordinates[0] == ORIGIN_POINT[0]) && (coordinates[1] <= ORIGIN_POINT[1]) && (coordinates[1] + wordLength - 1 >= ORIGIN_POINT[1]);
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Attempts to play a particular word on the board.
      * @param wordTiles An array of tiles that spells the word.
@@ -104,17 +120,16 @@ public class Board {
      * otherwise.
      */
     public boolean attemptPlay(Tile[] wordTiles, int[] coordinates, Direction direction) {
+        if((coordinates[0] >= BOARD_SIZE) || (coordinates[1] >= BOARD_SIZE))
+            return false;
+
+        if(!checkFirstPlayConditions(wordTiles.length, coordinates, direction))
+            return false;
+
         if(direction == Direction.FORWARD) {
-            if((coordinates[0] >= BOARD_SIZE) || (coordinates[1] >= BOARD_SIZE))
-                return false;
             if(coordinates[0] + wordTiles.length - 1 >= BOARD_SIZE)
                 return false;
-            if(isEmpty()) {
-                if(!((coordinates[1] == ORIGIN_POINT[1]) && (coordinates[0] <= ORIGIN_POINT[0]) && (coordinates[0] + wordTiles.length - 1 >= ORIGIN_POINT[0])))
-                    return false;
-                else if(!((coordinates[0] == ORIGIN_POINT[0]) && (coordinates[1] <= ORIGIN_POINT[1]) && (coordinates[1] + wordTiles.length - 1 >= ORIGIN_POINT[1])))
-                    return false;
-            }
+
             for(int i = 0; i < wordTiles.length; i++) {
                 if(wordTiles[i] != null) {
                     boolean placed = board[coordinates[1]][coordinates[0] + i].placeTile(wordTiles[i]);
@@ -128,16 +143,9 @@ public class Board {
             }
         }
         else if(direction == Direction.DOWNWARD) {
-            if((coordinates[0] >= BOARD_SIZE) || (coordinates[1] >= BOARD_SIZE))
-                return false;
             if(coordinates[1] + wordTiles.length - 1 >= BOARD_SIZE)
                 return false;
-            if(isEmpty()) {
-                if(!((coordinates[0] == ORIGIN_POINT[0]) && (coordinates[1] <= ORIGIN_POINT[1]) && (coordinates[1] + wordTiles.length - 1 >= ORIGIN_POINT[1])))
-                    return false;
-                else if(!((coordinates[1] == ORIGIN_POINT[1]) && (coordinates[0] <= ORIGIN_POINT[0]) && (coordinates[0] + wordTiles.length - 1 >= ORIGIN_POINT[0])))
-                    return false;
-            }
+
             for(int i = 0; i < wordTiles.length; i++) {
                 if(wordTiles[i] != null) {
                     boolean placed = board[coordinates[0] + i][coordinates[1]].placeTile(wordTiles[i]);

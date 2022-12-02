@@ -16,7 +16,6 @@ public class AIPlayer extends Player {
         super(name, true);
     }
 
-
     /**
      * Return a play event if player is an AI
      * @param board Board to play on

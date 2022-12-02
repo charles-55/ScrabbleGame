@@ -1,11 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.color.ICC_ColorSpace;
+import java.io.File;
 
 /**
  * This class is part of the "Scrabble" application.
  * A (playing) Tile in a scrabble game representing a letter and point.
- *
  * This Tile creates a new tile for the game of scrabble every time it is called.
  * The Tile stores its point value and is used to get the letter, point or
  * a string description of each Tile of the game.
@@ -17,7 +16,7 @@ public class Tile
 {
     private char letter;
     public int points;
-    private final ImageIcon icon;
+    private ImageIcon icon;
 
     /**
      * Constructor for objects of class Tile, initializes letter and points with the given parameters.
@@ -30,12 +29,10 @@ public class Tile
         this.letter = letter;
         this.points = points;
 
-        try {
-            Image img = new ImageIcon("Graphics/" + letter + ".png").getImage();
-            Image resizeImaged = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        File image = new File("Graphics/" + letter + ".png");
+        if(image.exists()) {
+            Image resizeImaged = (new ImageIcon(image.toString())).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
             icon = new ImageIcon(resizeImaged);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -53,6 +50,11 @@ public class Tile
     public boolean setBlankTileLetter(char newLetter) {
         if(this.letter == '-') {
             this.letter = newLetter;
+            File image = new File("Graphics/" + letter + ".png");
+            if(image.exists()) {
+                Image resizeImaged = (new ImageIcon(image.toString())).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                icon.setImage(resizeImaged);
+            }
         }
         return false;
     }

@@ -19,7 +19,6 @@ public class Square {
      */
     public Square() {
         tile = null;
-        icon = new ImageIcon();
     }
 
     /**
@@ -38,11 +37,18 @@ public class Square {
         this.squareType = squareType;
         Image image = new ImageIcon("Graphics/" + squareType.toString() + ".png").getImage();
         Image resizeImaged = image.getScaledInstance(50,50, Image.SCALE_SMOOTH);
-        icon.setImage(resizeImaged);
+        if(icon == null)
+            icon = new ImageIcon(resizeImaged);
+        else
+            icon.setImage(resizeImaged);
     }
 
     public ImageIcon getIcon() {
         return icon;
+    }
+
+    public void setIcon(ImageIcon icon) {
+        this.icon = icon;
     }
 
     /**

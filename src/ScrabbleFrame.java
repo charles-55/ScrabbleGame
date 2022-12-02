@@ -23,6 +23,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private static Clip clip;
     private final static Color BORDER_COLOR = Color.RED;
     private final static Font FONT = new Font(Font.SERIF, Font.PLAIN|Font.BOLD,  30);
+    private final static String AUDIO = "Audio/backgroundMusic.wav";
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
 
     /**
@@ -36,7 +37,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         board = new JButton[model.getBoard().getBoardSize()][model.getBoard().getBoardSize()];
         model.addView(this);
 
-        playMusic("Audio/backgroundMusic.wav");
+        playMusic();
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenuSetup());
@@ -50,38 +51,26 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+
+        if(model.getPlayers()[model.getTurn()].isAI())
+            model.attemptPlay(((AIPlayer) model.getPlayers()[model.getTurn()]).play(model.getBoard()));
     }
 
     /**
      * Play music in an infinite loop
-     * @param fileName name of music file to be played
      */
-    private void playMusic(String fileName) {
+    private void playMusic() {
         try {
-            File file = new File(fileName);
-            if (file.exists()) {
-                AudioInputStream sound = AudioSystem.getAudioInputStream(file);
-                clip = AudioSystem.getClip();
-                clip.open(sound);
-                clip.setFramePosition(0);
-                clip.start();
-                clip.loop(Clip.LOOP_CONTINUOUSLY);
-            }
-            else {
-                throw new RuntimeException("Sound: file not found: " + fileName);
-            }
+            File file = new File(AUDIO);
+            AudioInputStream sound = AudioSystem.getAudioInputStream(file);
+            clip = AudioSystem.getClip();
+            clip.open(sound);
+            clip.setFramePosition(0);
+            clip.start();
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
         }
-        catch (UnsupportedAudioFileException e) {
+        catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
-            throw new RuntimeException("Sound: Unsupported Audio File: " + e);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Sound: Input/Output Error: " + e);
-        }
-        catch (LineUnavailableException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Sound: Line Unavailable Exception Error: " + e);
         }
     }
 
@@ -190,7 +179,11 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             JPanel rackPanel = new JPanel(new GridLayout(1, 7));
 
             for(int j = 0; j < 7; j++) {
-                playerRacks.get(i)[j] = new JLabel(model.getPlayers()[i].getRack().getTiles()[j].getIcon());
+                Tile tile = model.getPlayers()[i].getRack().getTiles()[j];
+                if(tile.getIcon() == null)
+                    playerRacks.get(i)[j] = new JLabel(String.valueOf(tile.getLetter()));
+                else
+                    playerRacks.get(i)[j] = new JLabel(tile.getIcon());
                 rackPanel.add(playerRacks.get(i)[j]);
             }
 
@@ -204,16 +197,25 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
     private JPanel playCommandsPanel() {
         JPanel playCommandsPanel = new JPanel(new GridLayout(1, 2));
+        File image;
 
         JButton exchangeButton = new JButton();
         exchangeButton.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
-        exchangeButton.setIcon(new ImageIcon("Graphics/EXCHANGE.png"));
+        image = new File("Graphics/EXCHANGE.png");
+        if(image.exists())
+            exchangeButton.setIcon(new ImageIcon(image.toString()));
+        else
+            exchangeButton.setText("EXCHANGE");
         exchangeButton.setActionCommand(Commands.EXCHANGE.toString());
         exchangeButton.addActionListener(commandController);
 
         JButton passButton = new JButton();
         passButton.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
-        passButton.setIcon(new ImageIcon("Graphics/PASS.png"));
+        image = new File("Graphics/PASS.png");
+        if(image.exists())
+            passButton.setIcon(new ImageIcon(image.toString()));
+        else
+            passButton.setText("PASS");
         passButton.setActionCommand(Commands.PASS.toString());
         passButton.addActionListener(commandController);
 
@@ -259,7 +261,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
                 if(JOptionPane.showConfirmDialog(this, playerPanel, "Player Configuration", JOptionPane.OK_OPTION) == JOptionPane.YES_OPTION) {
                     if(isAiOptions.getSelectedItem().equals("Yes"))
-                        model.addPlayer(new Player(playerName.getText(), true));
+                        model.addPlayer(new AIPlayer(playerName.getText()));
                     else if(isAiOptions.getSelectedItem().equals("No"))
                         model.addPlayer(new Player(playerName.getText(), false));
                 }
@@ -281,9 +283,6 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             gamePanel.add(boardAndPlayCommandsPanel);
             gamePanel.add(playerPanelSetup());
             this.add(gamePanel);
-
-            if(model.getPlayers()[model.getTurn()].isAI())
-                model.attemptPlay(((AIPlayer) model.getPlayers()[model.getTurn()]).play(model.getBoard()));
         }
         else
             JOptionPane.showMessageDialog(this, "Game setup incomplete!");
@@ -330,7 +329,11 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         ArrayList<Integer> tileIndexes = new ArrayList<>();
 
         for(int i = 0; i < 7; i++) {
-            panel.add(new JLabel(model.getPlayers()[model.getTurn()].getRack().getTiles()[i].getIcon()));
+            Icon image = model.getPlayers()[model.getTurn()].getRack().getTiles()[i].getIcon();
+            if(image == null)
+                panel.add(new JLabel(String.valueOf(model.getPlayers()[model.getTurn()].getRack().getTiles()[i].getLetter())));
+            else
+                panel.add(new JLabel(image));
         }
 
         for(int i = 0; i < 7; i++) {
@@ -357,8 +360,8 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
      */
     @Override
     public void handleNewGameUpdate() {
-        this.dispose();
         clip.stop();
+        this.dispose();
         new ScrabbleFrame();
     }
 
@@ -388,10 +391,17 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     public void handleBoardUpdate(String word, int[] coordinates, Board.Direction direction) {
         for(int i = 0; i < word.length(); i++) {
             if(direction == Board.Direction.FORWARD) {
-                board[coordinates[0]][coordinates[1] + i].setIcon(model.getBoard().getBoard()[coordinates[0]][coordinates[1] + i].getTile().getIcon());
+                if(model.getBoard().getBoard()[coordinates[0]][coordinates[1] + i].getTile().getIcon() == null)
+                    board[coordinates[0]][coordinates[1] + i].setText(String.valueOf(word.charAt(i)));
+                else
+                    board[coordinates[0]][coordinates[1] + i].setIcon(model.getBoard().getBoard()[coordinates[0]][coordinates[1] + i].getTile().getIcon());
             }
-            else if(direction == Board.Direction.DOWNWARD)
-                board[coordinates[0] + i][coordinates[1]].setText(String.valueOf(word.charAt(i)));
+            else if(direction == Board.Direction.DOWNWARD) {
+                if(model.getBoard().getBoard()[coordinates[0] + i][coordinates[1]].getTile().getIcon() == null)
+                    board[coordinates[0] + i][coordinates[1]].setText(String.valueOf(word.charAt(i)));
+                else
+                    board[coordinates[0] + i][coordinates[1]].setIcon(model.getBoard().getBoard()[coordinates[0] + i][coordinates[1]].getTile().getIcon());
+            }
         }
     }
 
@@ -418,11 +428,19 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     /**
-     * Get a letter to set the blank tile.
+     * Set the letter of a blank tile.
+     * @param tile Tile to set the letter.
+     * @return true if the letter was changed, false otherwise.
      */
     @Override
-    public char handleBlankTile() {
-        return JOptionPane.showInputDialog("What letter should the blank tile represent?").charAt(0);
+    public boolean handleBlankTile(Tile tile) {
+        if(JOptionPane.showConfirmDialog(this, "Do you want to use your blank tile?") == JOptionPane.YES_OPTION) {
+            if(tile.setBlankTileLetter(JOptionPane.showInputDialog("What letter should the blank tile represent?").charAt(0))) {
+                handleRackUpdate();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

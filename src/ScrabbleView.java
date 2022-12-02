@@ -31,9 +31,11 @@ public interface ScrabbleView {
     void handleRackUpdate();
 
     /**
-     * Get a letter to set the blank tile.
+     * Set the letter of a blank tile.
+     * @param tile Tile to set the letter.
+     * @return true if the letter was changed, false otherwise.
      */
-    char handleBlankTile();
+    boolean handleBlankTile(Tile tile);
 
     /**
      * Handle a message from the model.

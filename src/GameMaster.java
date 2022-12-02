@@ -71,7 +71,6 @@ public class GameMaster {
                 case (1) -> changeTurn();
                 case (2) -> exchangeTile(((AIPlayer)players[turn]).getExchangeTileIndices());
             }
-
         }
     }
 
@@ -214,11 +213,20 @@ public class GameMaster {
      */
     public boolean attemptPlay(PlayEvent event) {
         int blankTileAmount = 0;
-
-        /* Get the tiles from the player */
         Tile[] tilesToPlay = new Tile[event.getWordAttempt().length()];
         boolean connected = false;
+
+        /* Check if first play */
+        if(board.checkFirstPlayConditions(event.getWordAttempt().length(), event.getCoordinates(), event.getDirection()))
+            connected = true;
+        else {
+            for(ScrabbleView view : views)
+                view.handleMessage("You have to connect your word to the origin point!");
+            return false;
+        }
+
         for(int i = 0; i < event.getWordAttempt().length(); i++) {
+            /* Check if a player is using a previously played letter */
             if(board.getBoard()[event.getCoordinates()[1]][event.getCoordinates()[0] + i].getTile() != null) {
                 if((board.getBoard()[event.getCoordinates()[1]][event.getCoordinates()[0] + i].getTile().getLetter() == event.getWordAttempt().charAt(i)) && (event.getDirection() == Board.Direction.FORWARD)) {
                     connected = true;
@@ -233,73 +241,50 @@ public class GameMaster {
                     continue;
                 }
             }
+
             for(Tile tile : players[turn].getRack().getTiles()) {
+                /* Check for blank tiles */
                 if(tile.getLetter() == '-')
                     blankTileAmount++;
+                /* Check for tiles to spell the word */
                 else if(tile.getLetter() == event.getWordAttempt().charAt(i)) {
-                    tilesToPlay[i] = tile;
-                    break;
+                    /* Check if the tile has been taken */
+                    boolean taken = false;
+                    for(int j = 0 ; j < i; j++) {
+                        if(tilesToPlay[j] == tile) {
+                            taken = true;
+                            break;
+                        }
+                    }
+                    if(!taken) {
+                        tilesToPlay[i] = tile;
+                        break;
+                    }
                 }
             }
+
             if(tilesToPlay[i] == null) {
-                if(event.getDirection() == Board.Direction.FORWARD) {
-                    try {
-                        if(blankTileAmount > 0) {
-                            for(Tile tile : players[turn].getRack().getTiles()) {
-                                if(tile.getLetter() == '-') {
-                                    for(ScrabbleView view : views) {
-                                        tile.setBlankTileLetter(view.handleBlankTile());
-                                    }
-                                }
-                                if(tile.getLetter() == event.getWordAttempt().charAt(i)) {
-                                    tilesToPlay[i] = tile;
+                if(blankTileAmount > 0) {
+                    for(Tile tile : players[turn].getRack().getTiles()) {
+                        if(tile.getLetter() == '-') {
+                            for(ScrabbleView view : views) {
+                                if(view.handleBlankTile(tile)) {
                                     blankTileAmount--;
+                                    if(tile.getLetter() == event.getWordAttempt().charAt(i))
+                                        tilesToPlay[i] = tile;
+                                    else {
+                                        view.handleMessage("You do not have the tiles to spell \"" + event.getWordAttempt() + "\".");
+                                        return false;
+                                    }
                                 }
                             }
                         }
-                        else {
-                            for(ScrabbleView view : views)
-                                view.handleMessage("You do not have the tiles to spell \"" + event.getWordAttempt() + "\".");
-                            return false;
-                        }
-                    }
-                    catch(NullPointerException exception) {
-                        for(ScrabbleView view : views)
-                            view.handleMessage("You do not have the tiles to spell \"" + event.getWordAttempt() + "\".");
-                        return false;
-                    }
-                }
-                if(event.getDirection() == Board.Direction.DOWNWARD) {
-                    try {
-                        if(blankTileAmount > 0) {
-                            for(Tile tile : players[turn].getRack().getTiles()) {
-                                if (tile.getLetter() == '-') {
-                                    for(ScrabbleView view : views) {
-                                        tile.setBlankTileLetter(view.handleBlankTile());
-                                    }
-                                }
-                                if(tile.getLetter() == event.getWordAttempt().charAt(i)) {
-                                    tilesToPlay[i] = tile;
-                                    blankTileAmount--;
-                                }
-                            }
-                        }
-                        else {
-                            for(ScrabbleView view : views)
-                                view.handleMessage("You do not have the tiles to spell \"" + event.getWordAttempt() + "\".");
-                            return false;
-                        }
-                    }
-                    catch(NullPointerException exception) {
-                        for(ScrabbleView view : views)
-                            view.handleMessage("You do not have the tiles to spell \"" + event.getWordAttempt() + "\".");
-                        return false;
                     }
                 }
             }
         }
 
-        if((!connected) && (!board.isEmpty())) {
+        if(!connected) {
             for(ScrabbleView view : views)
                 view.handleMessage("You have to connect your word to a previously spelt word!");
             return false;

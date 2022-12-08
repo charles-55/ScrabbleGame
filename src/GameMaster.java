@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -11,7 +8,7 @@ import java.util.*;
  * @author Osamudiamen Nwoko 101152520
  * @version 3.0
  */
-public class GameMaster {
+public class GameMaster implements  Serializable {
 
     private final Board board;
     private final Bag bag;
@@ -161,12 +158,13 @@ public class GameMaster {
     @Override
     public String toString() {
         StringBuilder gameToString = new StringBuilder("---------------------------------------------------------------\n");
-        gameToString.append(gameFileName).append("\n\n");
+        gameToString.append(gameFileName).append("#").append("\n\n");
 
         for(Player player : players) {
             gameToString.append(player.toString()).append("\n");
         }
         gameToString.append("\n").append(board.toString()).append("\n");
+        gameToString.append("#");
         gameToString.append("---------------------------------------------------------------");
 
         return gameToString.toString();
@@ -380,15 +378,14 @@ public class GameMaster {
      * Save the current game being played.
      * @return true if the game saved, false otherwise.
      */
-    private boolean save() {
+    public boolean save() {
         try {
-            File gameFile = new File(gameFileName + ".txt");
-            if(gameFile.createNewFile()) {
-                FileWriter fileWriter = new FileWriter(gameFile);
-                fileWriter.write(this.toString());
-                fileWriter.close();
-                return true;
-            }
+            ObjectOutputStream object=new ObjectOutputStream(new FileOutputStream(gameFileName+".txt"));
+            object.writeObject(board);
+            object.writeObject(bag);
+            object.close();
+            return true;
+
         }
         catch (IOException e) {
             for(ScrabbleView view : views)

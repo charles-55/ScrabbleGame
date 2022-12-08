@@ -36,6 +36,9 @@ public class CommandController implements ActionListener {
         else if(e.getActionCommand().equals(ScrabbleFrame.Commands.PASS.toString())) {
             model.changeTurn();
         }
+        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.SAVE.toString())) {
+            model.save();
+        }
 
     }
 }

@@ -86,10 +86,34 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         JButton loadGame = new JButton("Load Game");
         JButton quit = new JButton("Quit");
 
-        newGame.addActionListener(e -> option.set(0));
-        customizeGame.addActionListener(e -> option.set(1));
-        loadGame.addActionListener(e -> option.set(2));
-        quit.addActionListener(e -> option.set(3));
+        newGame.addActionListener(e -> {
+            option.set(0);
+            newGame.setBackground(Color.GREEN);
+            customizeGame.setBackground(null);
+            loadGame.setBackground(null);
+            quit.setBackground(null);
+        });
+        customizeGame.addActionListener(e -> {
+            option.set(1);
+            newGame.setBackground(null);
+            customizeGame.setBackground(Color.GREEN);
+            loadGame.setBackground(null);
+            quit.setBackground(null);
+        });
+        loadGame.addActionListener(e -> {
+            option.set(2);
+            newGame.setBackground(null);
+            customizeGame.setBackground(null);
+            loadGame.setBackground(Color.GREEN);
+            quit.setBackground(null);
+        });
+        quit.addActionListener(e -> {
+            option.set(3);
+            newGame.setBackground(null);
+            customizeGame.setBackground(null);
+            loadGame.setBackground(null);
+            quit.setBackground(Color.GREEN);
+        });
 
         startPanel.add(newGame);
         startPanel.add(customizeGame);

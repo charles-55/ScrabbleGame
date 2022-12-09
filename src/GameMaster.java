@@ -11,7 +11,7 @@ import java.util.*;
 public class GameMaster implements  Serializable {
 
     private Board board;
-    private Bag bag;
+    private final Bag bag;
     private Player[] players;
     private int turn;
     private String gameFileName;
@@ -81,7 +81,7 @@ public class GameMaster implements  Serializable {
 
     /**
      * Return a list of the players in the game.
-     * @return List of players.
+     * @return A list of players.
      */
     public Player[] getPlayers() {
         return players;

@@ -453,6 +453,17 @@ public class GameMaster implements Serializable {
      * @return true if the game loaded, false otherwise.
      */
     public boolean load(String filename) {
-        return false;
+        try{
+            ObjectInputStream object=new ObjectInputStream(new FileInputStream(filename+".txt"));
+            board=(Board) object.readObject();
+            bag=(Bag) object.readObject();
+            players =(Player[]) object.readObject();
+            turn=(int) object.readObject();
+
+        }catch(IOException | ClassNotFoundException e){
+            return false;
+        }
+        return true;
+
     }
 }

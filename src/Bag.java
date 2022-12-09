@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -7,10 +8,9 @@ import java.util.*;
  * @author Meyiwa Temile
  * @version 1.0
  */
-public class Bag
-{
+public class Bag implements Serializable {
     private ArrayList <Tile> bag = new ArrayList <Tile>();
-    private Random random  = new Random ();
+    private final Random random  = new Random ();
 
     /**
      * Constructor for objects of class Bag, initializes bag to contain the default amount
@@ -76,16 +76,11 @@ public class Bag
      * @return Tile a new Tile from the bag
      */
 
-    public Tile drawTile()
-    {
+    public Tile drawTile() {
         if(!isEmpty())
-        {
             return bag.remove(random.nextInt(bag.size()));
-        }
         else
-        {
             return null;
-        }
     }
 
     /**

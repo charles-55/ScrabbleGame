@@ -10,8 +10,8 @@ import java.util.*;
  */
 public class GameMaster implements  Serializable {
 
-    private final Board board;
-    private final Bag bag;
+    private Board board;
+    private Bag bag;
     private Player[] players;
     private int turn;
     private String gameFileName;
@@ -36,6 +36,14 @@ public class GameMaster implements  Serializable {
      */
     public Board getBoard() {
         return board;
+    }
+
+    /**
+     * Set the board.
+     * @param board The board.
+     */
+    public void setBoard(Board board) {
+        this.board = board;
     }
 
     /**
@@ -158,13 +166,12 @@ public class GameMaster implements  Serializable {
     @Override
     public String toString() {
         StringBuilder gameToString = new StringBuilder("---------------------------------------------------------------\n");
-        gameToString.append(gameFileName).append("#").append("\n\n");
+        gameToString.append(gameFileName).append("\n\n");
 
         for(Player player : players) {
             gameToString.append(player.toString()).append("\n");
         }
         gameToString.append("\n").append(board.toString()).append("\n");
-        gameToString.append("#");
         gameToString.append("---------------------------------------------------------------");
 
         return gameToString.toString();
@@ -217,7 +224,7 @@ public class GameMaster implements  Serializable {
         /* Check if first play */
         if(board.checkFirstPlayConditions(event.getWordAttempt().length(), event.getCoordinates(), event.getDirection()))
             connected = true;
-        else {
+        else if(board.isEmpty()) {
             for(ScrabbleView view : views)
                 view.handleMessage("You have to connect your word to the origin point!");
             return false;
@@ -380,16 +387,17 @@ public class GameMaster implements  Serializable {
      */
     public boolean save() {
         try {
-            ObjectOutputStream object=new ObjectOutputStream(new FileOutputStream(gameFileName+".txt"));
-            object.writeObject(board);
-            object.writeObject(bag);
-            object.close();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(gameFileName+".txt"));
+            objectOutputStream.writeObject(board);
+            objectOutputStream.writeObject(bag);
+            objectOutputStream.writeObject(players);
+            objectOutputStream.close();
             return true;
 
         }
         catch (IOException e) {
             for(ScrabbleView view : views)
-                view.handleMessage("An error occurred!");
+                view.handleMessage(e.getMessage());
         }
 
         return false;
@@ -400,7 +408,7 @@ public class GameMaster implements  Serializable {
      * @param newName New game name.
      * @return true if the game saved, false otherwise.
      */
-    private boolean saveAs(String newName) {
+    public boolean saveAs(String newName) {
         gameFileName = newName;
         return save();
     }
@@ -410,7 +418,7 @@ public class GameMaster implements  Serializable {
      * Load a saved game.
      * @return true if the game loaded, false otherwise.
      */
-    private boolean load() {
+    public boolean load(String filename) {
         return false;
     }
 }

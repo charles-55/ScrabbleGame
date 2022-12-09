@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.sound.sampled.*;
 
 /**
@@ -23,7 +24,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private static Clip clip;
     private final static Color BORDER_COLOR = Color.RED;
     private final static Font FONT = new Font(Font.SERIF, Font.PLAIN|Font.BOLD,  30);
-    private final static String AUDIO = "Audio/backgroundMusic.wav";
+    private final static String AUDIO = "src/Audio/backgroundMusic.wav";
     public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
 
     /**
@@ -34,7 +35,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         model = new GameMaster();
         boardController = new BoardController(this,model);
         commandController = new CommandController(model, this);
-        board = new JButton[model.getBoard().getBoardSize()][model.getBoard().getBoardSize()];
+        board = new JButton[model.getBoard().getBoardSize()[0]][model.getBoard().getBoardSize()[1]];
         model.addView(this);
 
         playMusic();
@@ -44,16 +45,18 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         menuBar.add(helpMenuSetup());
         this.setJMenuBar(menuBar);
 
-        initializeGame();
+        if(initializeGame()) {
+            this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+            this.setMinimumSize(new Dimension(500, 500));
+            this.pack();
+            this.setLocationRelativeTo(null);
+            this.setVisible(true);
 
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setMinimumSize(new Dimension(500, 500));
-        this.pack();
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
-
-        if(model.getPlayers()[model.getTurn()].isAI())
-            model.attemptPlay(((AIPlayer) model.getPlayers()[model.getTurn()]).play(model.getBoard()));
+            if (model.getPlayers()[model.getTurn()].isAI())
+                model.attemptPlay(((AIPlayer) model.getPlayers()[model.getTurn()]).play(model.getBoard()));
+        }
+        else
+            model.quit();
     }
 
     /**
@@ -72,6 +75,179 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean initializeGame() {
+        JPanel startPanel = new JPanel(new GridLayout(4, 1));
+        AtomicInteger option = new AtomicInteger(-1);
+
+        JButton newGame = new JButton("New Game");
+        JButton customizeGame = new JButton("Customize Game");
+        JButton loadGame = new JButton("Load Game");
+        JButton quit = new JButton("Quit");
+
+        newGame.addActionListener(e -> option.set(0));
+        customizeGame.addActionListener(e -> option.set(1));
+        loadGame.addActionListener(e -> option.set(2));
+        quit.addActionListener(e -> option.set(3));
+
+        startPanel.add(newGame);
+        startPanel.add(customizeGame);
+        startPanel.add(loadGame);
+        startPanel.add(quit);
+
+        JOptionPane.showMessageDialog(this, startPanel);
+
+        if(option.get() == 0)
+            return newGame();
+        else if(option.get() == 1)
+            return customizeGame();
+        else if(option.get() == 2)
+            return loadGame();
+
+        return false;
+    }
+
+    private boolean newGame() {
+        JPanel initPanel = new JPanel(new GridLayout(2, 2));
+
+        JTextField gameNameTextField = new JTextField(20);
+        initPanel.add(new JLabel("Game Name: "));
+        initPanel.add(gameNameTextField);
+
+        Choice numPlayersOptions = new Choice();
+        for(int i = model.getMinPlayers(); i <= model.getMaxPlayers(); i++) {
+            numPlayersOptions.add(String.valueOf(i));
+        }
+        initPanel.add(new JLabel("Number of players: "));
+        initPanel.add(numPlayersOptions);
+
+        if((JOptionPane.showConfirmDialog(this, initPanel, "Game Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) && (model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem())))) {
+            model.setGameFileName(gameNameTextField.getText());
+            playerScores = new JLabel[Integer.parseInt(numPlayersOptions.getSelectedItem())];
+            playerRacks = new ArrayList<>();
+            for(int i = 0; i < Integer.parseInt(numPlayersOptions.getSelectedItem()); i++) {
+                JPanel playerPanel = new JPanel(new GridLayout(1, 4));
+                JTextField playerName = new JTextField();
+                Choice isAiOptions = new Choice();
+                isAiOptions.add("Yes");
+                isAiOptions.add("No");
+
+                playerPanel.add(new JLabel("Player " + (i + 1) + "'s name: "));
+                playerPanel.add(playerName);
+                playerPanel.add(new JLabel("Is AI: "));
+                playerPanel.add(isAiOptions);
+
+                if(JOptionPane.showConfirmDialog(this, playerPanel, "Player Configuration", JOptionPane.OK_OPTION) == JOptionPane.YES_OPTION) {
+                    if(isAiOptions.getSelectedItem().equals("Yes"))
+                        model.addPlayer(new AIPlayer(playerName.getText()));
+                    else if(isAiOptions.getSelectedItem().equals("No"))
+                        model.addPlayer(new Player(playerName.getText(), false));
+                }
+                else {
+                    JOptionPane.showMessageDialog(this, "Player setup incomplete!");
+                    return false;
+                }
+            }
+            frameContentSetup();
+
+            return true;
+        }
+        else {
+            JOptionPane.showMessageDialog(this, "Game setup incomplete!");
+            return false;
+        }
+    }
+
+    private boolean loadGame() {
+        frameContentSetup();
+        return model.load(getFilename());
+    }
+
+    private boolean customizeGame() {
+        JPanel sizePanel = new JPanel(new GridLayout(2, 2));
+        JTextField widthTextField = new JTextField();
+        JTextField heightTextField = new JTextField();
+
+        sizePanel.add(new JLabel("Width of the board: "));
+        sizePanel.add(widthTextField);
+        sizePanel.add(new JLabel("Height of the board: "));
+        sizePanel.add(heightTextField);
+
+        JOptionPane.showMessageDialog(this, sizePanel);
+        try {
+            int width = Integer.parseInt(widthTextField.getText());
+            int height = Integer.parseInt(heightTextField.getText());
+
+            JPanel customBoardPanel = new JPanel(new GridLayout(height, width));
+            Square[][] squares = new Square[height][width];
+            JButton[][] customBoard = new JButton[height][width];
+            CustomizeController customizeController = new CustomizeController(this, squares);
+
+            for(int i = 0; i < height; i++) {
+                for(int j = 0; j < width; j++) {
+                    squares[i][j] = new Square();
+                    customBoard[i][j] = new JButton(squares[i][j].getIcon());
+                    customBoard[i][j].setActionCommand(i + " " + j);
+                    customBoard[i][j].addActionListener(customizeController);
+                    customBoardPanel.add(customBoard[i][j]);
+                }
+            }
+
+            customBoardPanel.setMaximumSize(new Dimension(1000, 1000));
+            customBoardPanel.setMinimumSize(new Dimension(1000, 1000));
+            customBoardPanel.setPreferredSize(new Dimension(1000, 1000));
+
+            JOptionPane.showMessageDialog(this, customBoardPanel);
+            try {
+                model.setBoard(new Board(squares));
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+                return false;
+            }
+            newGame();
+
+            return true;
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid input! Customization failed!");
+            return false;
+        }
+    }
+
+    public String getCustomSquareType() {
+        JPanel jPanel = new JPanel(new GridLayout(2, 1));
+        JLabel label = new JLabel("Select the square type you want for this square...");
+        Choice choice = new Choice();
+
+        choice.add("Blank");
+        choice.add("Origin");
+        choice.add("Double Letter Score");
+        choice.add("Double Word Score");
+        choice.add("Triple Letter Score");
+        choice.add("Triple Word Score");
+
+        jPanel.add(label);
+        jPanel.add(choice);
+
+        JOptionPane.showMessageDialog(this, jPanel);
+        return choice.getSelectedItem();
+    }
+
+    private void frameContentSetup() {
+        this.setTitle(model.getGameFileName());
+        currentPlayer = new JLabel("Player turn: " + model.getPlayers()[model.getTurn()].getName());
+        currentPlayer.setFont(FONT);
+
+        JPanel gamePanel = new JPanel();
+        gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.X_AXIS));
+        JPanel boardAndPlayCommandsPanel = new JPanel();
+        boardAndPlayCommandsPanel.setLayout(new BoxLayout(boardAndPlayCommandsPanel, BoxLayout.PAGE_AXIS));
+
+        boardAndPlayCommandsPanel.add(boardPanelSetup());
+        boardAndPlayCommandsPanel.add(playCommandsPanel());
+        gamePanel.add(boardAndPlayCommandsPanel);
+        gamePanel.add(playerPanelSetup());
+        this.add(gamePanel);
     }
 
     private JMenu fileMenuSetup() {
@@ -145,10 +321,10 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     private JPanel boardPanelSetup() {
-        JPanel boardPanel = new JPanel(new GridLayout(model.getBoard().getBoardSize(), model.getBoard().getBoardSize()));
+        JPanel boardPanel = new JPanel(new GridLayout(model.getBoard().getBoardSize()[0], model.getBoard().getBoardSize()[1]));
 
-        for(int i = 0; i < model.getBoard().getBoardSize(); i++) {
-            for(int j = 0; j < model.getBoard().getBoardSize(); j++) {
+        for(int i = 0; i < model.getBoard().getBoardSize()[0]; i++) {
+            for(int j = 0; j < model.getBoard().getBoardSize()[1]; j++) {
                 JButton button = new JButton();
                 button.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
                 button.setIcon(model.getBoard().getBoard()[i][j].getIcon());
@@ -201,7 +377,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
         JButton exchangeButton = new JButton();
         exchangeButton.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
-        image = new File("Graphics/EXCHANGE.png");
+        image = new File("src/Graphics/EXCHANGE.png");
         if(image.exists())
             exchangeButton.setIcon(new ImageIcon(image.toString()));
         else
@@ -211,7 +387,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
         JButton passButton = new JButton();
         passButton.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
-        image = new File("Graphics/PASS.png");
+        image = new File("src/Graphics/PASS.png");
         if(image.exists())
             passButton.setIcon(new ImageIcon(image.toString()));
         else
@@ -227,65 +403,6 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         playCommandsPanel.setMinimumSize(new Dimension(670, 50));
 
         return playCommandsPanel;
-    }
-
-    private void initializeGame() {
-        JPanel initPanel = new JPanel(new GridLayout(2, 2));
-
-        JTextField gameNameTextField = new JTextField(20);
-        initPanel.add(new JLabel("Game Name: "));
-        initPanel.add(gameNameTextField);
-
-        Choice numPlayersOptions = new Choice();
-        for(int i = model.getMinPlayers(); i <= model.getMaxPlayers(); i++) {
-            numPlayersOptions.add(String.valueOf(i));
-        }
-        initPanel.add(new JLabel("Number of players: "));
-        initPanel.add(numPlayersOptions);
-
-        if((JOptionPane.showConfirmDialog(this, initPanel, "Game Configuration", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) && (model.setPlayerSize(Integer.parseInt(numPlayersOptions.getSelectedItem())))) {
-            model.setGameFileName(gameNameTextField.getText());
-            playerScores = new JLabel[Integer.parseInt(numPlayersOptions.getSelectedItem())];
-            playerRacks = new ArrayList<>();
-            for(int i = 0; i < Integer.parseInt(numPlayersOptions.getSelectedItem()); i++) {
-                JPanel playerPanel = new JPanel(new GridLayout(1, 4));
-                JTextField playerName = new JTextField();
-                Choice isAiOptions = new Choice();
-                isAiOptions.add("Yes");
-                isAiOptions.add("No");
-
-                playerPanel.add(new JLabel("Player " + (i + 1) + "'s name: "));
-                playerPanel.add(playerName);
-                playerPanel.add(new JLabel("Is AI: "));
-                playerPanel.add(isAiOptions);
-
-                if(JOptionPane.showConfirmDialog(this, playerPanel, "Player Configuration", JOptionPane.OK_OPTION) == JOptionPane.YES_OPTION) {
-                    if(isAiOptions.getSelectedItem().equals("Yes"))
-                        model.addPlayer(new AIPlayer(playerName.getText()));
-                    else if(isAiOptions.getSelectedItem().equals("No"))
-                        model.addPlayer(new Player(playerName.getText(), false));
-                }
-                else
-                    JOptionPane.showMessageDialog(this, "Player setup incomplete!");
-            }
-
-            this.setTitle(model.getGameFileName());
-            currentPlayer = new JLabel("Player turn: " + model.getPlayers()[model.getTurn()].getName());
-            currentPlayer.setFont(FONT);
-
-            JPanel gamePanel = new JPanel();
-            gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.X_AXIS));
-            JPanel boardAndPlayCommandsPanel = new JPanel();
-            boardAndPlayCommandsPanel.setLayout(new BoxLayout(boardAndPlayCommandsPanel, BoxLayout.PAGE_AXIS));
-
-            boardAndPlayCommandsPanel.add(boardPanelSetup());
-            boardAndPlayCommandsPanel.add(playCommandsPanel());
-            gamePanel.add(boardAndPlayCommandsPanel);
-            gamePanel.add(playerPanelSetup());
-            this.add(gamePanel);
-        }
-        else
-            JOptionPane.showMessageDialog(this, "Game setup incomplete!");
     }
 
     /**
@@ -353,6 +470,10 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             JOptionPane.showMessageDialog(this, "Exchange incomplete!");
 
         return new int[0];
+    }
+
+    public String getFilename() {
+        return JOptionPane.showInputDialog("Enter filename: ");
     }
 
     /**

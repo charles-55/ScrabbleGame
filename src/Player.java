@@ -4,10 +4,9 @@
  * @author Ejeh Leslie 101161386
  * @version 2.0
  */
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.Serializable;
 import java.util.*;
-public class Player {
+public class Player implements Serializable {
 
     private final String name;
     private int score;
@@ -69,13 +68,13 @@ public class Player {
      * @return a string
      */
     public String toString(){
-        String s = "Name = " + getName() + ", Score = "+getScore()+ "\nPlayer Rack = "+rack.toString() + "\n\n";
-        s += "PLAYED WORDS\n";
+        StringBuilder s = new StringBuilder("Name = " + getName() + ", Score = " + getScore() + "\nPlayer Rack = " + rack + "\n\n");
+        s.append("PLAYED WORDS\n");
         for(String word : playedWords) {
-            s += word + "\n";
+            s.append(word).append("\n");
         }
 
-        return s;
+        return s.toString();
     }
     /**
      * Stores played words in a stack

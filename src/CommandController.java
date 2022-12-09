@@ -18,27 +18,19 @@ public class CommandController implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getActionCommand().equals(ScrabbleFrame.Commands.NEW_GAME.toString())) {
+        if(e.getActionCommand().equals(ScrabbleFrame.Commands.NEW_GAME.toString()))
             model.newGame();
-        }
-        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.QUIT.toString())) {
+        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.QUIT.toString()))
             model.quit();
-        }
-        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.HELP.toString())) {
+        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.HELP.toString()))
             model.help();
-        }
-        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.ABOUT.toString())) {
+        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.ABOUT.toString()))
             model.about();
-        }
-        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.EXCHANGE.toString())) {
+        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.EXCHANGE.toString()))
             model.exchangeTile(frame.getExchangeTileIndex());
-        }
-        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.PASS.toString())) {
+        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.PASS.toString()))
             model.changeTurn();
-        }
-        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.SAVE.toString())) {
+        else if(e.getActionCommand().equals(ScrabbleFrame.Commands.SAVE.toString()))
             model.save();
-        }
-
     }
 }

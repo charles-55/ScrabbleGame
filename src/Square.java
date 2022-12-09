@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.Serializable;
 
 /**
  * This class concerns the squares on the scrabble board.
@@ -7,18 +9,22 @@ import java.awt.*;
  * @author LONGJOHN DAGOGO
  * @version 1.0
  */
-public class Square {
+public class Square implements Serializable {
 
     private Tile tile;
     private SquareType squareType;
     private ImageIcon icon;
-    public enum SquareType {ORIGIN, DLS, TLS, DWS, TWS}
+    public enum SquareType {BLANK, ORIGIN, DLS, TLS, DWS, TWS}
 
     /**
      * Constructor for Square class.
      */
     public Square() {
         tile = null;
+        squareType = SquareType.BLANK;
+        File image = new File("src/Graphics/BLANK.png");
+        if(image.exists())
+            icon = new ImageIcon(image.toString());
     }
 
     /**
@@ -35,12 +41,12 @@ public class Square {
 
     public void setSquareType(SquareType squareType) {
         this.squareType = squareType;
-        Image image = new ImageIcon("Graphics/" + squareType.toString() + ".png").getImage();
-        Image resizeImaged = image.getScaledInstance(50,50, Image.SCALE_SMOOTH);
+        Image image = new ImageIcon("src/Graphics/" + squareType.toString() + ".png").getImage();
+        Image resizedImage = image.getScaledInstance(50,50, Image.SCALE_SMOOTH);
         if(icon == null)
-            icon = new ImageIcon(resizeImaged);
+            icon = new ImageIcon(image);
         else
-            icon.setImage(resizeImaged);
+            icon.setImage(resizedImage);
     }
 
     public ImageIcon getIcon() {

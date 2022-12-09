@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * This class is part of the "Scrabble" application.
@@ -12,8 +13,8 @@ import java.io.File;
  * @author Meyiwa Temile
  * @version 1.0
  */
-public class Tile
-{
+public class Tile implements Serializable {
+
     private char letter;
     public int points;
     private ImageIcon icon;
@@ -24,15 +25,14 @@ public class Tile
      * @param letter char representation of scrabble tile
      * @param points the point value for the letter
      */
-    public Tile(char letter, int points)
-    {
+    public Tile(char letter, int points) {
         this.letter = letter;
         this.points = points;
 
-        File image = new File("Graphics/" + letter + ".png");
+        File image = new File("src/Graphics/" + letter + ".png");
         if(image.exists()) {
-            Image resizeImaged = (new ImageIcon(image.toString())).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-            icon = new ImageIcon(resizeImaged);
+            Image resizedImage = (new ImageIcon(image.toString())).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+            icon = new ImageIcon(resizedImage);
         }
     }
 
@@ -50,7 +50,7 @@ public class Tile
     public boolean setBlankTileLetter(char newLetter) {
         if(this.letter == '-') {
             this.letter = newLetter;
-            File image = new File("Graphics/" + letter + ".png");
+            File image = new File("src/Graphics/" + letter + ".png");
             if(image.exists()) {
                 Image resizeImaged = (new ImageIcon(image.toString())).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
                 icon.setImage(resizeImaged);

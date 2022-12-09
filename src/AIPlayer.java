@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -7,7 +8,7 @@ import java.util.*;
  *
  * @version 1.0
  */
-public class AIPlayer extends Player {
+public class AIPlayer extends Player implements Serializable {
 
     /**
      * Create and initialize the AI Player.
@@ -27,15 +28,15 @@ public class AIPlayer extends Player {
         int[] coordinates = new int[2];
         Board.Direction direction = Board.Direction.FORWARD;
 
-        String allTileLetters = "";
+        StringBuilder allTileLetters = new StringBuilder();
         for(int i = 0; i < 7; i++)
-            allTileLetters += getRack().getTiles()[i].getLetter();
+            allTileLetters.append(getRack().getTiles()[i].getLetter());
 
-        ArrayList<String> possibleWords = combine(allTileLetters, new StringBuffer(), 0);
+        ArrayList<String> possibleWords = combine(allTileLetters.toString(), new StringBuffer(), 0);
         possibleWords.sort(Comparator.comparingInt(String::length).reversed());
 
-        for(int i = 0; i < tempBoard.getBoardSize(); i++) {
-            for(int j = 0; j < tempBoard.getBoardSize(); j++) {
+        for(int i = 0; i < tempBoard.getBoardSize()[0]; i++) {
+            for(int j = 0; j < tempBoard.getBoardSize()[1]; j++) {
                 for(String word : possibleWords) {
                     Tile[] wordTiles = new Tile[word.length()];
                     for(int k = 0; k < word.length(); k++) {
@@ -82,9 +83,8 @@ public class AIPlayer extends Player {
         int[] indices = new int[randomNumber];
         for (int i = 0; i < randomNumber; i++) {
             int randomIndex = (new Random()).nextInt(randomNumber);
-            while (List.of(indices).contains(randomIndex)) {
+            while (List.of(indices).contains(randomIndex))
                 randomIndex = (new Random()).nextInt(randomNumber);
-            }
             indices[i] = randomIndex;
         }
         return indices;

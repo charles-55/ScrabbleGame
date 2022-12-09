@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * The Board class.
@@ -8,34 +9,47 @@ import java.io.File;
  * @author Osamudiamen Nwoko 101152520
  * @version 2.0
  */
-public class Board {
+public class Board implements Serializable {
 
     public enum Direction {FORWARD, DOWNWARD}
     private final Square[][] board;
-    private static final int BOARD_SIZE = 15;
-    private static final int[] ORIGIN_POINT = new int[] {BOARD_SIZE / 2, BOARD_SIZE / 2};
+    private final int[] BOARD_SIZE;
+    private final int[] ORIGIN_POINT;
 
     /**
      * Create the board.
      */
     public Board() {
-        board = new Square[BOARD_SIZE][BOARD_SIZE];
+        BOARD_SIZE = new int[] {15, 15};
+        ORIGIN_POINT = new int[] {BOARD_SIZE[0] / 2, BOARD_SIZE[1] / 2};
+        board = new Square[BOARD_SIZE[0]][BOARD_SIZE[1]];
         boardSetUp();
     }
 
-    private void boardSetUp(){
+    public Board(Square[][] squares) {
+        board = squares;
+        BOARD_SIZE = new int[] {squares.length, squares[0].length};
 
-        for(int i = 0; i < BOARD_SIZE; i++) {
-            for(int j = 0; j < BOARD_SIZE; j++) {
-                board[i][j] = new Square();
-                File image = new File("Graphics/BLANK.png");
-                if(image.exists())
-                    board[i][j].setIcon(new ImageIcon(image.toString()));
+        for(int i = 0; i < BOARD_SIZE[0]; i++) {
+            for(int j = 0; j < BOARD_SIZE[1]; j++) {
+                if(board[i][j].getSquareType() == Square.SquareType.ORIGIN) {
+                    ORIGIN_POINT = new int[]{i, j};
+                    return;
+                }
             }
         }
+        throw new RuntimeException("No Origin point found");
+    }
+
+    private void boardSetUp(){
+        for(int i = 0; i < BOARD_SIZE[0]; i++) {
+            for(int j = 0; j < BOARD_SIZE[1]; j++)
+                board[i][j] = new Square();
+        }
+
         board[ORIGIN_POINT[0]][ORIGIN_POINT[1]].setSquareType(Square.SquareType.ORIGIN);
-        for(int k=0;k<BOARD_SIZE;k++){
-            for(int g=0;g<BOARD_SIZE;g++){
+        for(int k=0;k<BOARD_SIZE[0];k++){
+            for(int g=0;g<BOARD_SIZE[1];g++){
                 if((k==0&&g==0)||(k==5 && g==5)||(k==9 && g==9)||(k==14 && g==14)){
                     board[k][g].setSquareType(Square.SquareType.TWS);
                 } else if ((k==14&&g==0)||(k==9 && g==5)||(k==5 && g==9)||(k==0 && g==14)) {
@@ -64,8 +78,6 @@ public class Board {
         }
     }
 
-
-
     /**
      * Return the board in form of Square arrays.
      * @return The board in form of Square arrays.
@@ -78,7 +90,7 @@ public class Board {
      * Return the size of the board.
      * @return The size of the board.
      */
-    public int getBoardSize() {
+    public int[] getBoardSize() {
         return BOARD_SIZE;
     }
 
@@ -87,8 +99,8 @@ public class Board {
      * @return true if the board is empty, false otherwise.
      */
     public boolean isEmpty() {
-        for(int i = 0; i < BOARD_SIZE; i++) {
-            for(int j = 0; j < BOARD_SIZE; j++) {
+        for(int i = 0; i < BOARD_SIZE[0]; i++) {
+            for(int j = 0; j < BOARD_SIZE[1]; j++) {
                 if(board[i][j].getTile() != null)
                     return false;
             }
@@ -98,12 +110,10 @@ public class Board {
 
     public boolean checkFirstPlayConditions(int wordLength, int[] coordinates, Direction direction) {
         if(isEmpty()) {
-            if(direction == Direction.FORWARD) {
+            if(direction == Direction.FORWARD)
                 return (coordinates[1] == ORIGIN_POINT[1]) && (coordinates[0] <= ORIGIN_POINT[0]) && (coordinates[0] + wordLength - 1 >= ORIGIN_POINT[0]);
-            }
-            else if(direction == Direction.DOWNWARD) {
+            else if(direction == Direction.DOWNWARD)
                 return (coordinates[0] == ORIGIN_POINT[0]) && (coordinates[1] <= ORIGIN_POINT[1]) && (coordinates[1] + wordLength - 1 >= ORIGIN_POINT[1]);
-            }
         }
 
         return false;
@@ -120,14 +130,14 @@ public class Board {
      * otherwise.
      */
     public boolean attemptPlay(Tile[] wordTiles, int[] coordinates, Direction direction) {
-        if((coordinates[0] >= BOARD_SIZE) || (coordinates[1] >= BOARD_SIZE))
+        if((coordinates[0] >= BOARD_SIZE[0]) || (coordinates[1] >= BOARD_SIZE[1]))
             return false;
 
-        if(!checkFirstPlayConditions(wordTiles.length, coordinates, direction))
+        if(!checkFirstPlayConditions(wordTiles.length, coordinates, direction) && isEmpty())
             return false;
 
         if(direction == Direction.FORWARD) {
-            if(coordinates[0] + wordTiles.length - 1 >= BOARD_SIZE)
+            if(coordinates[0] + wordTiles.length - 1 >= BOARD_SIZE[0])
                 return false;
 
             for(int i = 0; i < wordTiles.length; i++) {
@@ -143,7 +153,7 @@ public class Board {
             }
         }
         else if(direction == Direction.DOWNWARD) {
-            if(coordinates[1] + wordTiles.length - 1 >= BOARD_SIZE)
+            if(coordinates[1] + wordTiles.length - 1 >= BOARD_SIZE[1])
                 return false;
 
             for(int i = 0; i < wordTiles.length; i++) {
@@ -211,7 +221,7 @@ public class Board {
                     else
                         score += board[coordinates[1] + j][coordinates[0] - i].getTile().getPoints();
                     j++;
-                    if(coordinates[1] + j  >= BOARD_SIZE)
+                    if(coordinates[1] + j  >= BOARD_SIZE[1])
                         break;
                 }
 
@@ -238,7 +248,7 @@ public class Board {
                 else
                     score += board[coordinates[1]][coordinates[0] + i].getTile().getPoints();
                 i++;
-                if (coordinates[1] + i >= BOARD_SIZE)
+                if (coordinates[1] + i >= BOARD_SIZE[1])
                     break;
             }
         }
@@ -284,7 +294,7 @@ public class Board {
                     else
                         score += board[coordinates[1] - j][coordinates[0] + i].getTile().getPoints();
                     i++;
-                    if(coordinates[1] + i >= BOARD_SIZE)
+                    if(coordinates[1] + i >= BOARD_SIZE[1])
                         break;
                 }
 
@@ -311,7 +321,7 @@ public class Board {
                 else
                     score += board[coordinates[1] + j][coordinates[0]].getTile().getPoints();
                 j++;
-                if (coordinates[1] + j >= BOARD_SIZE)
+                if (coordinates[1] + j >= BOARD_SIZE[1])
                     break;
             }
         }
@@ -327,7 +337,7 @@ public class Board {
     public String toString() {
         StringBuilder boardString = new StringBuilder("  || 0");
 
-        for(int i = 1; i < BOARD_SIZE; i++) {
+        for(int i = 1; i < BOARD_SIZE[0]; i++) {
             if(i <= 10)
                 boardString.append(" | ").append(i);
             else

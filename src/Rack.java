@@ -1,10 +1,12 @@
+import java.io.Serializable;
+
 /**
  * The Rack class.
  *
  * @author Ejeh Leslie 101161386
  * @version 1.0
  */
-public class Rack {
+public class Rack implements Serializable {
 
     private Tile[] tiles;
     private static final int MAX_RACK_SIZE = 7;
@@ -38,11 +40,10 @@ public class Rack {
      * @param bag and an array of int.
      * @return true if the tile was exchanged succesfully , false otherwise.
      */
-    public boolean exchangeTiles(Bag bag,int[] index){
+    public boolean exchangeTiles(Bag bag, int[] index){
         for(int i : index) {
-            if(!bag.isEmpty()) {
+            if(!bag.isEmpty())
                 tiles[i] = bag.swapTile(tiles[i]);
-            }
         }
         return true;
     }

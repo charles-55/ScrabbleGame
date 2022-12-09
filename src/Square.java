@@ -20,7 +20,7 @@ public class Square implements Serializable {
      * Constructor for Square class.
      */
     public Square() {
-        tile = null;
+        tile = Tile.getDefaultTile();
         squareType = SquareType.BLANK;
         File image = new File("src/Graphics/BLANK.png");
         if(image.exists())
@@ -65,7 +65,7 @@ public class Square implements Serializable {
     public boolean placeTile(Tile tileToPlace){
         if(tile == tileToPlace)
             return true;
-        if(tile != null)
+        if(tile != Tile.getDefaultTile())
             return false;
         tile = tileToPlace;
         return true;

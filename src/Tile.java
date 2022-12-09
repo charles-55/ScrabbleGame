@@ -40,6 +40,10 @@ public class Tile implements Serializable {
         return icon;
     }
 
+    public void setIcon(ImageIcon icon) {
+        this.icon = icon;
+    }
+
     /**
      * Update the tile's letter to the players new letter if the current letter is a blank tile and
      * return true, else return false if the letter is not a blank tile.
@@ -84,8 +88,30 @@ public class Tile implements Serializable {
      *
      * @return String description of tile
      */
+    @Override
     public String toString()
     {
         return "Letter: "+this.getLetter() +" Points: "+ this.getPoints();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        try {
+            Tile tile = (Tile) obj;
+            return (tile.getLetter() == letter) && (tile.getPoints() == points);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static Tile getDefaultTile() {
+        Tile tile = new Tile(' ', 0);
+
+        File image = new File("src/Graphics/BLANK.png");
+        if(image.exists()) {
+            Image resizedImage = (new ImageIcon(image.toString())).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+            tile.setIcon(new ImageIcon(resizedImage));
+        }
+        return tile;
     }
 }

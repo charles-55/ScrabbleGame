@@ -8,7 +8,7 @@ import java.util.*;
  * @author Osamudiamen Nwoko 101152520
  * @version 3.0
  */
-public class GameMaster implements  Serializable {
+public class GameMaster implements Serializable {
 
     private Board board;
     private final Bag bag;

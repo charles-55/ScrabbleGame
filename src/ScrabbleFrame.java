@@ -184,8 +184,9 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     private boolean loadGame() {
+        boolean load = model.load(getFilename());
         frameContentSetup();
-        return model.load(getFilename());
+        return load;
     }
 
     private boolean customizeGame() {

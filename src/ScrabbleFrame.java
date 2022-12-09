@@ -25,7 +25,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private final static Color BORDER_COLOR = Color.RED;
     private final static Font FONT = new Font(Font.SERIF, Font.PLAIN|Font.BOLD,  30);
     private final static String AUDIO = "src/Audio/backgroundMusic.wav";
-    public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS}
+    public enum Commands {NEW_GAME, LOAD, SAVE, SAVE_AS, QUIT, HELP, ABOUT, EXCHANGE, PASS, UNDO, REDO}
 
     /**
      * Create a scrabble frame
@@ -41,6 +41,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         playMusic();
 
         JMenuBar menuBar = new JMenuBar();
+        menuBar.add(editMenuSetup());
         menuBar.add(fileMenuSetup());
         menuBar.add(helpMenuSetup());
         this.setJMenuBar(menuBar);
@@ -287,6 +288,15 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         return fileMenu;
     }
 
+    private JMenu editMenuSetup() {
+        JMenu edit = new JMenu("Edit");
+
+        edit.add(undoMenuItemSetup());
+        edit.add(redoMenuItemSetup());
+
+        return edit;
+    }
+
     private JMenu helpMenuSetup() {
         JMenu help = new JMenu("Help");
 
@@ -329,6 +339,20 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         quit.setActionCommand(Commands.QUIT.toString());
         quit.addActionListener(commandController);
         return quit;
+    }
+
+    private JMenuItem undoMenuItemSetup() {
+        JMenuItem undo = new JMenuItem("Undo");
+        undo.setActionCommand(Commands.UNDO.toString());
+        undo.addActionListener(commandController);
+        return undo;
+    }
+
+    private JMenuItem redoMenuItemSetup() {
+        JMenuItem redo = new JMenuItem("Redo");
+        redo.setActionCommand(Commands.REDO.toString());
+        redo.addActionListener(commandController);
+        return redo;
     }
 
     private JMenuItem helpMenuItemSetup() {

@@ -11,13 +11,16 @@ import java.util.*;
 public class GameMaster implements Serializable {
 
     private Board board;
-    private final Bag bag;
+    private Bag bag;
     private Player[] players;
     private int turn;
     private String gameFileName;
     private final ArrayList<ScrabbleView> views;
     private static final int MIN_PLAYERS = 2, MAX_PLAYERS = 4;
     public static final String DICTIONARY = "src/WordList.txt";
+    private Stack<Object[]> undoStack;
+    private Stack<Object[]> redoStack;
+
 
     /**
      * Create and initialize the game.
@@ -28,6 +31,26 @@ public class GameMaster implements Serializable {
         turn = 0;
         gameFileName = "New Game";
         views = new ArrayList<>();
+        undoStack = new Stack<>();
+        redoStack = new Stack<>();
+    }
+
+    public void undo() {
+        Object[] objects = undoStack.pop();
+        redoStack.add(objects);
+        bag = (Bag) objects[0];
+        board = (Board) objects[1];
+        turn = (int) objects[2];
+        players = (Player[]) objects[3];
+    }
+
+    public void redo() {
+        Object[] objects = redoStack.pop();
+        undoStack.add(objects);
+        bag = (Bag) objects[0];
+        board = (Board) objects[1];
+        turn = (int) objects[2];
+        players = (Player[]) objects[3];
     }
 
     /**
@@ -300,6 +323,15 @@ public class GameMaster implements Serializable {
             Scanner dictionary = new Scanner(new File(DICTIONARY));
             while(dictionary.hasNextLine()) {
                 if(event.getWordAttempt().equalsIgnoreCase(dictionary.nextLine())) {
+
+                    /* Add previous game state to undo stack */
+                    Bag b = bag;
+                    Board bo = board;
+                    int i = turn;
+                    Player[] p = players;
+                    Object[] objects = {b, bo, i,  p};
+                    undoStack.add(objects);
+
                     /* If word exists, attempt to play it on the board */
                     if(board.attemptPlay(tilesToPlay, event.getCoordinates(), event.getDirection())) {
                         /* If word is playable */
@@ -318,6 +350,7 @@ public class GameMaster implements Serializable {
                         return true;
                     }
                     else {
+                        undoStack.pop();
                         for(ScrabbleView view : views)
                             view.handleMessage("You can not play there!");
                         return false;

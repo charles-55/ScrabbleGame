@@ -391,6 +391,7 @@ public class GameMaster implements Serializable {
             objectOutputStream.writeObject(board);
             objectOutputStream.writeObject(bag);
             objectOutputStream.writeObject(players);
+            objectOutputStream.writeObject(turn);
             objectOutputStream.close();
             return true;
 

@@ -1,22 +1,23 @@
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class GameMasterTest {
-        GameMaster test;
+
+    GameMaster test;
 
     @Before
     public void setup(){
         test=new GameMaster();
         test.setPlayerSize(2);
+    }
 
-
-        }
+    @After
+    public void tearDown() {
+        test = null;
+    }
 
     @Test
     public void testPlayerSize() throws Exception {
@@ -32,33 +33,24 @@ public class GameMasterTest {
     public void testGameFileName(){
         test.setGameFileName("game");
         assertEquals("game",test.getGameFileName());
-
     }
 
     @Test
     public void testAttemptPlay(){
-
-
         Tile[] tiles=new Tile[7];
         tiles[0]=new Tile('L',2);
         tiles[1]=new Tile('A',2);
         tiles[2]=new Tile('T',2);
         tiles[3]=new Tile('E',2);
 
-
-
         test.addPlayer(new Player("charles", false));
         test.addPlayer(new Player("leslie", false));
         test.getPlayers()[test.getTurn()].getRack().setTiles(tiles);
         assertSame(true,test.attemptPlay(new PlayEvent("LATE",new int[]{7,7}, Board.Direction.DOWNWARD)));
-
-
-
     }
+
     @Test
     public void testExchangeTile(){
-
-
         Tile[] tiles=new Tile[7];
         tiles[0]=new Tile('L',2);
         tiles[1]=new Tile('A',2);
@@ -72,12 +64,8 @@ public class GameMasterTest {
         test.addPlayer(new Player("leslie", false));
         test.getPlayers()[test.getTurn()].getRack().setTiles(tiles);
         assertSame(true,test.exchangeTile(new int[]{1,2}));
-
-
-
-
-
     }
+
     @Test
     public void testChangeTurn(){
         test.setPlayerSize(3);
@@ -90,8 +78,8 @@ public class GameMasterTest {
         test.changeTurn();
         test.changeTurn();
         assertEquals(0,test.getTurn());
-
     }
+
     @Test
     public void testAddPlayer(){
         test.setPlayerSize(2);
@@ -115,8 +103,8 @@ public class GameMasterTest {
         assertEquals(v,test.getView(0));
         assertEquals(h,test.getView(1));
         assertEquals(m,test.getView(2));
-
     }
+
     @Test
     public void TestAi(){
         test.addPlayer(new Player("charles", true));
@@ -125,8 +113,4 @@ public class GameMasterTest {
         test.changeTurn();
         assertFalse(test.getPlayers()[test.getTurn()].isAI());
     }
-
-
-
-
 }

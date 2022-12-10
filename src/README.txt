@@ -19,6 +19,7 @@ Deliverables:
 	BoardController.java // @author Ejeh Leslie, Osamudiamen Nwoko
 	CommandController.java // @author Ejeh Leslie, Osamudiamen Nwoko
 	ScrabbleView.java // Osamudiamen Nwoko, Meyiywa Temile
+	CustomizableController//Osamudiamen Nwoko
 	ScrabbleFrame.java // Osamudiamen Nwoko, Meyiwa Temile
 	WordList.txt  //@author https://www.mit.edu/~ecprice/wordlist.10000
 	README.txt  // @author Group 3
@@ -38,7 +39,7 @@ All letters played on a turn must be placed in one row across or down the board,
 If, at the same time, they touch others letters in adjacent rows, those must also form complete words. The player gets full credit for all words formed or modified on his or her turn.
 Players may use a turn to exchange all, some, or none of the letters, this ends their turn.
 The two blank tiles may be used as any letters. When playing a blank, you must state which letter it represents. It remains that letter for the rest of the game.
-The game ends when all letters have been drawn and one player uses his or her last letter; or when all possible plays have been made.
+The game ends when all letters have been drawn and one player uses his or her last letter; or when all possible plays have been made.You can now UNDO and REDO with customizable board save and load
 
 New words may be formed by:
 Adding one or more letters to a word or letters already on the board.
@@ -56,5 +57,3 @@ If you make an illegal move or a wrong word, you will be notified and required t
 
 Known Issues:
 play using tiles on board doesn't work correctly
-save/saveAs unable to save game
-load unable to load a previous game

@@ -18,9 +18,9 @@ Deliverables:
 	GameMasterTest.java // @author Ejeh Leslie, Longjohn Dagogo
 	BoardController.java // @author Ejeh Leslie, Osamudiamen Nwoko
 	CommandController.java // @author Ejeh Leslie, Osamudiamen Nwoko
-	ScrabbleView.java // Osamudiamen Nwoko, Meyiywa Temile
-	CustomizableController//Osamudiamen Nwoko
-	ScrabbleFrame.java // Osamudiamen Nwoko, Meyiwa Temile
+	ScrabbleView.java // @author Osamudiamen Nwoko, Meyiywa Temile
+	CustomizableController// @author Osamudiamen Nwoko
+	ScrabbleFrame.java // @author Osamudiamen Nwoko, Meyiwa Temile
 	WordList.txt  //@author https://www.mit.edu/~ecprice/wordlist.10000
 	README.txt  // @author Group 3
 
@@ -39,7 +39,8 @@ All letters played on a turn must be placed in one row across or down the board,
 If, at the same time, they touch others letters in adjacent rows, those must also form complete words. The player gets full credit for all words formed or modified on his or her turn.
 Players may use a turn to exchange all, some, or none of the letters, this ends their turn.
 The two blank tiles may be used as any letters. When playing a blank, you must state which letter it represents. It remains that letter for the rest of the game.
-The game ends when all letters have been drawn and one player uses his or her last letter; or when all possible plays have been made.You can now UNDO and REDO with customizable board save and load
+The game ends when all letters have been drawn and one player uses his or her last letter; or when all possible plays have been made.
+You can now UNDO and REDO a play, play with a customizable board, and save and load games.
 
 New words may be formed by:
 Adding one or more letters to a word or letters already on the board.
@@ -55,5 +56,14 @@ If you can't come up with a word, select "pass" to skip your turn or "exchange" 
 If you make an illegal move or a wrong word, you will be notified and required to enter a new word and direction of play.
 
 
+Running the jar File:
+1. Extract file content from the jar file.
+2. Create a new folder called "src".
+3. Move the "Audio" and "Graphics" folder in to the "src" folder.
+4. Open your terminal and navigate to the folder containing the extracted files.
+5. Enter "java Main.java" in the terminal.
+
+
 Known Issues:
-play using tiles on board doesn't work correctly
+Board doesn't connect correctly.
+Undo/Redo stacks doesn't work correctly.

@@ -33,24 +33,99 @@ public class GameMaster implements Serializable {
         views = new ArrayList<>();
         undoStack = new Stack<>();
         redoStack = new Stack<>();
+
+        Bag bag = this.bag;
+        Board board = this.board;
+        int turn = this.turn;
+        Player[] players = this.players;
+        Object[] objects = {bag, board, turn, players};
+        undoStack.push(objects);
+    }
+
+    public void saveState() {
+        /* Add previous game state to undo stack */
+        Bag bag = this.bag;
+        Board board = this.board;
+        int turn = this.turn;
+        Player[] players = this.players;
+        Object[] objects = {bag, board, turn, players};
+        undoStack.push(objects);
     }
 
     public void undo() {
-        Object[] objects = undoStack.pop();
-        redoStack.add(objects);
-        bag = (Bag) objects[0];
-        board = (Board) objects[1];
-        turn = (int) objects[2];
-        players = (Player[]) objects[3];
+        try {
+            Object[] objects = undoStack.pop();
+            redoStack.push(objects);
+            bag = (Bag) objects[0];
+            board = (Board) objects[1];
+            turn = (int) objects[2];
+            players = (Player[]) objects[3];
+
+            for (ScrabbleView view : views)
+                view.updateFrameContent();
+
+            if (players[turn].isAI()) {
+                int randomNumber = (new Random()).nextInt(3);
+                switch (randomNumber) {
+                    case (0) -> {
+                        if (!attemptPlay(((AIPlayer) players[turn]).play(board))) {
+                            randomNumber = (new Random()).nextInt(2);
+                            if (randomNumber == 0)
+                                changeTurn();
+                            else
+                                exchangeTile(((AIPlayer) players[turn]).getExchangeTileIndices());
+                        }
+                    }
+                    case (1) -> changeTurn();
+                    case (2) -> exchangeTile(((AIPlayer) players[turn]).getExchangeTileIndices());
+                }
+            }
+        } catch (Exception e) {
+            if(undoStack.isEmpty()) {
+                for(ScrabbleView view : views)
+                    view.handleMessage("Undo failed! Undo stack is empty.");
+            }
+            else
+                e.printStackTrace();
+        }
     }
 
     public void redo() {
-        Object[] objects = redoStack.pop();
-        undoStack.add(objects);
-        bag = (Bag) objects[0];
-        board = (Board) objects[1];
-        turn = (int) objects[2];
-        players = (Player[]) objects[3];
+        try {
+            Object[] objects = redoStack.pop();
+            undoStack.push(objects);
+            bag = (Bag) objects[0];
+            board = (Board) objects[1];
+            turn = (int) objects[2];
+            players = (Player[]) objects[3];
+
+            for (ScrabbleView view : views)
+                view.updateFrameContent();
+
+            if (players[turn].isAI()) {
+                int randomNumber = (new Random()).nextInt(3);
+                switch (randomNumber) {
+                    case (0) -> {
+                        if (!attemptPlay(((AIPlayer) players[turn]).play(board))) {
+                            randomNumber = (new Random()).nextInt(2);
+                            if (randomNumber == 0)
+                                changeTurn();
+                            else
+                                exchangeTile(((AIPlayer) players[turn]).getExchangeTileIndices());
+                        }
+                    }
+                    case (1) -> changeTurn();
+                    case (2) -> exchangeTile(((AIPlayer) players[turn]).getExchangeTileIndices());
+                }
+            }
+        } catch (Exception e) {
+            if(undoStack.isEmpty()) {
+                for(ScrabbleView view : views)
+                    view.handleMessage("Redo failed! Redo stack is empty.");
+            }
+            else
+                e.printStackTrace();
+        }
     }
 
     /**
@@ -81,9 +156,11 @@ public class GameMaster implements Serializable {
      * Changes the players' turn.
      */
     public void changeTurn() {
+        saveState();
         turn = (turn + 1) % players.length;
         for(ScrabbleView view : views)
             view.handleChangeTurn(players[turn].getName());
+
         if(players[turn].isAI()) {
             int randomNumber = (new Random()).nextInt(3);
             switch (randomNumber) {
@@ -274,7 +351,7 @@ public class GameMaster implements Serializable {
                 /* Check for blank tiles */
                 if(tile.getLetter() == '-')
                     blankTileAmount++;
-                /* Check for tiles to spell the word */
+                    /* Check for tiles to spell the word */
                 else if(tile.getLetter() == event.getWordAttempt().charAt(i)) {
                     /* Check if the tile has been taken */
                     boolean taken = false;
@@ -323,22 +400,14 @@ public class GameMaster implements Serializable {
             Scanner dictionary = new Scanner(new File(DICTIONARY));
             while(dictionary.hasNextLine()) {
                 if(event.getWordAttempt().equalsIgnoreCase(dictionary.nextLine())) {
-
-                    /* Add previous game state to undo stack */
-                    Bag b = bag;
-                    Board bo = board;
-                    int i = turn;
-                    Player[] p = players;
-                    Object[] objects = {b, bo, i,  p};
-                    undoStack.add(objects);
-
+                    saveState();
                     /* If word exists, attempt to play it on the board */
                     if(board.attemptPlay(tilesToPlay, event.getCoordinates(), event.getDirection())) {
                         /* If word is playable */
+                        redoStack = new Stack<>();
                         players[turn].addPlayedWords(event.getWordAttempt());
-                        for(Tile tile : tilesToPlay) {
+                        for(Tile tile : tilesToPlay)
                             players[turn].getRack().removeTile(tile);
-                        }
                         players[turn].updateScore(board.getScore(event.getCoordinates(), event.getDirection()));
                         players[turn].getRack().fillRack(bag);
                         for(ScrabbleView view : views) {
@@ -347,6 +416,7 @@ public class GameMaster implements Serializable {
                             view.handleRackUpdate();
                         }
                         changeTurn();
+                        undoStack.pop();
                         return true;
                     }
                     else {
@@ -412,7 +482,6 @@ public class GameMaster implements Serializable {
             view.handleQuitUpdate();
         }
     }
-    // TODO: 2022-10-18 complete implementation
 
     /**
      * Save the current game being played.
@@ -446,7 +515,6 @@ public class GameMaster implements Serializable {
         gameFileName = newName;
         return save();
     }
-    // TODO: 2022-10-18 complete implementation
 
     /**
      * Load a saved game.

@@ -1,6 +1,11 @@
 public interface ScrabbleView {
 
     /**
+     * Update the frame content.
+     */
+    void updateFrameContent();
+
+    /**
      * Handle new game update to the view.
      */
     void handleNewGameUpdate();

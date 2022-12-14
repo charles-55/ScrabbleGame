@@ -18,8 +18,8 @@ public class GameMaster implements Serializable {
     private final ArrayList<ScrabbleView> views;
     private static final int MIN_PLAYERS = 2, MAX_PLAYERS = 4;
     public static final String DICTIONARY = "src/WordList.txt";
-    private Stack<Object[]> undoStack;
-    private Stack<Object[]> redoStack;
+    private final Stack<Object[]> undoStack;
+    private final Stack<Object[]> redoStack;
 
 
     /**
@@ -33,13 +33,6 @@ public class GameMaster implements Serializable {
         views = new ArrayList<>();
         undoStack = new Stack<>();
         redoStack = new Stack<>();
-
-        Bag bag = this.bag;
-        Board board = this.board;
-        int turn = this.turn;
-        Player[] players = this.players;
-        Object[] objects = {bag, board, turn, players};
-        undoStack.push(objects);
     }
 
     public void saveState() {
@@ -119,7 +112,7 @@ public class GameMaster implements Serializable {
                 }
             }
         } catch (Exception e) {
-            if(undoStack.isEmpty()) {
+            if(redoStack.isEmpty()) {
                 for(ScrabbleView view : views)
                     view.handleMessage("Redo failed! Redo stack is empty.");
             }
@@ -317,24 +310,55 @@ public class GameMaster implements Serializable {
      * @return true if the play was successful, false otherwise.
      */
     public boolean attemptPlay(PlayEvent event) {
+        try {
+            /* Check if the word exists */
+            Scanner dictionary = new Scanner(new File(DICTIONARY));
+            boolean foundWord = false;
+            while(dictionary.hasNextLine()) {
+                if(event.getWordAttempt().equalsIgnoreCase(dictionary.nextLine())) {
+                    foundWord = true;
+                    break;
+                }
+            }
+            if(!foundWord) {
+                for(ScrabbleView view : views)
+                    view.handleMessage("\"" + event.getWordAttempt() + "\" does not exist.");
+                return false;
+            }
+        }
+        catch(FileNotFoundException e) {
+            for(ScrabbleView view : views)
+                view.handleMessage("Dictionary not found");
+            return false;
+        }
+
+        /* Get tiles from player */
         int blankTileAmount = 0;
         Tile[] tilesToPlay = new Tile[event.getWordAttempt().length()];
-        boolean connected = false;
+        boolean connected = board.isEmpty() && board.checkFirstPlayConditions(event.getWordAttempt().length(), event.getCoordinates(), event.getDirection());
 
         for(int i = 0; i < event.getWordAttempt().length(); i++) {
             /* Check if a player is using a previously played letter */
-            if(board.getBoard()[event.getCoordinates()[1]][event.getCoordinates()[0] + i].getTile() != null) {
-                if((board.getBoard()[event.getCoordinates()[1]][event.getCoordinates()[0] + i].getTile().getLetter() == event.getWordAttempt().charAt(i)) && (event.getDirection() == Board.Direction.FORWARD)) {
-                    connected = true;
-                    tilesToPlay[i] = board.getBoard()[event.getCoordinates()[1]][event.getCoordinates()[0] + i].getTile();
-                    continue;
+            if(event.getDirection() == Board.Direction.FORWARD) {
+                try {
+                    if(board.getBoard()[event.getCoordinates()[0]][event.getCoordinates()[1] + i].getTile().getLetter() == event.getWordAttempt().charAt(i)) {
+                        connected = true;
+                        tilesToPlay[i] = board.getBoard()[event.getCoordinates()[0]][event.getCoordinates()[1] + i].getTile();
+                        continue;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-            if(board.getBoard()[event.getCoordinates()[1] + i][event.getCoordinates()[0]].getTile() != null) {
-                if((board.getBoard()[event.getCoordinates()[1] + i][event.getCoordinates()[0]].getTile().getLetter() == event.getWordAttempt().charAt(i)) && (event.getDirection() == Board.Direction.DOWNWARD)) {
-                    connected = true;
-                    tilesToPlay[i] = board.getBoard()[event.getCoordinates()[1] + i][event.getCoordinates()[0]].getTile();
-                    continue;
+            else if(event.getDirection() == Board.Direction.DOWNWARD) {
+                try {
+                    if(board.getBoard()[event.getCoordinates()[0] + i][event.getCoordinates()[1]].getTile().getLetter() == event.getWordAttempt().charAt(i)) {
+                        connected = true;
+                        tilesToPlay[i] = board.getBoard()[event.getCoordinates()[0] + i][event.getCoordinates()[1]].getTile();
+                        continue;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -342,7 +366,7 @@ public class GameMaster implements Serializable {
                 /* Check for blank tiles */
                 if(tile.getLetter() == '-')
                     blankTileAmount++;
-                    /* Check for tiles to spell the word */
+                /* Check for tiles to spell the word */
                 else if(tile.getLetter() == event.getWordAttempt().charAt(i)) {
                     /* Check if the tile has been taken */
                     boolean taken = false;
@@ -391,48 +415,27 @@ public class GameMaster implements Serializable {
             return false;
         }
 
-        try {
-            /* Check if the word exists */
-            Scanner dictionary = new Scanner(new File(DICTIONARY));
-            while(dictionary.hasNextLine()) {
-                if(event.getWordAttempt().equalsIgnoreCase(dictionary.nextLine())) {
-                    saveState();
-                    /* If word exists, attempt to play it on the board */
-                    if(board.attemptPlay(tilesToPlay, event.getCoordinates(), event.getDirection())) {
-                        /* If word is playable */
-                        redoStack = new Stack<>();
-                        players[turn].addPlayedWords(event.getWordAttempt());
-                        for(Tile tile : tilesToPlay)
-                            players[turn].getRack().removeTile(tile);
-                        players[turn].updateScore(board.getScore(event.getCoordinates(), event.getDirection()));
-                        players[turn].getRack().fillRack(bag);
-                        for(ScrabbleView view : views) {
-                            view.handleBoardUpdate(event.getWordAttempt(), event.getCoordinates(), event.getDirection());
-                            view.handleScoreUpdate();
-                            view.handleRackUpdate();
-                        }
-                        changeTurn();
-                        undoStack.pop();
-                        return true;
-                    }
-                    else {
-                        undoStack.pop();
-                        for(ScrabbleView view : views)
-                            view.handleMessage("You can not play there!");
-                        return false;
-                    }
-                }
+        if(board.attemptPlay(tilesToPlay, event.getCoordinates(), event.getDirection())) {
+            /* If word is playable */
+            redoStack.removeAllElements();
+            players[turn].addPlayedWords(event.getWordAttempt());
+            for(Tile tile : tilesToPlay)
+                players[turn].getRack().removeTile(tile);
+            players[turn].updateScore(board.getScore(event.getCoordinates(), event.getDirection()));
+            players[turn].getRack().fillRack(bag);
+            for(ScrabbleView view : views) {
+                view.handleBoardUpdate(event.getWordAttempt(), event.getCoordinates(), event.getDirection());
+                view.handleScoreUpdate();
+                view.handleRackUpdate();
             }
-            for(ScrabbleView view : views)
-                view.handleMessage("\"" + event.getWordAttempt() + "\" does not exist.");
+            changeTurn();
+            return true;
         }
-        catch (FileNotFoundException exception) {
+        else {
             for(ScrabbleView view : views)
-                view.handleMessage("Dictionary not found");
+                view.handleMessage("You can not play there!");
             return false;
         }
-
-        return false;
     }
 
     /**

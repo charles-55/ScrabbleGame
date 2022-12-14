@@ -173,6 +173,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
                     return false;
                 }
             }
+            model.saveState();
             updateFrameContent();
 
             JMenuBar menuBar = new JMenuBar();
@@ -191,9 +192,14 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     private boolean loadGame() {
-        boolean load = model.load(getFilename());
-        updateFrameContent();
-        return load;
+        try {
+            boolean load = model.load(getFilename());
+            updateFrameContent();
+            return load;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+            return false;
+        }
     }
 
     private boolean customizeGame() {
@@ -275,6 +281,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
         currentPlayer = new JLabel("Player turn: " + model.getPlayers()[model.getTurn()].getName());
         currentPlayer.setFont(FONT);
+        currentPlayer.updateUI();
 
         JPanel boardAndPlayCommandsPanel = new JPanel();
         boardAndPlayCommandsPanel.setLayout(new BoxLayout(boardAndPlayCommandsPanel, BoxLayout.PAGE_AXIS));
@@ -412,6 +419,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             nameLabel.setFont(FONT);
             playerScores[i] = new JLabel("Score: " + model.getPlayers()[i].getScore());
             playerScores[i].setFont(FONT);
+            playerScores[i].updateUI();
             playerRacks.add(new JLabel[7]);
             JPanel rackPanel = new JPanel(new GridLayout(1, 7));
 
@@ -421,6 +429,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
                     playerRacks.get(i)[j] = new JLabel(String.valueOf(tile.getLetter()));
                 else
                     playerRacks.get(i)[j] = new JLabel(tile.getIcon());
+                playerRacks.get(i)[j].updateUI();
                 rackPanel.add(playerRacks.get(i)[j]);
             }
 
@@ -533,8 +542,12 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         return new int[0];
     }
 
-    public String getFilename() {
-        return JOptionPane.showInputDialog("Enter filename: ");
+    public String getFilename() throws Exception {
+        String input = JOptionPane.showInputDialog("Enter filename: ");
+        if(input.length() > 0)
+            return input;
+        JOptionPane.showMessageDialog(this, "Invalid input!", "Error message", JOptionPane.ERROR_MESSAGE);
+        throw new Exception("Invalid input!");
     }
 
     /**

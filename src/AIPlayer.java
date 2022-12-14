@@ -28,15 +28,16 @@ public class AIPlayer extends Player implements Serializable {
         int[] coordinates = new int[2];
         Board.Direction direction = Board.Direction.FORWARD;
 
-        StringBuilder allTileLetters = new StringBuilder();
-        for(int i = 0; i < 7; i++)
-            allTileLetters.append(getRack().getTiles()[i].getLetter());
-
-        ArrayList<String> possibleWords = combine(allTileLetters.toString(), new StringBuffer(), 0);
-        possibleWords.sort(Comparator.comparingInt(String::length).reversed());
-
         for(int i = 0; i < tempBoard.getBoardSize()[0]; i++) {
             for(int j = 0; j < tempBoard.getBoardSize()[1]; j++) {
+                StringBuilder allTileLetters = new StringBuilder();
+                for(int x = 0; x < 7; x++)
+                    allTileLetters.append(getRack().getTiles()[x].getLetter());
+                allTileLetters.append(tempBoard.getBoard()[i][j].getTile().getLetter());
+
+                ArrayList<String> possibleWords = combine(allTileLetters.toString(), new StringBuffer(), 0);
+                possibleWords.sort(Comparator.comparingInt(String::length).reversed());
+
                 for(String word : possibleWords) {
                     Tile[] wordTiles = new Tile[word.length()];
                     for(int k = 0; k < word.length(); k++) {

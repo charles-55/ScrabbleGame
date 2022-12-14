@@ -63,9 +63,9 @@ public class Square implements Serializable {
      * @return false if the tile is null(no tile) else return true.
      */
     public boolean placeTile(Tile tileToPlace){
-        if(tile == tileToPlace)
+        if(tile.equals(tileToPlace))
             return true;
-        if(tile != Tile.getDefaultTile())
+        if(!tile.equals(Tile.getDefaultTile()))
             return false;
         tile = tileToPlace;
         return true;

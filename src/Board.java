@@ -114,20 +114,18 @@ public class Board {
         if(direction == Direction.FORWARD) {
             if((coordinates[0] >= BOARD_SIZE) || (coordinates[1] >= BOARD_SIZE))
                 return false;
-            if(coordinates[0] + wordTiles.length - 1 >= BOARD_SIZE)
+            if(coordinates[1] + wordTiles.length - 1 >= BOARD_SIZE)
                 return false;
             if(isEmpty()) {
-                if(!((coordinates[1] == ORIGIN_POINT[1]) && (coordinates[0] <= ORIGIN_POINT[0]) && (coordinates[0] + wordTiles.length - 1 >= ORIGIN_POINT[0])))
-                    return false;
-                else if(!((coordinates[0] == ORIGIN_POINT[0]) && (coordinates[1] <= ORIGIN_POINT[1]) && (coordinates[1] + wordTiles.length - 1 >= ORIGIN_POINT[1])))
+                if(!((coordinates[1] <= ORIGIN_POINT[1]) && (coordinates[1] + wordTiles.length - 1 >= ORIGIN_POINT[1]) && (coordinates[0] == ORIGIN_POINT[0])))
                     return false;
             }
             for(int i = 0; i < wordTiles.length; i++) {
                 if(wordTiles[i] != null) {
-                    boolean placed = board[coordinates[1]][coordinates[0] + i].placeTile(wordTiles[i]);
+                    boolean placed = board[coordinates[0]][coordinates[1] + i].placeTile(wordTiles[i]);
                     if(!placed) {
                         for(int j = i - 1; j >= 0; j--) {
-                            board[coordinates[1]][coordinates[0] + j].removeTile();
+                            board[coordinates[0]][coordinates[1] + j].removeTile();
                         }
                         return false;
                     }
@@ -137,10 +135,10 @@ public class Board {
         else if(direction == Direction.DOWNWARD) {
             if((coordinates[0] >= BOARD_SIZE) || (coordinates[1] >= BOARD_SIZE))
                 return false;
-            if(coordinates[1] + wordTiles.length - 1 >= BOARD_SIZE)
+            if(coordinates[0] + wordTiles.length - 1 >= BOARD_SIZE)
                 return false;
             if(isEmpty()) {
-                if(!((coordinates[0] == ORIGIN_POINT[0]) && (coordinates[1] <= ORIGIN_POINT[1]) && (coordinates[1] + wordTiles.length - 1 >= ORIGIN_POINT[1])))
+                if(!((coordinates[0] <= ORIGIN_POINT[0]) && (coordinates[0] + wordTiles.length - 1 >= ORIGIN_POINT[0]) && (coordinates[1] == ORIGIN_POINT[1])))
                     return false;
             }
             for(int i = 0; i < wordTiles.length; i++) {

@@ -114,4 +114,10 @@ public class Tile implements Serializable {
         }
         return tile;
     }
+
+    public static Tile getCopyTile(Tile tile) {
+        Tile copyTile = new Tile(tile.getLetter(), tile.getPoints());
+        copyTile.setIcon(tile.getIcon());
+        return copyTile;
+    }
 }

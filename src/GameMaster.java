@@ -321,15 +321,6 @@ public class GameMaster implements Serializable {
         Tile[] tilesToPlay = new Tile[event.getWordAttempt().length()];
         boolean connected = false;
 
-        /* Check if first play */
-        if(board.checkFirstPlayConditions(event.getWordAttempt().length(), event.getCoordinates(), event.getDirection()))
-            connected = true;
-        else if(board.isEmpty()) {
-            for(ScrabbleView view : views)
-                view.handleMessage("You have to connect your word to the origin point!");
-            return false;
-        }
-
         for(int i = 0; i < event.getWordAttempt().length(); i++) {
             /* Check if a player is using a previously played letter */
             if(board.getBoard()[event.getCoordinates()[1]][event.getCoordinates()[0] + i].getTile() != null) {
@@ -389,9 +380,14 @@ public class GameMaster implements Serializable {
             }
         }
 
-        if(!connected) {
+        if((!connected) && (!board.isEmpty())) {
             for(ScrabbleView view : views)
                 view.handleMessage("You have to connect your word to a previously spelt word!");
+            return false;
+        }
+        else if((!connected) && board.isEmpty()) {
+            for(ScrabbleView view : views)
+                view.handleMessage("You have to connect your word to the origin!");
             return false;
         }
 

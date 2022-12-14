@@ -23,7 +23,7 @@ public class AIPlayer extends Player implements Serializable {
      * @return the play event
      */
     public PlayEvent play(Board board) {
-        Board tempBoard = board;
+        Board tempBoard = Board.getCopyBoard(board);
         String wordAttempt = "";
         int[] coordinates = new int[2];
         Board.Direction direction = Board.Direction.FORWARD;

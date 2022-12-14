@@ -17,8 +17,8 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private final GameMaster model;
     private final BoardController boardController;
     private final CommandController commandController;
-    private final JButton[][] board;
-    private JPanel gamePanel = new JPanel();
+    private JButton[][] board;
+    private final JPanel gamePanel;
     private JLabel currentPlayer;
     private JLabel[] playerScores;
     private ArrayList<JLabel[]> playerRacks;
@@ -36,12 +36,16 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         model = new GameMaster();
         boardController = new BoardController(this,model);
         commandController = new CommandController(model, this);
-        board = new JButton[model.getBoard().getBoardSize()[0]][model.getBoard().getBoardSize()[1]];
         model.addView(this);
+
+        gamePanel = new JPanel();
+        gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.X_AXIS));
 
         playMusic();
 
         if(initializeGame()) {
+            this.add(gamePanel);
+
             this.setDefaultCloseOperation(EXIT_ON_CLOSE);
             this.setMinimumSize(new Dimension(500, 500));
             this.pack();
@@ -171,6 +175,13 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             }
             updateFrameContent();
 
+            JMenuBar menuBar = new JMenuBar();
+            menuBar.add(fileMenuSetup());
+            menuBar.add(editMenuSetup());
+            menuBar.add(helpMenuSetup());
+            this.setJMenuBar(menuBar);
+            this.setTitle(model.getGameFileName());
+
             return true;
         }
         else {
@@ -259,20 +270,12 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
      */
     @Override
     public void updateFrameContent() {
-        this.remove(gamePanel);
-
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.add(fileMenuSetup());
-        menuBar.add(editMenuSetup());
-        menuBar.add(helpMenuSetup());
-        this.setJMenuBar(menuBar);
-        this.setTitle(model.getGameFileName());
+        if(gamePanel.getComponents().length > 0)
+            gamePanel.removeAll();
 
         currentPlayer = new JLabel("Player turn: " + model.getPlayers()[model.getTurn()].getName());
         currentPlayer.setFont(FONT);
 
-        gamePanel = new JPanel();
-        gamePanel.setLayout(new BoxLayout(gamePanel, BoxLayout.X_AXIS));
         JPanel boardAndPlayCommandsPanel = new JPanel();
         boardAndPlayCommandsPanel.setLayout(new BoxLayout(boardAndPlayCommandsPanel, BoxLayout.PAGE_AXIS));
 
@@ -280,7 +283,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
         boardAndPlayCommandsPanel.add(playCommandsPanel());
         gamePanel.add(boardAndPlayCommandsPanel);
         gamePanel.add(playerPanelSetup());
-        this.add(gamePanel);
+        gamePanel.updateUI();
     }
 
     private JMenu fileMenuSetup() {
@@ -378,6 +381,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
     private JPanel boardPanelSetup() {
         JPanel boardPanel = new JPanel(new GridLayout(model.getBoard().getBoardSize()[0], model.getBoard().getBoardSize()[1]));
+        board = new JButton[model.getBoard().getBoardSize()[0]][model.getBoard().getBoardSize()[1]];
 
         for(int i = 0; i < model.getBoard().getBoardSize()[0]; i++) {
             for(int j = 0; j < model.getBoard().getBoardSize()[1]; j++) {
@@ -387,6 +391,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
                 button.setActionCommand(i + " " + j);
                 button.addActionListener(boardController);
                 board[i][j] = button;
+                board[i][j].updateUI();
                 boardPanel.add(board[i][j]);
             }
         }

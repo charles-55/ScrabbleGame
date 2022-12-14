@@ -77,4 +77,12 @@ public class Square implements Serializable {
     public void removeTile() {
         tile = null;
     }
+
+    public static Square getCopySquare(Square square) {
+        Square copySquare = new Square();
+        copySquare.placeTile(Tile.getCopyTile(square.getTile()));
+        copySquare.setSquareType(square.getSquareType());
+        copySquare.setIcon(square.getIcon());
+        return copySquare;
+    }
 }

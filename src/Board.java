@@ -142,9 +142,8 @@ public class Board implements Serializable {
                 if(wordTiles[i] != null) {
                     boolean placed = board[coordinates[1]][coordinates[0] + i].placeTile(wordTiles[i]);
                     if(!placed) {
-                        for(int j = i - 1; j >= 0; j--) {
+                        for(int j = i - 1; j >= 0; j--)
                             board[coordinates[1]][coordinates[0] + j].removeTile();
-                        }
                         return false;
                     }
                 }
@@ -158,9 +157,8 @@ public class Board implements Serializable {
                 if(wordTiles[i] != null) {
                     boolean placed = board[coordinates[0] + i][coordinates[1]].placeTile(wordTiles[i]);
                     if(!placed) {
-                        for(int j = i - 1; j >= 0; j--) {
+                        for(int j = i - 1; j >= 0; j--)
                             board[coordinates[0] + j][coordinates[1]].removeTile();
-                        }
                         return false;
                     }
                 }
@@ -366,5 +364,17 @@ public class Board implements Serializable {
         }
 
         return boardString.toString();
+    }
+
+    public static Board getCopyBoard(Board board) {
+        Square[][] boardSquares = board.getBoard();
+        Square[][] copyBoardSquares = new Square[boardSquares.length][boardSquares[0].length];
+        for(int i = 0; i < boardSquares.length; i++) {
+            for(int j = 0; j < boardSquares[0].length; j++) {
+                copyBoardSquares[i][j] = Square.getCopySquare(boardSquares[i][j]);
+            }
+        }
+
+        return new Board(copyBoardSquares);
     }
 }

@@ -85,6 +85,7 @@ public class Player implements Serializable {
 
         return s.toString();
     }
+
     /**
      * Stores played words in a stack
      * @param  word of  type Strings

@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class Board implements Serializable {
 
     public enum Direction {FORWARD, DOWNWARD}
-    private final Square[][] board;
+    private Square[][] board;
     private final int[] BOARD_SIZE;
     private final int[] ORIGIN_POINT;
 
@@ -81,6 +81,10 @@ public class Board implements Serializable {
      */
     public Square[][] getBoard() {
         return board;
+    }
+
+    public void setBoard(Square[][] board) {
+        this.board = board;
     }
 
     /**

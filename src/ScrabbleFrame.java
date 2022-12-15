@@ -482,7 +482,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     /**
-     * Attemps a play on the board, if the move is valid the play will be made else return null
+     * Attempts a play on the board, if the move is valid the play will be made else return null
      * @return returnArray[] array of the word and direction to be played
      */
     public String[] attemptPlay() {

@@ -17,26 +17,23 @@ public class Rack implements Serializable {
 
     public Rack() {
         this.tiles = new Tile[MAX_RACK_SIZE];
+        for(int i = 0; i < MAX_RACK_SIZE; i++)
+            tiles[i] = Tile.getDefaultTile();
     }
 
     /**
      * takes a tile from the bag and fills the rack up
      * @param bag The Bag to be processed.
-     * @return true if the bag was filled , false otherwise.
      */
-    public boolean fillRack(Bag bag){
-        boolean filled=true;
-        for(int i=0;i<MAX_RACK_SIZE;i++){
-            if(tiles[i]==null){
-                tiles[i]=bag.drawTile();
-                filled=!(tiles[i]==null);
-
+    public void fillRack(Bag bag) {
+        for(int i = 0; i < MAX_RACK_SIZE; i++) {
+            if(tiles[i].equals(Tile.getDefaultTile())) {
+                tiles[i] = bag.drawTile();
             }
         }
-        return filled;
     }
     /**
-     * checks the bag and true  if the amount of tile to be exhanged was succesful
+     * checks the bag and true  if the amount of tile to be exchanged was successful
      * @param bag and an array of int.
      * @return true if the tile was exchanged succesfully , false otherwise.
      */
@@ -67,7 +64,7 @@ public class Rack implements Serializable {
      * returns the tiles letters and points as string
      * @return String of the tiles letters and points
      */
-    public String toString(){
+    public String toString() {
         StringBuilder lettersAndPoints= new StringBuilder("| ");
         for(Tile t : tiles){
             if(t != null){
@@ -84,7 +81,7 @@ public class Rack implements Serializable {
     public void removeTile(Tile tile) {
         for(int i = 0; i < MAX_RACK_SIZE; i++) {
             if(tiles[i] == tile) {
-                tiles[i] = null;
+                tiles[i] = Tile.getDefaultTile();
             }
         }
     }

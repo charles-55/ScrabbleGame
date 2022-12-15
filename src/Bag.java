@@ -76,7 +76,7 @@ public class Bag implements Serializable {
      */
 
     public Tile drawTile() {
-        if(isEmpty())
+        if(!isEmpty())
             return bag.remove(random.nextInt(bag.size()));
         else
             return null;

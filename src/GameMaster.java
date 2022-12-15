@@ -50,10 +50,14 @@ public class GameMaster implements Serializable {
         try {
             Object[] objects = undoStack.pop();
             redoStack.push(objects);
-            bag = (Bag) objects[0];
-            board = (Board) objects[1];
+            bag.setBag(((Bag) objects[0]).getBag());
+            board.setBoard(((Board) objects[1]).getBoard());
             turn = (int) objects[2];
-            players = (Player[]) objects[3];
+            for(int i = 0; i < players.length; i++) {
+                players[i].setScore(((Player[]) objects[3])[i].getScore());
+                players[i].setRack(((Player[]) objects[3])[i].getRack());
+                players[i].setPlayedWords(((Player[]) objects[3])[i].getPlayedWords());
+            }
 
             for (ScrabbleView view : views)
                 view.updateFrameContent();
@@ -150,7 +154,6 @@ public class GameMaster implements Serializable {
      * Changes the players' turn.
      */
     public void changeTurn() {
-        saveState();
         turn = (turn + 1) % players.length;
         for(ScrabbleView view : views)
             view.handleChangeTurn(players[turn].getName());
@@ -416,6 +419,7 @@ public class GameMaster implements Serializable {
             return false;
         }
 
+        saveState();
         if(board.attemptPlay(tilesToPlay, event.getCoordinates(), event.getDirection())) {
             /* If word is playable */
             redoStack.removeAllElements();
@@ -433,6 +437,7 @@ public class GameMaster implements Serializable {
             return true;
         }
         else {
+            undoStack.pop();
             for(ScrabbleView view : views)
                 view.handleMessage("You can not play there!");
             return false;

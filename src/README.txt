@@ -65,5 +65,5 @@ Running the jar File:
 
 
 Known Issues:
-Board doesn't connect correctly.
-Undo/Redo stacks doesn't work correctly.
+- Gameplay takes long to load.
+- Undo/Redo stacks doesn't work correctly.

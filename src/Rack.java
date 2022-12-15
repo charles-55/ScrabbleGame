@@ -42,7 +42,7 @@ public class Rack implements Serializable {
      */
     public boolean exchangeTiles(Bag bag, int[] index){
         for(int i : index) {
-            if(!bag.isEmpty())
+            if(bag.isEmpty())
                 tiles[i] = bag.swapTile(tiles[i]);
         }
         return true;
@@ -87,5 +87,14 @@ public class Rack implements Serializable {
                 tiles[i] = null;
             }
         }
+    }
+
+    public static Rack getCopyRack(Rack rack) {
+        Rack copyRack = new Rack();
+        Tile[] tiles = new Tile[MAX_RACK_SIZE];
+        for(int i = 0; i < MAX_RACK_SIZE; i++)
+            tiles[i] = Tile.getCopyTile(rack.getTiles()[i]);
+        copyRack.setTiles(tiles);
+        return copyRack;
     }
 }

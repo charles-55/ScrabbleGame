@@ -21,7 +21,6 @@ public class GameMaster implements Serializable {
     private final Stack<Object[]> undoStack;
     private final Stack<Object[]> redoStack;
 
-
     /**
      * Create and initialize the game.
      */
@@ -37,10 +36,12 @@ public class GameMaster implements Serializable {
 
     public void saveState() {
         /* Add previous game state to undo stack */
-        Bag bag = this.bag;
-        Board board = this.board;
+        Bag bag = Bag.getCopyBag(this.bag);
+        Board board = Board.getCopyBoard(this.board);
         int turn = this.turn;
-        Player[] players = this.players;
+        Player[] players = new Player[this.players.length];
+        for(int i = 0; i < players.length; i++)
+            players[i] = Player.getCopyPlayer(this.players[i]);
         Object[] objects = {bag, board, turn, players};
         undoStack.push(objects);
     }
@@ -489,10 +490,10 @@ public class GameMaster implements Serializable {
     public boolean save() {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(gameFileName+".txt"));
-            objectOutputStream.writeObject(board);
             objectOutputStream.writeObject(bag);
-            objectOutputStream.writeObject(players);
+            objectOutputStream.writeObject(board);
             objectOutputStream.writeObject(turn);
+            objectOutputStream.writeObject(players);
             objectOutputStream.close();
             return true;
 
@@ -521,16 +522,15 @@ public class GameMaster implements Serializable {
      */
     public boolean load(String filename) {
         try{
-            ObjectInputStream object=new ObjectInputStream(new FileInputStream(filename+".txt"));
-            board=(Board) object.readObject();
-            bag=(Bag) object.readObject();
-            players =(Player[]) object.readObject();
-            turn=(int) object.readObject();
-
+            ObjectInputStream object = new ObjectInputStream(new FileInputStream(filename+".txt"));
+            bag = (Bag) object.readObject();
+            board = (Board) object.readObject();
+            turn = (int) object.readObject();
+            players = (Player[]) object.readObject();
+            object.close();
         }catch(IOException | ClassNotFoundException e){
             return false;
         }
         return true;
-
     }
 }

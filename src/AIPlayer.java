@@ -23,17 +23,16 @@ public class AIPlayer extends Player implements Serializable {
      * @return the play event
      */
     public PlayEvent play(Board board) {
-        Board tempBoard = Board.getCopyBoard(board);
         String wordAttempt = "";
         int[] coordinates = new int[2];
         Board.Direction direction = Board.Direction.FORWARD;
 
-        for(int i = 0; i < tempBoard.getBoardSize()[0]; i++) {
-            for(int j = 0; j < tempBoard.getBoardSize()[1]; j++) {
+        for(int i = 0; i < board.getBoardSize()[0]; i++) {
+            for(int j = 0; j < board.getBoardSize()[1]; j++) {
                 StringBuilder allTileLetters = new StringBuilder();
                 for(int x = 0; x < 7; x++)
                     allTileLetters.append(getRack().getTiles()[x].getLetter());
-                allTileLetters.append(tempBoard.getBoard()[i][j].getTile().getLetter());
+                allTileLetters.append(board.getBoard()[i][j].getTile().getLetter());
 
                 ArrayList<String> possibleWords = combine(allTileLetters.toString(), new StringBuffer(), 0);
                 possibleWords.sort(Comparator.comparingInt(String::length).reversed());
@@ -47,6 +46,7 @@ public class AIPlayer extends Player implements Serializable {
                         }
                     }
 
+                    Board tempBoard = Board.getCopyBoard(board);
                     if(tempBoard.attemptPlay(wordTiles, new int[]{i, j}, Board.Direction.FORWARD))
                         return new PlayEvent(word, new int[]{i, j}, Board.Direction.FORWARD);
                     else if(tempBoard.attemptPlay(wordTiles, new int[]{i, j}, Board.Direction.DOWNWARD))

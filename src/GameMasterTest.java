@@ -10,7 +10,7 @@ public class GameMasterTest {
 
     @Before
     public void setup(){
-        test=new GameMaster();
+        test = new GameMaster();
         test.setPlayerSize(2);
     }
 
@@ -20,7 +20,7 @@ public class GameMasterTest {
     }
 
     @Test
-    public void testPlayerSize() throws Exception {
+    public void testPlayerSize() {
         test.setPlayerSize(2);
         assertEquals(2,test.getPlayers().length);
         test.setPlayerSize(4);
@@ -57,9 +57,6 @@ public class GameMasterTest {
         tiles[2]=new Tile('T',2);
         tiles[3]=new Tile('E',2);
 
-        Tile[] t=new Tile[7];
-        tiles[0]=new Tile('L',2);
-
         test.addPlayer(new Player("charles", false));
         test.addPlayer(new Player("leslie", false));
         test.getPlayers()[test.getTurn()].getRack().setTiles(tiles);
@@ -94,15 +91,19 @@ public class GameMasterTest {
 
     @Test
     public void testAddViews(){
-        ScrabbleView v=new ScrabbleFrame();
-        ScrabbleView h=new ScrabbleFrame();;
-        ScrabbleView m=new ScrabbleFrame();;
-        test.addView(v);
-        test.addView(h);
-        test.addView(m);
-        assertEquals(v,test.getView(0));
-        assertEquals(h,test.getView(1));
-        assertEquals(m,test.getView(2));
+        try {
+            ScrabbleView v = new ScrabbleFrame();
+            ScrabbleView h = new ScrabbleFrame();
+            ScrabbleView m = new ScrabbleFrame();
+            test.addView(v);
+            test.addView(h);
+            test.addView(m);
+            assertEquals(v, test.getView(0));
+            assertEquals(h, test.getView(1));
+            assertEquals(m, test.getView(2));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

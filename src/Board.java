@@ -46,29 +46,28 @@ public class Board implements Serializable {
         }
 
         board[ORIGIN_POINT[0]][ORIGIN_POINT[1]].setSquareType(Square.SquareType.ORIGIN);
-        for(int k=0;k<BOARD_SIZE[0];k++){
-            for(int g=0;g<BOARD_SIZE[1];g++){
-                if((k==0&&g==0)||(k==5 && g==5)||(k==9 && g==9)||(k==14 && g==14)){
+        for(int k = 0; k < BOARD_SIZE[0]; k++) {
+            for(int g = 0; g < BOARD_SIZE[1]; g++) {
+                if((k == 0 && g == 0) || (k == 5 && g == 5) || (k == 9 && g == 9) || (k == 14 && g == 14)) {
                     board[k][g].setSquareType(Square.SquareType.TWS);
-                } else if ((k==14&&g==0)||(k==9 && g==5)||(k==5 && g==9)||(k==0 && g==14)) {
+                } else if ((k == 14 && g == 0) || (k == 9 && g == 5) ||( k == 5 && g == 9) || (k == 0 && g == 14)) {
                     board[k][g].setSquareType(Square.SquareType.TWS);
-                } else if (!((k==0&&g==0)||(k==5 && g==5)||(k==9 && g==9)||(k==14 && g==14)&&(k==14&&g==0)||(k==9 && g==5)||(k==5 && g==9)||(k==0 && g==14))) {
-                    if(k==g && (k!=7 && g!=7) && (k!=8 && g!=8) && (k!=6 && g!=6) ){
+                } else {
+                    if(k == g && k != 7 && k != 8 && k != 6){
                         board[k][g].setSquareType(Square.SquareType.DWS);
-                    } else if ((k==13 && g==1 )||(k==12&&g==2) ||(k==11&&g==3)||(k==10&&g==4)||(k==8&&g==6)||(k==6&&g==8)||(k==4&&g==10)||(k==3&&g==11)||(k==2&&g==12)||(k==1&&g==13)) {
+                    } else if ((k == 13 && g == 1) || (k == 12 && g == 2) || (k == 11 && g == 3) || (k == 10 && g == 4) || (k == 8 && g == 6) || (k == 6 && g == 8) || (k == 4 && g == 10) || (k == 3 && g == 11) || (k == 2 && g == 12) || (k == 1 && g == 13)) {
                         board[k][g].setSquareType(Square.SquareType.DWS);
                     } else if (k==8 &&g==8 || k==6 && g== 6) {
                         board[k][g].setSquareType(Square.SquareType.DLS);
-                    }else if((k==3 && g==0) || (k==6 && g==3)|| (k==7 && g==4)|| (k==8 && g==3)|| (k==11 && g==0)||(k==3 && g==14)|| (k==6 && g==11)|| (k==7 && g==10)|| (k==8 && g==11)|| (k==11 && g==14) ){
+                    } else if((k == 3 && g == 0) || (k == 6 && g == 3) || (k == 7 && g == 4) || (k == 8 && g == 3) || (k == 11 && g == 0) || (k == 3 && g == 14) || (k == 6 && g == 11) || (k == 7 && g == 10) || (k == 8 && g == 11) || (k == 11 && g == 14)) {
                         board[k][g].setSquareType(Square.SquareType.DLS);
-
-                    }else if((k==5 && g==2)|| (k==9 && g==2)||(k==5 && g==12) || (k==9 && g==12)){
+                    } else if((k == 5 && g == 2) || (k == 9 && g == 2) || (k == 5 && g == 12) || (k == 9 && g == 12)) {
                         board[k][g].setSquareType(Square.SquareType.TLS);
-                    }else if((k==0&&g==7)||(k==7 && g==14)||(k==7 && g==0)||(k==14 && g==7) ){
+                    } else if((k == 0 && g == 7) || (k == 7 && g == 14) || (k == 7 && g == 0)||(k == 14 && g == 7)) {
                         board[k][g].setSquareType(Square.SquareType.TWS);
-                    } else if((k==0 && g==3) || (k==3 && g==6)|| (k==4 && g==7)|| (k==3 && g==8)|| (k==0 && g==11)||(k==14 && g==3)|| (k==11 && g==6)|| (k==10 && g==7)|| (k==11 && g==8)|| (k==14 && g==11) ){
+                    } else if((k == 0 && g == 3) || (k == 3 && g == 6) || (k == 4 && g == 7) || (k == 3 && g == 8) || (k == 0 && g == 11) || (k == 14 && g == 3) || (k == 11 && g == 6) || (k == 10 && g == 7) || (k == 11 && g == 8) || (k == 14 && g == 11)) {
                         board[k][g].setSquareType(Square.SquareType.DLS);
-                    }else if((k==12 && g==5)|| (k==2 && g==9)||(k==12 && g==5) || (k==12 && g==9)){
+                    } else if((k == 2 && g == 9) || (k == 12 && g == 5) || (k == 12 && g == 9)) {
                         board[k][g].setSquareType(Square.SquareType.TLS);
                     }
                 }
@@ -177,9 +176,9 @@ public class Board implements Serializable {
 
         if(direction == Direction.FORWARD) {
             int i = 0;
-            while(board[coordinates[0]][coordinates[1] - i].getTile() != null) {
+            while(!board[coordinates[0]][coordinates[1] - i].getTile().equals(Tile.getDefaultTile())) {
                 int j = 0;
-                while(board[coordinates[0] - j][coordinates[1] - i].getTile() != null) {
+                while(!board[coordinates[0] - j][coordinates[1] - i].getTile().equals(Tile.getDefaultTile())) {
                     if(board[coordinates[0] - j][coordinates[1] - i].getSquareType() == Square.SquareType.TWS) {
                         multiplier *= 3;
                         score += board[coordinates[0] - j][coordinates[1] - i].getTile().getPoints();
@@ -201,7 +200,7 @@ public class Board implements Serializable {
                     }
                 }
 
-                while(board[coordinates[0] + j][coordinates[1] - i].getTile() != null) {
+                while(!board[coordinates[0] + j][coordinates[1] - i].getTile().equals(Tile.getDefaultTile())) {
                     if(board[coordinates[0] + j][coordinates[1] - i].getSquareType() == Square.SquareType.TWS) {
                         multiplier *= 3;
                         score += board[coordinates[0] + j][coordinates[1] - i].getTile().getPoints();
@@ -228,7 +227,7 @@ public class Board implements Serializable {
                 }
             }
 
-            while(board[coordinates[0]][coordinates[1] + i].getTile() != null) {
+            while(!board[coordinates[0]][coordinates[1] + i].getTile().equals(Tile.getDefaultTile())) {
                 if(board[coordinates[0]][coordinates[1] + i].getSquareType() == Square.SquareType.TWS) {
                     multiplier *= 3;
                     score += board[coordinates[0]][coordinates[1] + i].getTile().getPoints();
@@ -250,9 +249,9 @@ public class Board implements Serializable {
         }
         else if(direction == Board.Direction.DOWNWARD) {
             int j = 0;
-            while(board[coordinates[0] - j][coordinates[1]].getTile() != null) {
+            while(!board[coordinates[0] - j][coordinates[1]].getTile().equals(Tile.getDefaultTile())) {
                 int i = 0;
-                while(board[coordinates[0] - j][coordinates[1] - i].getTile() != null) {
+                while(!board[coordinates[0] - j][coordinates[1] - i].getTile().equals(Tile.getDefaultTile())) {
                     if(board[coordinates[0] - j][coordinates[1] - i].getSquareType() == Square.SquareType.TWS) {
                         multiplier *= 3;
                         score += board[coordinates[0] - j][coordinates[1] - i].getTile().getPoints();
@@ -274,7 +273,7 @@ public class Board implements Serializable {
                     }
                 }
 
-                while(board[coordinates[0] - j][coordinates[1] + i].getTile() != null) {
+                while(!board[coordinates[0] - j][coordinates[1] + i].getTile().equals(Tile.getDefaultTile())) {
                     if(board[coordinates[0] - j][coordinates[1] + i].getSquareType() == Square.SquareType.TWS) {
                         multiplier *= 3;
                         score += board[coordinates[0] - j][coordinates[1] + i].getTile().getPoints();
@@ -301,7 +300,7 @@ public class Board implements Serializable {
                 }
             }
 
-            while(board[coordinates[0] + j][coordinates[1]].getTile() != null) {
+            while(!board[coordinates[0] + j][coordinates[1]].getTile().equals(Tile.getDefaultTile())) {
                 if(board[coordinates[0] + j][coordinates[1]].getSquareType() == Square.SquareType.TWS) {
                     multiplier *= 3;
                     score += board[coordinates[0] + j][coordinates[1]].getTile().getPoints();

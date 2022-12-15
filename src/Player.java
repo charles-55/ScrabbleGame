@@ -10,8 +10,8 @@ public class Player implements Serializable {
 
     private final String name;
     private int score;
-    private final Rack rack;
-    private final Stack<String> playedWords;
+    private Rack rack;
+    private Stack<String> playedWords;
     private final boolean IS_AI;
 
     /**
@@ -55,12 +55,21 @@ public class Player implements Serializable {
     public int getScore(){
         return this.score;
     }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     /**
      * Gets the players rack
      * @return Data of type rack
      */
     public Rack getRack(){
         return rack;
+    }
+
+    public void setRack(Rack rack) {
+        this.rack = rack;
     }
 
     /**
@@ -83,11 +92,27 @@ public class Player implements Serializable {
     public void addPlayedWords(String word){
         playedWords.add(word );
     }
+
     /**
      *Returns played words
      * @return a stack of played words
      */
-    public Stack<String> returnsPlayedWords(){
+    public Stack<String> getPlayedWords(){
         return playedWords;
+    }
+
+    public void setPlayedWords(Stack<String> playedWords) {
+        this.playedWords = playedWords;
+    }
+
+    public static Player getCopyPlayer(Player player) {
+        Player copyPlayer = new Player(player.getName(), player.IS_AI);
+        copyPlayer.setScore(player.getScore());
+        copyPlayer.setRack(Rack.getCopyRack(player.getRack()));
+        Stack<String> copyPlayedWords = new Stack<>();
+        for(String word : player.getPlayedWords())
+            copyPlayedWords.push(word);
+        copyPlayer.setPlayedWords(copyPlayedWords);
+        return copyPlayer;
     }
 }

@@ -9,7 +9,7 @@ import java.util.*;
  * @version 1.0
  */
 public class Bag implements Serializable {
-    private ArrayList <Tile> bag = new ArrayList <Tile>();
+    private ArrayList <Tile> bag = new ArrayList <>();
     private final Random random  = new Random ();
 
     /**
@@ -41,8 +41,7 @@ public class Bag implements Serializable {
      *
      * @return boolean true if the Bag is empty, else false
      */
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return bag.isEmpty();
     }
 
@@ -77,7 +76,7 @@ public class Bag implements Serializable {
      */
 
     public Tile drawTile() {
-        if(!isEmpty())
+        if(isEmpty())
             return bag.remove(random.nextInt(bag.size()));
         else
             return null;
@@ -87,7 +86,7 @@ public class Bag implements Serializable {
      * Creates a new bag and add the default number of tiles into bag.
      */
     private void resetBag() {
-        bag = new ArrayList <Tile>();
+        bag = new ArrayList<>();
         addTiles (2, '-', 0);
         addTiles (12, 'E', 1);
         addTiles (9, 'A', 1);
@@ -115,5 +114,22 @@ public class Bag implements Serializable {
         addTiles (1, 'X', 8);
         addTiles (1, 'Q', 10);
         addTiles (1, 'Z', 10);
+    }
+
+    public ArrayList<Tile> getBag() {
+        return bag;
+    }
+
+    public void setBag(ArrayList<Tile> bag) {
+        this.bag = bag;
+    }
+
+    public static Bag getCopyBag(Bag bag) {
+        Bag copyBag = new Bag();
+        ArrayList<Tile> tiles = new ArrayList<>();
+        for(Tile tile : bag.getBag())
+            tiles.add(Tile.getCopyTile(tile));
+        copyBag.setBag(tiles);
+        return copyBag;
     }
 }

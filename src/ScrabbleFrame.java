@@ -133,6 +133,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     private boolean newGame() {
+        board = new JButton[model.getBoard().getBoardSize()[0]][model.getBoard().getBoardSize()[1]];
         JPanel initPanel = new JPanel(new GridLayout(2, 2));
 
         JTextField gameNameTextField = new JTextField(20);
@@ -194,6 +195,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     private boolean loadGame() {
         try {
             boolean load = model.load(getFilename());
+            board = new JButton[model.getBoard().getBoardSize()[0]][model.getBoard().getBoardSize()[1]];
             updateFrameContent();
             return load;
         } catch (Exception e) {
@@ -239,6 +241,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
             JOptionPane.showMessageDialog(this, customBoardPanel);
             try {
                 model.setBoard(new Board(squares));
+                board = new JButton[model.getBoard().getBoardSize()[0]][model.getBoard().getBoardSize()[1]];
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e.getMessage());
                 return false;
@@ -388,15 +391,18 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
 
     private JPanel boardPanelSetup() {
         JPanel boardPanel = new JPanel(new GridLayout(model.getBoard().getBoardSize()[0], model.getBoard().getBoardSize()[1]));
-        board = new JButton[model.getBoard().getBoardSize()[0]][model.getBoard().getBoardSize()[1]];
 
         for(int i = 0; i < model.getBoard().getBoardSize()[0]; i++) {
             for(int j = 0; j < model.getBoard().getBoardSize()[1]; j++) {
                 JButton button = new JButton();
                 button.setBorder(BorderFactory.createLineBorder(BORDER_COLOR));
-                button.setIcon(model.getBoard().getBoard()[i][j].getIcon());
+                if(model.getBoard().getBoard()[i][j].getTile().equals(Tile.getDefaultTile()))
+                    button.setIcon(model.getBoard().getBoard()[i][j].getIcon());
+                else
+                    button.setIcon(model.getBoard().getBoard()[i][j].getTile().getIcon());
                 button.setActionCommand(i + " " + j);
                 button.addActionListener(boardController);
+
                 board[i][j] = button;
                 board[i][j].updateUI();
                 boardPanel.add(board[i][j]);
@@ -557,7 +563,11 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     public void handleNewGameUpdate() {
         clip.stop();
         this.dispose();
-        new ScrabbleFrame();
+        try {
+            new ScrabbleFrame();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
     }
 
     /**
@@ -609,7 +619,7 @@ public class ScrabbleFrame extends JFrame implements ScrabbleView {
     }
 
     /**
-     * Handle the rack update();
+     * Handle the rack update.
      */
     @Override
     public void handleRackUpdate() {

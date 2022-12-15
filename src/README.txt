@@ -66,4 +66,4 @@ Running the jar File:
 
 Known Issues:
 - Gameplay takes long to load.
-- Undo/Redo stacks doesn't work correctly.
+- AI doesn't work correctly.

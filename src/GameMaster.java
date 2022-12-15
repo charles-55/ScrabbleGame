@@ -50,14 +50,10 @@ public class GameMaster implements Serializable {
         try {
             Object[] objects = undoStack.pop();
             redoStack.push(objects);
-            bag.setBag(((Bag) objects[0]).getBag());
-            board.setBoard(((Board) objects[1]).getBoard());
+            bag = (Bag) objects[0];
+            board = (Board) objects[1];
             turn = (int) objects[2];
-            for(int i = 0; i < players.length; i++) {
-                players[i].setScore(((Player[]) objects[3])[i].getScore());
-                players[i].setRack(((Player[]) objects[3])[i].getRack());
-                players[i].setPlayedWords(((Player[]) objects[3])[i].getPlayedWords());
-            }
+            players = (Player[]) objects[3];
 
             for (ScrabbleView view : views)
                 view.updateFrameContent();

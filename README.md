@@ -8,7 +8,7 @@ A simplified version of the classic board game Scrabble.
 - LongJohn Dagogo
 
 ## Game Rules
-The rules of the game is taken from https://en.wikipedia.org/wiki/Scrabble.
+The rules of the game are taken from https://en.wikipedia.org/wiki/Scrabble.
 
 ## Game Play
 In this game you can choose to play with real players or AI players programmed to play the game with you.

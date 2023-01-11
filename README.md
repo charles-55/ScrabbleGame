@@ -39,22 +39,22 @@ If you make an illegal move or a wrong word, you will be notified and required t
 2. AI doesn't work correctly.
 
 ## Files
-AIPlayer.java //@author Osamudiamen Nwoko
-Bag.java  // @author Meyiwa Temile
-Board.java  // @author Osamudiamen Nwoko, Ejeh Leslie
-BoardController.java // @author Ejeh Leslie, Osamudiamen Nwoko
-CommandController.java // @author Ejeh Leslie, Osamudiamen Nwoko
-CustomizableController// @author Osamudiamen Nwoko
-GameMaster.java  // @author Osamudiamen Nwoko, Meyiwa Temile
-GameMasterTest.java // @author Ejeh Leslie, Longjohn Dagogo
-Main.java  // @author Group 3
-Milestone 4 UML.png  // @author Longjohn Dagogo
-PlayEvent.java  // @author Osamudiamen Nwoko
-Player.java  // @author Ejeh Leslie
-README.txt  // @author Group 3
-Rack.java  // @author Ejeh Leslie
-ScrabbleFrame.java // @author Osamudiamen Nwoko, Meyiwa Temile
-ScrabbleView.java // @author Osamudiamen Nwoko, Meyiywa Temile
-Square.java  // @author Longjohn Dagogo
-Tile.java  // @author Meyiwa Temile
-WordList.txt  //@author https://www.mit.edu/~ecprice/wordlist.10000
+- AIPlayer.java //@author Osamudiamen Nwoko
+- Bag.java  // @author Meyiwa Temile
+- Board.java  // @author Osamudiamen Nwoko, Ejeh Leslie
+- BoardController.java // @author Ejeh Leslie, Osamudiamen Nwoko
+- CommandController.java // @author Ejeh Leslie, Osamudiamen Nwoko
+- CustomizableController// @author Osamudiamen Nwoko
+- GameMaster.java  // @author Osamudiamen Nwoko, Meyiwa Temile
+- GameMasterTest.java // @author Ejeh Leslie, Longjohn Dagogo
+- Main.java  // @author Group 3
+- Milestone 4 UML.png  // @author Longjohn Dagogo
+- PlayEvent.java  // @author Osamudiamen Nwoko
+- Player.java  // @author Ejeh Leslie
+- README.txt  // @author Group 3
+- Rack.java  // @author Ejeh Leslie
+- ScrabbleFrame.java // @author Osamudiamen Nwoko, Meyiwa Temile
+- ScrabbleView.java // @author Osamudiamen Nwoko, Meyiywa Temile
+- Square.java  // @author Longjohn Dagogo
+- Tile.java  // @author Meyiwa Temile
+- WordList.txt  //@author https://www.mit.edu/~ecprice/wordlist.10000
